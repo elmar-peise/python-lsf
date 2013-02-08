@@ -1,0 +1,10 @@
+from distutils.core import setup
+
+setup(name="lsf",
+      version="1.0",
+      description="LSF job scheduler utilities",
+      author="Elmar Peise",
+      author_email="peise@aices.rwth-aachen.de",
+      packages=["lsf"],
+      scripts=["scripts/ejobs"]
+      )
