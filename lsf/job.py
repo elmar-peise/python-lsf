@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 from __future__ import print_function, division
 
-from host import *
+from host import Hostlist
 from utility import color, format_time
 
 import sys
@@ -14,50 +14,50 @@ from subprocess import Popen, check_output, PIPE
 class Job():
     """representation of a single LSF batch job"""
     strregexps = {
-            "Job Name": "Job Name <(.*?)>, ?User",
-            "User": "User <(.*?)>[,;]",
-            "Project": "Project <(.*?)>[,;]",
-            "User Group": "User Group <(.*?)>[,;]",
-            "Mail": "Mail <(.*?)>[,;]",
-            "Status": "Status <(.*?)>[,;]",
-            "Queue": "Queue <(.*?)>[,;]",
-            "Command": "Command <(.*?)>, ?(?:Job Description|Share group charged)",
-            "Submitted from host": "Submitted from host <(.*?)>[,;]",
-            "CWD": "CWD <(.*?)>[,;]",
-            "Output File": "Output File <(.*?)>[,;]",
-            "Error File": "Error File <(.*?)>[,;]",
-            "Requested Resources": "Requested Resources <(.*?) ?>[,;]",
-            "Dependency Condition": "Dependency Condition <(.*?)>[,;]",
-            "Share group charged": "Share group charged <(.*?)>[,;]",
-            "Specified Hosts": "Specified Hosts <(.*?)>[,;]",
-            "Execution Home": "Execution Home <(.*?)>[,;]",
-            "Execution CWD": "Execution CWD <(.*?)>[,;]",
-            "Processors": "Hosts/Processors <(.*?)>[,;]",
-            "Started on": "Started on <(.*?)>[,;]",
-            "Complete": "Completed <(.*?)>",
-            "PENDING REASONS": "PENDING REASONS:\n(.*?)\n\n",
-            "RUNLIMIT" : "RUNLIMIT\s*\n (.*?) min of",
-            "MEMLIMIT" : "MEMLIMIT\s*\n (.*?)\n",
-            }
+        "Job Name": "Job Name <(.*?)>, ?User",
+        "User": "User <(.*?)>[,;]",
+        "Project": "Project <(.*?)>[,;]",
+        "User Group": "User Group <(.*?)>[,;]",
+        "Mail": "Mail <(.*?)>[,;]",
+        "Status": "Status <(.*?)>[,;]",
+        "Queue": "Queue <(.*?)>[,;]",
+        "Command": "Command <(.*?)>, ?(?:Job Description|Share group charged)",
+        "Submitted from host": "Submitted from host <(.*?)>[,;]",
+        "CWD": "CWD <(.*?)>[,;]",
+        "Output File": "Output File <(.*?)>[,;]",
+        "Error File": "Error File <(.*?)>[,;]",
+        "Requested Resources": "Requested Resources <(.*?) ?>[,;]",
+        "Dependency Condition": "Dependency Condition <(.*?)>[,;]",
+        "Share group charged": "Share group charged <(.*?)>[,;]",
+        "Specified Hosts": "Specified Hosts <(.*?)>[,;]",
+        "Execution Home": "Execution Home <(.*?)>[,;]",
+        "Execution CWD": "Execution CWD <(.*?)>[,;]",
+        "Processors": "Hosts/Processors <(.*?)>[,;]",
+        "Started on": "Started on <(.*?)>[,;]",
+        "Complete": "Completed <(.*?)>",
+        "PENDING REASONS": "PENDING REASONS:\n(.*?)\n\n",
+        "RUNLIMIT": "RUNLIMIT\s*\n (.*?) min of",
+        "MEMLIMIT": "MEMLIMIT\s*\n (.*?)\n",
+    }
     numregexps = {
-            "Job Priority": "Job Priority <(\d+)>,",
-            "Processors Requested": ", (\d+) Processors Requested,",
-            "CPU time": "The CPU time used is (.*?) seconds.",
-            }
+        "Job Priority": "Job Priority <(\d+)>,",
+        "Processors Requested": ", (\d+) Processors Requested,",
+        "CPU time": "The CPU time used is (.*?) seconds.",
+    }
     tfregexps = {
-            "Notify when job ends": "Notify when job (begins/)?ends",
-            "Notify when job begins": "Notify when job begins",
-            "Exclusive Execution": "Exclusive Execution",
-            }
+        "Notify when job ends": "Notify when job (begins/)?ends",
+        "Notify when job begins": "Notify when job begins",
+        "Exclusive Execution": "Exclusive Execution",
+    }
     timeregexp = "([A-Z][a-z]{2} +\d+ \d+:\d+:\d+)"
     timeregexps = {
-            "submittime": timeregexp + ": Submitted",
-            "starttime": timeregexp + ": (?:\[\d+\] )?[sS]tarted",
-            "resourcetime": timeregexp + ": Resource",
-            "endtime": timeregexp + ": Done",
-            "exittime": timeregexp + ": Exited",
-            "completetime": timeregexp + ": Completed",
-            }
+        "submittime": timeregexp + ": Submitted",
+        "starttime": timeregexp + ": (?:\[\d+\] )?[sS]tarted",
+        "resourcetime": timeregexp + ": Resource",
+        "endtime": timeregexp + ": Done",
+        "exittime": timeregexp + ": Exited",
+        "completetime": timeregexp + ": Completed",
+    }
 
     def __init__(self, init):
         """Init job from LSF or data"""
@@ -81,65 +81,6 @@ class Job():
             self.initialized = True
         self.initializing = False
         return True
-
-    def submit(data):
-        """Submit a job to LSF"""
-        if not "Command" in data:
-            print("no command given", file=sys.stderr)
-            return False
-        if "Job Name" in data:
-            data["-J"] = data["Job Name"]
-        if "Output File" in data:
-            data["-o"] = data["Output File"]
-        if not "-o" in data and "-J" in data:
-            data["-o"] = data["-J"] + ".%J.out"
-        if "Error File" in data:
-            data["-e"] = data["Error File"]
-        if "Mail" in data:
-            data["-u"] = data["Mail"]
-        if "Notify when job ends" in data and data["Notify when job ends"]:
-            data["-N"] = True
-        if "Notify when job begins" in data and data["Notify when job begins"]:
-            data["-B"] = True
-        if "Exclusive Execution" in data and data["Exclusive Execution"]:
-            data["-x"] = True
-        if "Processors Requested" in data:
-            data["-n"] = str(int(data["Processors Requested"]))
-        if "RUNLIMIT" in data:
-            data["-W"] = str(data["RUNLIMIT"] // 60)
-        if "MEMLIMIT" in data:
-            data["-M"] = str(data["MEMLIMIT"] // 1024)
-        if "Project" in data:
-            data["-P"] = data["Project"]
-        if "Resource Request" in data:
-            if "-R" in data:
-                data["-R"] = [data["-R"]]
-            else:
-                data["-R"] = []
-            data["-R"].append(data["Resource Request"])
-        if "Dependency Condition" in data:
-            data["-w"] = data["Dependency Condition"]
-        cmd = ["bsub"]
-        for key, value in data.iteritems():
-            if key[0] != "-":
-                continue
-            val = data[key]
-            if type(val) is bool:
-                cmd += [key]
-            elif type(val) is str:
-                cmd += [key, val]
-            elif type(val) is list:
-                for v in val:
-                    cmd += [key, str(v)]
-        cmd += ["#!/bin/bash -l\n" + data["Command"]]
-        p = Popen(cmd, stdout=PIPE, stderr=PIPE)
-        out, err = p.communicate(input)
-        match = re.search("Job <(.*?)> is submitted", out)
-        if match:
-            return Job(match.groups()[0])
-        else:
-            print("problem with job submission:\n" + err, file=sys.stderr)
-            return False
 
     def kill(self):
         """Kill the job"""
@@ -179,7 +120,7 @@ class Job():
                     self[key] = float(match.groups()[0])
         for key, regexp in Job.tfregexps.iteritems():
             self[key] = not (re.search(regexp, outjoin) is None)
-        for key, regexp in  Job.timeregexps.iteritems():
+        for key, regexp in Job.timeregexps.iteritems():
             match = re.search(regexp, outjoin)
             if match:
                 tstr = time.strftime("%Y ") + match.groups()[0]
@@ -232,8 +173,8 @@ class Job():
             self["RUNLIMIT"] = int(60 * float(self["RUNLIMIT"]))
         if "MEMLIMIT" in self:
             groups = re.search("(.*) ([BKMGT])", self["MEMLIMIT"]).groups()
-            units = {"B": 1, "K": 1024, "M": 1024 ** 2, "G": 1024 ** 3, "T": 1024 ** 4}
-            self["MEMLIMIT"] = int(groups[0]) * units[groups[1]]
+            units = {"B": 0, "K": 1, "M": 2, "G": 3, "T": 4}
+            self["MEMLIMIT"] = int(groups[0]) * 1024 ** units[groups[1]]
         return True
 
     def __str__(self):
@@ -245,7 +186,8 @@ class Job():
         result = ""
         for k in self.data.keys():
             s = str(self[k]).replace("\n", "\n" + wk * " ")
-            s = re.sub("([^\n]{" + str(wv) + "})([^\n])", "\1\n" + wk * " " + "\2", s)
+            s = re.sub("([^\n]{" + str(wv) + "})([^\n])",
+                       "\1\n" + wk * " " + "\2", s)
             result += k.ljust(wk) + s + "\n"
         return result
 
@@ -277,6 +219,66 @@ class Job():
         return self.data.__delitem__(key)
 
 
+def submit(data):
+    """Submit a job to LSF"""
+    if not "Command" in data:
+        print("no command given", file=sys.stderr)
+        return False
+    if "Job Name" in data:
+        data["-J"] = data["Job Name"]
+    if "Output File" in data:
+        data["-o"] = data["Output File"]
+    if not "-o" in data and "-J" in data:
+        data["-o"] = data["-J"] + ".%J.out"
+    if "Error File" in data:
+        data["-e"] = data["Error File"]
+    if "Mail" in data:
+        data["-u"] = data["Mail"]
+    if "Notify when job ends" in data and data["Notify when job ends"]:
+        data["-N"] = True
+    if "Notify when job begins" in data and data["Notify when job begins"]:
+        data["-B"] = True
+    if "Exclusive Execution" in data and data["Exclusive Execution"]:
+        data["-x"] = True
+    if "Processors Requested" in data:
+        data["-n"] = str(int(data["Processors Requested"]))
+    if "RUNLIMIT" in data:
+        data["-W"] = str(data["RUNLIMIT"] // 60)
+    if "MEMLIMIT" in data:
+        data["-M"] = str(data["MEMLIMIT"] // 1024)
+    if "Project" in data:
+        data["-P"] = data["Project"]
+    if "Resource Request" in data:
+        if "-R" in data:
+            data["-R"] = [data["-R"]]
+        else:
+            data["-R"] = []
+        data["-R"].append(data["Resource Request"])
+    if "Dependency Condition" in data:
+        data["-w"] = data["Dependency Condition"]
+    cmd = ["bsub"]
+    for key, value in data.iteritems():
+        if key[0] != "-":
+            continue
+        val = data[key]
+        if type(val) is bool:
+            cmd += [key]
+        elif type(val) is str:
+            cmd += [key, val]
+        elif type(val) is list:
+            for v in val:
+                cmd += [key, str(v)]
+    cmd += ["#!/bin/bash -l\n" + data["Command"]]
+    p = Popen(cmd, stdout=PIPE, stderr=PIPE)
+    out, err = p.communicate(input)
+    match = re.search("Job <(.*?)> is submitted", out)
+    if match:
+        return Job(match.groups()[0])
+    else:
+        print("problem with job submission:\n" + err, file=sys.stderr)
+        return False
+
+
 class Joblist(list):
     """List of LSF jobs"""
     alljobs = set()
@@ -295,39 +297,43 @@ class Joblist(list):
     def __setitem__(self, key, value):
         """Access jobs"""
         if not isinstance(value, Job):
-            raise TypeError("Joblist elements must be Job not " + value.__class__.__name__)
+            raise TypeError("Joblist elements must be Job not " +
+                            value.__class__.__name__)
         list.__setitem__(self, key, value)
         Joblist.alljobs.add(value)
 
     def append(self, value):
         """Access jobs"""
         if not isinstance(value, Job):
-            raise TypeError("Joblist elements must be Job not " + value.__class__.__name__)
+            raise TypeError("Joblist elements must be Job not " +
+                            value.__class__.__name__)
         list.append(self, value)
         Joblist.alljobs.add(value)
-    
+
     def __setslice__(self, i, j, sequence):
         """Access jobs"""
         for k, value in enumerate(sequence):
-            if not isinstance(vaue, Job):
-                raise TypeError("item {}: Joblist elements must be Job not ".format(value.__class__.__name__, k))
+            if not isinstance(value, Job):
+                raise TypeError("item " + value.__class__.__name__ +
+                                ": Joblist elements must be Job not " + k)
             else:
                 Joblist.alljobs.add(value)
         list.__setslice__(self, i, j, sequence)
 
     def __add__(self, other):
         """Access jobs"""
-        return Joblist(jobs = self + other)
+        return Joblist(jobs=self + other)
 
     def __radd__(self, other):
         """Access jobs"""
-        return Joblist(jobs = other + self)
+        return Joblist(jobs=other + self)
 
-    def __iadd__(self, other):
+    def __iadd__(self, sequence):
         """Access jobs"""
         for k, value in enumerate(sequence):
             if not isinstance(value, Job):
-                raise TypeError("item {}: Joblist elements must be Job not ".format(value.__class__.__name__, k))
+                raise TypeError("item " + value.__class__.__name__ +
+                                ": Joblist elements must be Job not " + k)
             else:
                 Joblist.alljobs.add(value)
         for job in sequence:
@@ -339,13 +345,13 @@ class Joblist(list):
         out, err = p.communicate()
         if "No unfinished job found" in err:
             return
-        jobids = []
         for line in out.split("\n")[1:-1]:
             line = line.split()
             data = {
-                    "Job": line[0],
-                    "User": line[1],
-                    "Status": line[2]}
+                "Job": line[0],
+                "User": line[1],
+                "Status": line[2]
+            }
             match = re.search("(\[\d+\])$", line[-4])
             if match:
                 data["Job"] += match.groups()[0]
@@ -387,22 +393,22 @@ class Joblist(list):
             return
         screencols = int(check_output(["tput", "cols"]))
         if long:
-            if titlte:
+            if title:
                 print(title.center(screencols, "-"))
             for job in self:
-                header = " {Job} --- {Job Name} --- {User} --- {Status} ".format(**job)
-                print(title.centeR(screencols, "-"))
+                f = " {Job} --- {Job Name} --- {User} --- {Status} "
+                header = f.format(**job)
+                print(header.center(screencols, "-"))
                 print(job)
             return
         whoami = os.getenv("USER")
-        lens = [16, 16, 8, 12, 16]
         lens = {
-                "id": 16,
-                "name": 16,
-                "status": 8,
-                "user": 12,
-                "time": 16
-                }
+            "id": 16,
+            "name": 16,
+            "status": 8,
+            "user": 12,
+            "time": 16
+        }
         h = "Job".ljust(lens["id"]) + "Job Name".ljust(lens["name"])
         h += "Status".ljust(lens["status"]) + "User".ljust(lens["user"])
         h += "Wait/Runtime".rjust(lens["time"]) + "    Resources"
@@ -454,10 +460,10 @@ class Joblist(list):
                 s = ""
             l += s.rjust(lens["time"])
             # Resources
-            # Time 
+            # Time
             l += "    " + format_time(job["RUNLIMIT"]) + "    "
             if job["Status"] == "RUN":
-                # Execution hosts 
+                # Execution hosts
                 if wide:
                     l += job["Processorsstr"]
                 else:
@@ -475,13 +481,14 @@ class Joblist(list):
                 while m >= 1024:
                     m //= 1024
                     i += 1
-                l += str(m).rjust(5) 
+                l += str(m).rjust(5)
                 l += ["B", "KiB", "MiB", "GiB", "TiB", "PiB", "EiB"][i]
                 # Hosts or architecture
                 if "Specified Hosts" in job:
                     l += "    " + job["Specified Hosts"]
                 else:
-                    match = re.match("[model==(.*?)]", job["Requested Resources"])
+                    match = re.match("[model==(.*?)]",
+                                     job["Requested Resources"])
                     if match:
                         l += "    " + match.groups()[0]
             print(l)

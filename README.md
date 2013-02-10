@@ -1,7 +1,7 @@
 python-lsf
 ==========
 
-Python interface and tools for the LSF job scheduler
+Python API for the LSF batch job scheduler
 
 Installation
 ------------

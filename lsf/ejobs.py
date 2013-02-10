@@ -7,42 +7,42 @@ from utility import color
 
 import sys
 import os
-import time
 import argparse
+
 
 def main():
     global args
     parser = argparse.ArgumentParser(
-            description="More comprehensive version of bjobs.",
-            epilog="Any non-listed arguments are passed to bjobs.")
+        description="More comprehensive version of bjobs.",
+        epilog="Any non-listed arguments are passed to bjobs.")
     parser.add_argument(
-            "-l", "--long",
-            help="long job description",
-            action="store_true",
-            )
+        "-l", "--long",
+        help="long job description",
+        action="store_true",
+    )
     parser.add_argument(
-            "-w", "--wide",
-            help="don't shorten strings",
-            action="store_true",
-            )
+        "-w", "--wide",
+        help="don't shorten strings",
+        action="store_true",
+    )
     exg = parser.add_mutually_exclusive_group()
     exg.add_argument(
-            "-p", "--pending",
-            help="show pending jobs with reasons and potential hosts",
-            action="store_true",
-            )
+        "-p", "--pending",
+        help="show pending jobs with reasons and potential hosts",
+        action="store_true",
+    )
     exg.add_argument(
-            "--group",
-            help="group jobs by attribute",
-            metavar="BY",
-            )
+        "--group",
+        help="group jobs by attribute",
+        metavar="BY",
+    )
     parser.add_argument(
-            "-aices",
-            help="short for -G p_aices",
-            action="store_true",
-            )
+        "-aices",
+        help="short for -G p_aices",
+        action="store_true",
+    )
     parser.add_argument_group("further arguments",
-            description="are passed to bjobs")
+                              description="are passed to bjobs")
 
     args, bjobsargs = parser.parse_known_args()
 
@@ -78,13 +78,15 @@ def main():
     else:
         for reasons in sorted(joblists.keys(), key=len):
             pendjobs = joblists[reasons]
-            if len(reasons) == 1 and reasons[0][1] == True:
+            if len(reasons) == 1 and reasons[0][1] is True:
                 title = "{} [{}]".format(reasons[0][0], len(pendjobs))
                 pendjobs.display(args.long, args.wide, title)
                 continue
             lists = {}
-            for res, rlist in pendjobs.groupby("Requested Resources").iteritems():
-                for hosts, hlist in rlist.groupby("Specified Hosts").iteritems():
+            resgrouped = pendjobs.groupby("Requested Resources")
+            for res, rlist in resgrouped.iteritems():
+                hostgrouped = rlist.groupby("Specified Hosts")
+                for hosts, hlist in hostgrouped.iteritems():
                     lists[res, hosts] = hlist
             for case, list in lists.iteritems():
                 title = "[{}]".format(len(list))
@@ -92,7 +94,8 @@ def main():
                 print()
                 print("Pending reasons:")
                 for reason, count in reasons:
-                    if reason in ["Not enough slots or resources for whole duration of the job"]:
+                    if reason in ["Not enough slots or resources for "
+                                  "whole duration of the job"]:
                         print("\t{}\t{}".format(count, color(reason, "r")))
                     else:
                         print("\t{}\t{}".format(count, reason))
@@ -128,7 +131,7 @@ def main():
                             if job["Exclusive Execution"]:
                                 js = "-x "
                             else:
-                                js = "{:>2}*".format(job["Processors"][hostname])
+                                js = job["processors"][hostname].ljsut(2) + "*"
                             if job["User"] == whoami:
                                 js += color(job["User"], "g")
                             else:
@@ -155,7 +158,8 @@ def main():
                         c = "g"
                     else:
                         c = 0
-                    print("\t" + color(jobs[0]["Userstr"].ljust(40), 0) + procsstr)
+                    ustr = jobs[0]["Userstr"].ljust(40)
+                    print("\t" + color(ustr, c) + procsstr)
 
 if __name__ == "__main__":
     main()

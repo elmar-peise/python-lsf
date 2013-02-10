@@ -2,7 +2,7 @@ from __future__ import print_function, division
 
 import sys
 import re
-from subprocess import Popen, check_output, PIPE
+from subprocess import Popen, PIPE
 
 
 class Host():
@@ -12,9 +12,9 @@ class Host():
         self.initializing = False
         if type(init) is str:
             self.data = {
-                    "HOST": init,
-                    "HOST_NAME": init,
-                    }
+                "HOST": init,
+                "HOST_NAME": init,
+            }
         elif type(init) == dict:
             if "HOST" in init:
                 init["HOST_NAME"] = init["HOST"]
@@ -115,16 +115,16 @@ class Hostlist(list):
         for line in out.split("\n")[1:-1]:
             line = line.split()
             data = {
-                    "HOST": line[0],
-                    "HOST_NAME": line[0],
-                    "STATUS": line[1],
-                    "MAX": int(line[3]),
-                    "NJOBS": int(line[4]),
-                    "RUN": int(line[5]),
-                    "SSUSP": int(line[6]),
-                    "USUSP": int(line[7]),
-                    "RSV": int(line[8]),
-                    }
+                "HOST": line[0],
+                "HOST_NAME": line[0],
+                "STATUS": line[1],
+                "MAX": int(line[3]),
+                "NJOBS": int(line[4]),
+                "RUN": int(line[5]),
+                "SSUSP": int(line[6]),
+                "USUSP": int(line[7]),
+                "RSV": int(line[8]),
+            }
             found = False
             for host in Hostlist.allhosts:
                 if host["HOST"] == data["HOST"]:
@@ -137,6 +137,7 @@ class Hostlist(list):
     def append(self, value):
         """Access hosts"""
         if not isinstance(value, Host):
-            raise TypeError("Hostlist elements must be Host not " + value.__class__.__name__)
+            raise TypeError("Hostlist elements must be Host not " +
+                            value.__class__.__name__)
         list.append(self, value)
         Hostlist.allhosts.add(value)
