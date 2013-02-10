@@ -18,3 +18,14 @@ to install the package in ~/.local. You might then have to
     export PATH=$PATH:~/.local/bin
 
 in order to make the scripts available on the command line.
+
+Usage
+-----
+
+ejobs has essentially the same interface as LFS' bjobs.
+Check
+
+    ejobs -h
+
+and
+    man bjobs
