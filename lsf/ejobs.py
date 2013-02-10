@@ -131,7 +131,8 @@ def main():
                             if job["Exclusive Execution"]:
                                 js = "-x "
                             else:
-                                js = job["processors"][hostname].ljsut(2) + "*"
+                                js = str(job["Processors"][hostname]).ljust(2)
+                                js += "*"
                             if job["User"] == whoami:
                                 js += color(job["User"], "g")
                             else:
