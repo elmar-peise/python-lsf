@@ -268,9 +268,9 @@ def submit(data):
         elif type(val) is list:
             for v in val:
                 cmd += [key, str(v)]
-    cmd += ["#!/bin/bash -l\n" + data["Command"]]
-    p = Popen(cmd, stdout=PIPE, stderr=PIPE)
-    out, err = p.communicate(input)
+    p = Popen(cmd, stdout=PIPE, stderr=PIPE, stdin=PIPE)
+    script = "#!/bin/bash -l\n" + data["Command"]
+    out, err = p.communicate(script)
     match = re.search("Job <(.*?)> is submitted", out)
     if match:
         return Job(match.groups()[0])
