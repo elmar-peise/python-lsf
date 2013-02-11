@@ -450,7 +450,7 @@ class Joblist(list):
             l += color((username + " ").ljust(lens["user"]), c)
             # Wait/Runtime
             if "endtime" in job:
-                t = job["starttime"] - job["endtime"]
+                t = int(job["endtime"] - job["starttime"])
             elif "starttime" in job:
                 t = int(time.time() - job["starttime"])
             elif "submittime" in job:
