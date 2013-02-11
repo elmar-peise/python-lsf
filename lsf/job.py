@@ -268,8 +268,8 @@ def submit(data):
         elif type(val) is list:
             for v in val:
                 cmd += [key, str(v)]
-    p = Popen(cmd, stdout=PIPE, stderr=PIPE, stdin=PIPE)
     script = "#!/bin/bash -l\n" + data["Command"]
+    p = Popen(cmd, stdout=PIPE, stderr=PIPE, stdin=PIPE)
     out, err = p.communicate(script)
     match = re.search("Job <(.*?)> is submitted", out)
     if match:
@@ -423,10 +423,13 @@ class Joblist(list):
             l = (job["Job"] + " ").ljust(lens["id"])
             # Job Name
             jobname = job["Job Name"]
-            if not wide:
+            if wide:
+                jobname += "\t"
+            else:
                 if len(jobname) >= lens["name"]:
                     jobname = jobname[:lens["name"] - 2] + "*"
-            l += (jobname + " ").ljust(lens["name"])
+                jobname += " "
+            l += jobname.ljust(lens["name"])
             # Status
             if job["Status"] == "PEND":
                 c = "r"
