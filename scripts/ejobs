@@ -1,4 +1,5 @@
 #!/usr/bin/env python
 from lsf import ejobs
 
-ejobs.main()
+if __name__ == "__main__":
+    ejobs.main()

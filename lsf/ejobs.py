@@ -10,7 +10,7 @@ import os
 import argparse
 
 
-def main():
+def main_raising():
     global args
     parser = argparse.ArgumentParser(
         description="More comprehensive version of bjobs.",
@@ -166,11 +166,15 @@ def main():
                 ustr = jobs[0]["Userstr"].ljust(40)
                 print("\t" + color(ustr, c) + procsstr)
 
-if __name__ == "__main__":
+
+def main():
     try:
-        main()
+        main_raising()
     except KeyboardInterrupt:
         pass
     except:
         print(color("ERROR -- probably a job status changed while " +
                     sys.argv[0] + " processed it", "r"), file=sys.stderr)
+
+if __name__ == "__main__":
+    main()
