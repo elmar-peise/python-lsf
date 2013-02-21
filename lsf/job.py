@@ -134,8 +134,9 @@ class Job():
             else:
                 self["Userstr"] = "{User}".format(**self)
         if "Command" in self:
-            self["Command"] = self["Command"].replace("; ", ";;")
-            self["Command"] = self["Command"].replace(";; ", ";  ")
+            for _ in xrange(3):
+                self["Command"] = self["Command"].replace("; ", ";;")
+            self["Command"] = self["Command"].replace(";;;; ", ";    ")
             self["Command"] = self["Command"].replace(";", "\n")
         if "Started on" in self:
             self["Processors"] = self["Started on"]
@@ -186,9 +187,10 @@ class Job():
         wv = w - wk
         result = ""
         for k in self.data.keys():
-            s = str(self[k]).replace("\n", "\n" + wk * " ")
-            s = re.sub("([^\n]{" + str(wv) + "})([^\n])",
-                       "\1\n" + wk * " " + "\2", s)
+            strs = (s[i:i + wv]
+                    for s in str(self[k]).splitlines()
+                    for i in range(0, len(s) + 1, wv))
+            s = ("\n" + wk * " ").join(strs)
             result += k.ljust(wk) + s + "\n"
         return result
 
