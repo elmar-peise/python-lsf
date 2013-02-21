@@ -29,6 +29,7 @@ class Job():
         "Requested Resources": "Requested Resources <(.*?) ?>[,;]",
         "Dependency Condition": "Dependency Condition <(.*?)>[,;]",
         "Share group charged": "Share group charged <(.*?)>[,;]",
+        "Job Description": "Job Description <(.*?)>",
         "Specified Hosts": "Specified Hosts <(.*?)>[,;]",
         "Execution Home": "Execution Home <(.*?)>[,;]",
         "Execution CWD": "Execution CWD <(.*?)>[,;]",
