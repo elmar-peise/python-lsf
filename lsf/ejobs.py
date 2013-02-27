@@ -95,7 +95,7 @@ def main_raising():
             print("Pending reasons:")
             cs = {
                 "Job's requirement for exclusive execution not satisfied": "y",
-                "Not enough slots or resources"
+                "Not enough slots or resources "
                 "for whole duration of the job": "r",
             }
             for reason, count in reasons:
