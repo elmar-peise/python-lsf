@@ -3,8 +3,9 @@ from __future__ import print_function, division
 
 import sys
 
+
 def color(string, c):
-    if sys.stdin.isatty():
+    if sys.stdout.isatty():
         names = {"r": 31, "g": 32, "y": 33}
         if c in names:
             c = names[c]
