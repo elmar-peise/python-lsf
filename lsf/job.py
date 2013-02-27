@@ -189,8 +189,15 @@ class Job():
         wv = w - wk
         result = ""
         for k in self.data.keys():
+            val = self[k]
+            if k in Job.timeregexps:
+                val = format_time(val)
+            elif k == "RUNLIMIT":
+                val = format_duration(val)
+            elif k == "MEMLIMIT":
+                val = format_mem(val)
             strs = (s[i:i + wv]
-                    for s in str(self[k]).splitlines()
+                    for s in str(val).splitlines()
                     for i in range(0, len(s) + 1, wv))
             s = ("\n" + wk * " ").join(strs)
             result += k.ljust(wk) + s + "\n"

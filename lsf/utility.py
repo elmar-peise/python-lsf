@@ -2,6 +2,7 @@
 from __future__ import print_function, division
 
 import sys
+from time import strftime, gmtime
 
 
 def color(string, c):
@@ -34,6 +35,11 @@ def format_duration(t):
     # days
     s = "{:>2}d ".format(t) + s
     return s
+
+
+def format_time(t):
+    return strftime("%d.%m.%Y %H:%M:%S", gmtime(t))
+
 
 def format_mem(s):
     i = 0
