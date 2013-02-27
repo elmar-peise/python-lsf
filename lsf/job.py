@@ -2,7 +2,7 @@
 from __future__ import print_function, division
 
 from host import Hostlist
-from utility import color, format_time
+from utility import color, format_duration, format_mem
 
 import sys
 import os
@@ -461,13 +461,13 @@ class Joblist(list):
             else:
                 t = False
             if t:
-                s = format_time(t)
+                s = format_duration(t)
             else:
                 s = ""
             l += s.rjust(lens["time"])
             # Resources
             # Time
-            l += "    " + format_time(job["RUNLIMIT"]) + "    "
+            l += "    " + format_duration(job["RUNLIMIT"]) + "    "
             if job["Status"] == "RUN":
                 # Execution hosts
                 if wide:
@@ -482,13 +482,7 @@ class Joblist(list):
                 else:
                     l += " cores"
                 # Mmeory
-                m = job["MEMLIMIT"]
-                i = 0
-                while m >= 1024:
-                    m //= 1024
-                    i += 1
-                l += str(m).rjust(5)
-                l += ["B", "KiB", "MiB", "GiB", "TiB", "PiB", "EiB"][i]
+                l += format_mem(job["MEMLIMIT"]).rjust(8)
                 # Hosts or architecture
                 if "Specified Hosts" in job:
                     l += "    " + job["Specified Hosts"]

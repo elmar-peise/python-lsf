@@ -14,7 +14,7 @@ def color(string, c):
         return string
 
 
-def format_time(t):
+def format_duration(t):
     if t == 0:
         return "            0"
     # seconds
@@ -34,3 +34,10 @@ def format_time(t):
     # days
     s = "{:>2}d ".format(t) + s
     return s
+
+def format_mem(s):
+    i = 0
+    while s >= 1024:
+        s //= 1024
+        i += 1
+    return str(s) + ["B  ", "KiB", "MiB", "GiB", "TiB", "PiB", "EiB"][i]
