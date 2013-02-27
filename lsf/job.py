@@ -138,6 +138,8 @@ class Job():
                 self["Command"] = self["Command"].replace("; ", ";;")
             self["Command"] = self["Command"].replace(";;;; ", ";    ")
             self["Command"] = self["Command"].replace(";", "\n")
+            self["Command"] = re.sub("for \(\((.*?)\n\n(.*?)\n\n(.*?)\)\)",
+                                     "for ((\\1; \\2; \\3))", self["Command"])
         if "Started on" in self:
             self["Processors"] = self["Started on"]
             del self["Started on"]
