@@ -2,12 +2,12 @@
 from __future__ import print_function, division
 
 from host import Hostlist
-from utility import color, format_duration, format_mem
+from utility import *
 
 import sys
 import os
 import re
-import time
+from time import strftime, strptime, mktime, time
 from subprocess import Popen, check_output, PIPE
 
 
@@ -124,9 +124,9 @@ class Job():
         for key, regexp in Job.timeregexps.iteritems():
             match = re.search(regexp, outjoin)
             if match:
-                tstr = time.strftime("%Y ") + match.groups()[0]
-                t = time.strptime(tstr, "%Y %b %d %H:%M:%S")
-                self[key] = time.mktime(t)
+                tstr = strftime("%Y ") + match.groups()[0]
+                t = strptime(tstr, "%Y %b %d %H:%M:%S")
+                self[key] = mktime(t)
         #processing
         if "User" in self:
             if "Mail" in self:
@@ -457,9 +457,9 @@ class Joblist(list):
             if "endtime" in job:
                 t = int(job["endtime"] - job["starttime"])
             elif "starttime" in job:
-                t = int(time.time() - job["starttime"])
+                t = int(time() - job["starttime"])
             elif "submittime" in job:
-                t = int(time.time() - job["submittime"])
+                t = int(time() - job["submittime"])
             else:
                 t = False
             if t:
