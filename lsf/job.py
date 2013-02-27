@@ -412,6 +412,8 @@ class Joblist(list):
             "user": 12,
             "time": 16
         }
+        if wide:
+            lens["name"] = 32
         h = "Job".ljust(lens["id"]) + "Job Name".ljust(lens["name"])
         h += "Status".ljust(lens["status"]) + "User".ljust(lens["user"])
         h += "Wait/Runtime".rjust(lens["time"]) + "    Resources"
@@ -426,9 +428,7 @@ class Joblist(list):
             l = (job["Job"] + " ").ljust(lens["id"])
             # Job Name
             jobname = job["Job Name"]
-            if wide:
-                jobname += "\t"
-            else:
+            if not wide:
                 if len(jobname) >= lens["name"]:
                     jobname = jobname[:lens["name"] - 2] + "*"
                 jobname += " "
