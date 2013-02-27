@@ -64,7 +64,7 @@ class Job():
         """Init job from LSF or data"""
         self.initialized = False
         self.initializing = False
-        if type(init) in [int, str]:
+        if type(init) in (int, str):
             self.data = {"Job": str(init)}
         elif type(init) == dict:
             if not "Job" in init:
@@ -184,23 +184,41 @@ class Job():
     def __str__(self):
         """long format job details"""
         self.init()
-        h, w = map(int, check_output(["stty", "size"]).split())
+        h, w = map(int, check_output(("stty", "size")).split())
         wk = 25
         wv = w - wk
-        result = ""
+        data = {}
         for k in self.data.keys():
             val = self[k]
             if k in Job.timeregexps:
                 val = format_time(val)
-            elif k == "RUNLIMIT":
+            elif k in ("RUNLIMIT", "CPU time"):
                 val = format_duration(val)
             elif k == "MEMLIMIT":
                 val = format_mem(val)
+            elif type(val) is dict:
+                val = "\n".join("{}\t{}".format(dv, dk)
+                                for dk, dv in val.iteritems())
+            elif isinstance(val, list):
+                val = "\n".join(str(v) for v in val)
+            elif k in ("Processorsstr", "Userstr"):
+                continue
             strs = (s[i:i + wv]
                     for s in str(val).splitlines()
                     for i in range(0, len(s) + 1, wv))
             s = ("\n" + wk * " ").join(strs)
-            result += k.ljust(wk) + s + "\n"
+            data[k] = k.ljust(wk) + s + "\n"
+        result = ""
+        for k in ("Job", "Job Name", "User", "Status", "Command", "submittime",
+                  "starttime", "endtime", "Pending Reasons", "RUNLIMIT",
+                  "MEMLIMIT", "Processors Requested", "Processors",
+                  "Exclusive Execution", "Requested Resources",
+                  "Job Description"):
+            if k in data:
+                result += data[k]
+                del data[k]
+        for v in data.itervalues():
+            result += v
         return result
 
     def __getitem__(self, key):
