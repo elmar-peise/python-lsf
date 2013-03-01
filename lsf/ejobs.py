@@ -88,9 +88,11 @@ def main_raising():
             hostgrouped = rlist.groupby("Specified Hosts")
             for hosts, hlist in hostgrouped.iteritems():
                 lists[res, hosts] = hlist
-        for case, list in lists.iteritems():
-            title = "[{}]".format(len(list))
-            list.display(args.long, args.wide, title)
+        for case, casejobs in lists.iteritems():
+            title = "[{}]".format(len(casejobs))
+            casejobs.display(args.long, args.wide, title)
+            singlenode = "span[hosts=1]" in case[0]
+            minprocs = min(job["Processors Requested"] for job in casejobs)
             print()
             print("Pending reasons:")
             cs = {
@@ -99,10 +101,10 @@ def main_raising():
                 "for whole duration of the job": "r",
             }
             for reason, count in reasons:
+                s = reason
                 if reason in cs:
-                    print("\t{}\t{}".format(count, color(reason, cs[reason])))
-                else:
-                    print("\t{}\t{}".format(count, reason))
+                    s = color(reason, cs[reason])
+                print("\t" + str(count).ljust(8) + s)
             req = ["-R", case[0].replace(" && (hpcwork) && (hostok)", "")]
             if case[1]:
                 req = [case[1]]
@@ -113,9 +115,11 @@ def main_raising():
             sys.stdout.flush()
             jl = Joblist(["-m", " ".join(hl.keys()), "-u", "all"])
             byproc = jl.groupby("Processors")
-            print("potential hosts:              ")
+            print("Potential hosts:              ")
             for hostname in sorted(hl.keys()):
                 host = hl[hostname]
+                if singlenode and host["MAX"] < minprocs:
+                    continue
                 freeslots = host["MAX"] - host["RUN"]
                 if hostname in byproc:
                     if byproc[hostname][0]["Exclusive Execution"]:
