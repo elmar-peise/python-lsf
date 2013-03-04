@@ -111,6 +111,8 @@ def main_raising():
             print("Reading host list from LSF ...", end="\r")
             sys.stdout.flush()
             hl = {h["HOST"]: h for h in Hostlist(req)}
+            if singlenode:
+                hl = {n: h for n, h in hl.iteritems() if h["MAX"] >= minprocs}
             print("Reading job list from LSF ... ", end="\r")
             sys.stdout.flush()
             jl = Joblist(["-m", " ".join(hl.keys()), "-u", "all"])
@@ -118,8 +120,6 @@ def main_raising():
             print("Potential hosts:              ")
             for hostname in sorted(hl.keys()):
                 host = hl[hostname]
-                if singlenode and host["MAX"] < minprocs:
-                    continue
                 freeslots = host["MAX"] - host["RUN"]
                 if hostname in byproc:
                     if byproc[hostname][0]["Exclusive Execution"]:
@@ -149,6 +149,8 @@ def main_raising():
                     print("\t{}".format("\t".join(users)), end="")
                 print()
             print("conflicting users:")
+            if not len(jl):
+                print("\tNone")
             for user, jobs in jl.groupby("User").items():
                 procs = {}
                 for job in jobs:
