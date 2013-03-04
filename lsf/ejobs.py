@@ -148,29 +148,28 @@ def main_raising():
                         users.append(js)
                     print("\t{}".format("\t".join(users)), end="")
                 print()
-            print("conflicting users:")
-            if not len(jl):
-                print("\tNone")
-            for user, jobs in jl.groupby("User").items():
-                procs = {}
-                for job in jobs:
-                    idx = "Processors" if args.wide else "Hostgroups"
-                    for p, c in job[idx].iteritems():
-                        if not p in procs:
-                            procs[p] = 0
-                        if job["Exclusive Execution"]:
-                            procs[p] += job["Hosts"][0]["MAX"]
-                        else:
-                            procs[p] += c
-                procsstr = "\t".join("{:>3}*{}".format(c, p)
-                                     for p, c in procs.iteritems())
-                hosts = set(sum((job["Hosts"] for job in jobs), []))
-                if jobs[0]["User"] == whoami:
-                    c = "g"
-                else:
-                    c = 0
-                ustr = jobs[0]["Userstr"].ljust(40)
-                print("\t" + color(ustr, c) + procsstr)
+            if len(jl):
+                print("conflicting users:")
+                for user, jobs in jl.groupby("User").items():
+                    procs = {}
+                    for job in jobs:
+                        idx = "Processors" if args.wide else "Hostgroups"
+                        for p, c in job[idx].iteritems():
+                            if not p in procs:
+                                procs[p] = 0
+                            if job["Exclusive Execution"]:
+                                procs[p] += job["Hosts"][0]["MAX"]
+                            else:
+                                procs[p] += c
+                    procsstr = "\t".join("{:>3}*{}".format(c, p)
+                                         for p, c in procs.iteritems())
+                    hosts = set(sum((job["Hosts"] for job in jobs), []))
+                    if jobs[0]["User"] == whoami:
+                        c = "g"
+                    else:
+                        c = 0
+                    ustr = jobs[0]["Userstr"].ljust(40)
+                    print("\t" + color(ustr, c) + procsstr)
 
 
 def main():
