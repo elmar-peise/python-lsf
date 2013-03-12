@@ -177,12 +177,10 @@ class Job():
         if "RUNLIMIT" in self:
             self["RUNLIMIT"] = int(60 * float(self["RUNLIMIT"]))
         if "MEMLIMIT" in self:
-            print(self["Job"], self["MEMLIMIT"])
             groups = re.search("(.*) ([BKMGT])", self["MEMLIMIT"]).groups()
             units = {"B": 0, "K": 1, "M": 2, "G": 3, "T": 4}
             self["MEMLIMIT"] = int(groups[0]) * 1024 ** units[groups[1]]
         if "CORELIMIT" in self:
-            print(self["Job"], self["CORELIMIT"])
             groups = re.search("(.*) ([BKMGT])", self["CORELIMIT"]).groups()
             units = {"B": 0, "K": 1, "M": 2, "G": 3, "T": 4}
             self["CORELIMIT"] = int(groups[0]) * 1024 ** units[groups[1]]
