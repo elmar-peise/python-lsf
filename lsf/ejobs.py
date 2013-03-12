@@ -8,6 +8,7 @@ from utility import color
 import sys
 import os
 import argparse
+import re
 
 
 def main_raising():
@@ -105,9 +106,14 @@ def main_raising():
                 if reason in cs:
                     s = color(reason, cs[reason])
                 print("\t" + str(count).ljust(8) + s)
-            req = ["-R", case[0].replace(" && (hpcwork) && (hostok)", "")]
             if case[1]:
                 req = [case[1]]
+            else:
+                req = case[0]
+                req = re.sub(" && \(hpcwork\)", "", req)
+                req = re.sub(" && \(hostok\)", "", req)
+                req = re.sub(" && \(mem>\d+\)", "", req)
+                req = ["-R", req]
             print("Reading host list from LSF ...", end="\r")
             sys.stdout.flush()
             hl = {h["HOST"]: h for h in Hostlist(req)}
