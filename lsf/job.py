@@ -38,7 +38,8 @@ class Job():
         "Complete": "Completed <(.*?)>",
         "PENDING REASONS": "PENDING REASONS:\n(.*?)\n\n",
         "RUNLIMIT": "RUNLIMIT\s*\n (.*?) min of",
-        "MEMLIMIT": "MEMLIMIT\s*\n (.*?)\n",
+        "MEMLIMIT": "MEMLIMIT\s*\n .*? (\d+ [BKMGT])\s+\n",
+        "CORELIMIT": "CORELIMIT\s*\n (\d+ [BKMGT])",
     }
     numregexps = {
         "Job Priority": "Job Priority <(\d+)>,",
@@ -176,9 +177,15 @@ class Job():
         if "RUNLIMIT" in self:
             self["RUNLIMIT"] = int(60 * float(self["RUNLIMIT"]))
         if "MEMLIMIT" in self:
+            print(self["Job"], self["MEMLIMIT"])
             groups = re.search("(.*) ([BKMGT])", self["MEMLIMIT"]).groups()
             units = {"B": 0, "K": 1, "M": 2, "G": 3, "T": 4}
             self["MEMLIMIT"] = int(groups[0]) * 1024 ** units[groups[1]]
+        if "CORELIMIT" in self:
+            print(self["Job"], self["CORELIMIT"])
+            groups = re.search("(.*) ([BKMGT])", self["CORELIMIT"]).groups()
+            units = {"B": 0, "K": 1, "M": 2, "G": 3, "T": 4}
+            self["CORELIMIT"] = int(groups[0]) * 1024 ** units[groups[1]]
         return True
 
     def __str__(self):
@@ -276,6 +283,8 @@ def submit(data):
         data["-W"] = str(data["RUNLIMIT"] // 60)
     if "MEMLIMIT" in data:
         data["-M"] = str(data["MEMLIMIT"] // 1024)
+    if "CORELIMIT" in data:
+        data["-C"] = str(data["CORELIMIT"] // 1024)
     if "Project" in data:
         data["-P"] = data["Project"]
     if "Resource Request" in data:
