@@ -98,6 +98,7 @@ def main_raising():
             print("Pending reasons:")
             cs = {
                 "Job's requirement for exclusive execution not satisfied": "y",
+                "An exclusive job has reserved the host": "y",
                 "Not enough slots or resources "
                 "for whole duration of the job": "r",
             }
@@ -126,18 +127,21 @@ def main_raising():
             print("Potential hosts:              ")
             for hostname in sorted(hl.keys()):
                 host = hl[hostname]
-                freeslots = host["MAX"] - host["RUN"]
+                freeslots = host["MAX"] - host["RUN"] - host["RSV"]
                 if hostname in byproc:
                     if byproc[hostname][0]["Exclusive Execution"]:
                         freeslots = 0
                 if freeslots == 0:
                     c = "r"
-                elif host["RUN"] == 0:
+                elif freeslots == host["MAX"]:
                     c = "g"
                 else:
                     c = "y"
                 freeslots = color("{:>2}*free".format(freeslots), c)
                 print("\t{}: {}".format(host, freeslots), end="")
+                if host["RSV"] > 0:
+                    rsv = "{:>2}*".format(host["RSV"]) + color("reserved", "y")
+                    print("\t" + rsv, end="")
                 if hostname in byproc:
                     jobs = byproc[hostname]
                     users = []
