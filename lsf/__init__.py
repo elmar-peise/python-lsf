@@ -1,4 +1,4 @@
-__all__ = ["Job", "submit", "Joblist", "Host", "Hostlist", "ejobs"]
+__all__ = ["Job", "submit", "Joblist", "Host", "Hostlist", "ejobs", "ehosts"]
 import job
 import joblist
 import host
@@ -9,3 +9,4 @@ Host = host.Host
 Hostlist = hostlist.Hostlist
 from job import submit
 import ejobs
+import ehosts

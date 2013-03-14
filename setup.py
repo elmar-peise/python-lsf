@@ -7,5 +7,5 @@ setup(name="lsf",
       author="Elmar Peise",
       author_email="peise@aices.rwth-aachen.de",
       packages=["lsf"],
-      scripts=["scripts/ejobs"]
+      scripts=["scripts/ejobs", "scripts/ehosts"]
       )
