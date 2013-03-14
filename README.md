@@ -22,11 +22,10 @@ in order to make the scripts available on the command line.
 Usage
 -----
 
-ejobs has essentially the same interface as LFS' bjobs.
+ejobs and ehosts has essentially the same interface as LFS' bjobs and bhosts.
 Check
 
     ejobs -h
-
-and
-
+    ehosts -h
     man bjobs
+    man bhosts
