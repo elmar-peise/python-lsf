@@ -2,6 +2,7 @@
 from __future__ import print_function, division
 
 from hostlist import Hostlist
+from utility import color
 
 import sys
 import argparse
@@ -10,8 +11,7 @@ import argparse
 def main_raising():
     global args
     parser = argparse.ArgumentParser(
-        description="More comprehensive version of bhosts.",
-        epilog="Any non-listed arguments are passed to bhosts.")
+        description="More comprehensive version of bhosts.")
     parser.add_argument(
         "-w", "--wide",
         help="don't shorten strings",
@@ -39,7 +39,15 @@ def main_raising():
 
 
 def main():
-    main_raising()
+    try:
+        main_raising()
+    except KeyboardInterrupt:
+        pass
+    except SystemExit:
+        pass
+    except:
+        print(color("ERROR -- probably a job status changed while " +
+                    sys.argv[0] + " processed it", "r"), file=sys.stderr)
 
 if __name__ == "__main__":
     main()

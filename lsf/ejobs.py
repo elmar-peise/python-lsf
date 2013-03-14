@@ -6,7 +6,6 @@ from hostlist import Hostlist
 from utility import color
 
 import sys
-import os
 import argparse
 import re
 
@@ -52,8 +51,6 @@ def main_raising():
     if args.aices:
         bjobsargs = ["-G", "p_aices"] + bjobsargs
 
-    whoami = os.getenv("USER")
-
     print("Reading job list from LSF ...", end="\r")
     sys.stdout.flush()
     joblist = Joblist(bjobsargs)
@@ -95,8 +92,6 @@ def main_raising():
         for case, casejobs in lists.iteritems():
             title = "[{}]".format(len(casejobs))
             casejobs.display(args.long, args.wide, title)
-            singlenode = "span[hosts=1]" in case[0]
-            minprocs = min(job["Processors Requested"] for job in casejobs)
             print()
             print("Pending reasons:")
             cs = {
@@ -133,6 +128,8 @@ def main():
     try:
         main_raising()
     except KeyboardInterrupt:
+        pass
+    except SystemExit:
         pass
     except:
         print(color("ERROR -- probably a job status changed while " +
