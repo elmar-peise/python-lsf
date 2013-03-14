@@ -35,7 +35,7 @@ def main_raising():
     hostlist = Hostlist(bjobsargs)
     print("                              ", end="\r")
     hostlist.sort()
-    hostlist.display()
+    hostlist.display(wide=args.wide)
 
 
 def main():

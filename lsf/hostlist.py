@@ -114,6 +114,8 @@ class Hostlist(list):
                     print(color(un, "g"), end="")
                 else:
                     print(un, end="")
+                if wide:
+                    print(": " + job["Job Name"], end="")
             print()
         if len(users):
             print("Users:")
@@ -123,10 +125,6 @@ class Hostlist(list):
                 else:
                     c = 0
                 print("\t" + color(user["Userstr"].ljust(40), c), end="")
-                if wide:
-                    for hn, count in user["Hosts"].iteritems():
-                        print("\t{:>2}*{}".format(count, hn), end="")
-                else:
-                    for hn, count in user["Hostgroups"].iteritems():
-                        print("\t{:>3}*{}".format(count, hn), end="")
+                for hn, count in user["Hostgroups"].iteritems():
+                    print("\t{:>3}*{}*".format(count, hn), end="")
                 print()
