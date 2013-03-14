@@ -216,8 +216,8 @@ class Joblist(list):
                 if "Specified Hosts" in job:
                     l += "    " + job["Specified Hosts"]
                 else:
-                    match = re.match("[model==(.*?)]",
-                                     job["Requested Resources"])
+                    match = re.search("\(model==(.*?)\)",
+                                      job["Requested Resources"])
                     if match:
                         l += "    " + match.groups()[0]
             print(l)
