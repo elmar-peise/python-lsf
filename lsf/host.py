@@ -1,5 +1,7 @@
 from __future__ import print_function, division
 
+from utility import *
+
 import sys
 import re
 from subprocess import Popen, PIPE
@@ -54,6 +56,7 @@ class Host():
                 self[key] = int(self[key])
             except:
                 pass
+        self["Hostgroup"] = re.match("(.*?)\d+", line[0]).groups()[0],
         return True
 
     def __str__(self):
@@ -90,54 +93,3 @@ class Host():
     def __delitem__(self, key):
         """Access host attributes"""
         return self.data.__delitem__(key)
-
-
-class Hostlist(list):
-    """List of LSF hosts"""
-    allhosts = set()
-
-    def __init__(self, args=None, names=None):
-        """Init list from LSF or othr host list"""
-        list.__init__(self)
-        if names:
-            for name in names:
-                self.append(Host(name))
-        if args is None:
-            return
-        if type(args) is str:
-            args = [args]
-        self.readhosts(args)
-
-    def readhosts(self, args):
-        """read hosts from LSF"""
-        p = Popen(["bhosts", "-X", "-w"] + args, stdout=PIPE, stderr=PIPE)
-        out, err = p.communicate()
-        for line in out.split("\n")[1:-1]:
-            line = line.split()
-            data = {
-                "HOST": line[0],
-                "HOST_NAME": line[0],
-                "STATUS": line[1],
-                "MAX": int(line[3]),
-                "NJOBS": int(line[4]),
-                "RUN": int(line[5]),
-                "SSUSP": int(line[6]),
-                "USUSP": int(line[7]),
-                "RSV": int(line[8]),
-            }
-            found = False
-            for host in Hostlist.allhosts:
-                if host["HOST"] == data["HOST"]:
-                    self.append(host)
-                    found = True
-                    break
-            if not found:
-                self.append(Host(data))
-
-    def append(self, value):
-        """Access hosts"""
-        if not isinstance(value, Host):
-            raise TypeError("Hostlist elements must be Host not " +
-                            value.__class__.__name__)
-        list.append(self, value)
-        Hostlist.allhosts.add(value)

@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 from __future__ import print_function, division
 
-from job import Joblist
-from host import Hostlist
+from joblist import Joblist
+from hostlist import Hostlist
 from utility import color
 
 import sys
@@ -80,9 +80,12 @@ def main_raising():
     for reasons in sorted(joblists.keys(), key=len):
         pendjobs = joblists[reasons]
         if len(reasons) == 1 and reasons[0][1] is True:
-            title = "{} [{}]".format(reasons[0][0], len(pendjobs))
-            pendjobs.display(args.long, args.wide, title)
-            continue
+            if reasons[0][0] in [
+                "New job is waiting for scheduling"
+            ]:
+                title = "{} [{}]".format(reasons[0][0], len(pendjobs))
+                pendjobs.display(args.long, args.wide, title)
+                continue
         lists = {}
         resgrouped = pendjobs.groupby("Requested Resources")
         for res, rlist in resgrouped.iteritems():
@@ -101,12 +104,14 @@ def main_raising():
                 "An exclusive job has reserved the host": "y",
                 "Not enough slots or resources "
                 "for whole duration of the job": "r",
+                "Not enough hosts to meet the job's spanning requirement": "r",
             }
             for reason, count in reasons:
                 s = reason
                 if reason in cs:
                     s = color(reason, cs[reason])
-                print("\t" + str(count).ljust(8) + s)
+                if count is True:
+                    print("\t        " + s)
             if case[1]:
                 req = [case[1]]
             else:
@@ -117,69 +122,11 @@ def main_raising():
                 req = ["-R", req]
             print("Reading host list from LSF ...", end="\r")
             sys.stdout.flush()
-            hl = {h["HOST"]: h for h in Hostlist(req)}
-            if singlenode:
-                hl = {n: h for n, h in hl.iteritems() if h["MAX"] >= minprocs}
-            print("Reading job list from LSF ... ", end="\r")
-            sys.stdout.flush()
-            jl = Joblist(["-m", " ".join(hl.keys()), "-u", "all"])
-            byproc = jl.groupby("Processors")
+            hl = Hostlist(req)
             print("Potential hosts:              ")
-            for hostname in sorted(hl.keys()):
-                host = hl[hostname]
-                freeslots = host["MAX"] - host["RUN"] - host["RSV"]
-                if hostname in byproc:
-                    if byproc[hostname][0]["Exclusive Execution"]:
-                        freeslots = 0
-                if freeslots == 0:
-                    c = "r"
-                elif freeslots == host["MAX"]:
-                    c = "g"
-                else:
-                    c = "y"
-                freeslots = color("{:>2}*free".format(freeslots), c)
-                print("\t{}: {}".format(host, freeslots), end="")
-                if host["RSV"] > 0:
-                    rsv = "{:>2}*".format(host["RSV"]) + color("reserved", "y")
-                    print("\t" + rsv, end="")
-                if hostname in byproc:
-                    jobs = byproc[hostname]
-                    users = []
-                    for job in jobs:
-                        if job["Exclusive Execution"]:
-                            js = "-x "
-                        else:
-                            js = str(job["Processors"][hostname]).rjust(2)
-                            js += "*"
-                        if job["User"] == whoami:
-                            js += color(job["User"], "g")
-                        else:
-                            js += job["User"]
-                        users.append(js)
-                    print("\t{}".format("\t".join(users)), end="")
-                print()
-            if len(jl):
-                print("conflicting users:")
-                for user, jobs in jl.groupby("User").items():
-                    procs = {}
-                    for job in jobs:
-                        idx = "Processors" if args.wide else "Hostgroups"
-                        for p, c in job[idx].iteritems():
-                            if not p in procs:
-                                procs[p] = 0
-                            if job["Exclusive Execution"]:
-                                procs[p] += job["Hosts"][0]["MAX"]
-                            else:
-                                procs[p] += c
-                    procsstr = "\t".join("{:>3}*{}".format(c, p)
-                                         for p, c in procs.iteritems())
-                    hosts = set(sum((job["Hosts"] for job in jobs), []))
-                    if jobs[0]["User"] == whoami:
-                        c = "g"
-                    else:
-                        c = 0
-                    ustr = jobs[0]["Userstr"].ljust(40)
-                    print("\t" + color(ustr, c) + procsstr)
+            hl.sort()
+            hl.display(wide=args.wide, indent="\t")
+            hl = {h["HOST"]: h for h in Hostlist(req)}
 
 
 def main():
