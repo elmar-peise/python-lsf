@@ -14,8 +14,8 @@ import re
 def main_raising():
     global args
     parser = argparse.ArgumentParser(
-        description="More comprehensive version of bjobs.",
-        epilog="Any non-listed arguments are passed to bjobs.")
+        description="More comprehensive version of bjobs."
+    )
     parser.add_argument(
         "-l", "--long",
         help="long job description",
