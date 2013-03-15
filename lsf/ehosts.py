@@ -5,6 +5,7 @@ from hostlist import Hostlist
 from utility import color
 
 import sys
+import re
 import argparse
 
 
@@ -22,13 +23,40 @@ def main_raising():
         help="short for -R select[aices]",
         action="store_true",
     )
+    parser.add_argument(
+        "-m", "--model",
+        help="short for -R select[model==MODEL]",
+    )
+    parser.add_argument(
+        "-R",
+        help=argparse.SUPPRESS
+    )
     parser.add_argument_group("further arguments",
                               description="are passed to bjobs")
 
     args, bjobsargs = parser.parse_known_args()
 
+    r = ""
+    select = []
+    # get selects from -R
+    if args.R:
+        match = re.search("select\[(.*?)\]", args.R)
+        if match:
+            select += match.groups()
+        r = re.sub("select\[.*\]", "", args.R)
+
+    # add selects
     if args.aices:
-        bjobsargs = ["-R", "select[aices]"] + bjobsargs
+        select += ("aices",)
+    if args.model:
+        select += ("model==" + args.model,)
+
+    if len(select):
+        select = " && ".join("(" + s + ")" for s in select)
+        r = (r + " select[" + select + "]").strip()
+
+    if len(r):
+        bjobsargs += ["-R", r]
 
     print("Reading host list from LSF ...", end="\r")
     sys.stdout.flush()
