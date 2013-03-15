@@ -1,6 +1,7 @@
 from __future__ import print_function, division
 
 from utility import *
+import joblist as modulejoblist
 
 import sys
 import re
@@ -59,6 +60,10 @@ class Host():
         self["Hostgroup"] = re.match("(.*?)\d+", line[0]).groups()[0],
         return True
 
+    def readjobs(self):
+        """Read the list of jobs running on this host"""
+        self["Jobs"] = modulejoblist.Joblist(["-u", "all", "-m", self["HOST"]])
+
     def __str__(self):
         """Access host attributes"""
         return self["HOST"]
@@ -71,6 +76,9 @@ class Host():
         """Access host attributes"""
         if key in self.data:
             return self.data[key]
+        if key == "Jobs":
+            self.readjobs()
+            return self["Jobs"]
         self.init()
         return self.data.__getitem__(key)
 

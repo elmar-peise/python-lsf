@@ -2,7 +2,6 @@ from __future__ import print_function, division
 
 from utility import *
 import host as modulehost
-import joblist as modulejoblist
 
 import os
 import re
@@ -88,8 +87,7 @@ class Hostlist(list):
             if host["RSV"] > 0:
                 print("\t{:>3}*".format(host["RSV"]), end="")
                 print(color("reserved", "y"), end="")
-            jobs = modulejoblist.Joblist(["-u", "all", "-m", hn])
-            for job in jobs:
+            for job in host["Jobs"]:
                 print("\t", end="")
                 un = job["User"]
                 if not un in users:
