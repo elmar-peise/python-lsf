@@ -11,7 +11,6 @@ import re
 
 
 def main_raising():
-    global args
     parser = argparse.ArgumentParser(
         description="More comprehensive version of bjobs."
     )
