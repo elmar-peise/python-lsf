@@ -3,6 +3,13 @@ python-lsf
 
 Python API for the LSF batch job scheduler
 
+
+Requirements
+------------
+* bjobs and bhosts available from the command line
+* python version 2.7 or newer
+
+
 Installation
 ------------
 
@@ -18,6 +25,7 @@ to install the package in ~/.local. You might then have to
     export PATH=$PATH:~/.local/bin
 
 in order to make the scripts available on the command line.
+
 
 Usage
 -----
