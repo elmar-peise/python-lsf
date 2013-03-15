@@ -162,7 +162,7 @@ class Job():
                     hgs[hg] = 0
                 hgs[hg] += procs[host["HOST"]]
             self["Hostgroups"] = hgs
-            strs = (str(c) + "*" + p for p, c in hgs.iteritems())
+            strs = (str(c) + "*" + p + "*" for p, c in hgs.iteritems())
             self["Hostgroupsstr"] = " ".join(strs)
         if not "Processors Requested" in self:
             self["Processors Requested"] = 1
