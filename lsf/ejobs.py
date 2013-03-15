@@ -106,7 +106,9 @@ def main_raising():
                 if reason in cs:
                     s = color(reason, cs[reason])
                 if count is True:
-                    print("\t        " + s)
+                    print("\t       " + s)
+                else:
+                    print("\t{:>4}  ".format(count) + s)
             if case[1]:
                 req = [case[1]]
             else:
