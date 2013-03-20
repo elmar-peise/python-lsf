@@ -114,6 +114,7 @@ class Hostlist(list):
                     print(un, end="")
                 if wide:
                     print(": " + job["Job Name"], end="")
+                sys.stdout.flush()
             print()
         if len(users):
             print("Users:")
