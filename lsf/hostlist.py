@@ -104,6 +104,10 @@ class Hostlist(list):
                     users[un]["Hosts"][hn] += host["MAX"]
                     users[un]["Hostgroups"][hg] += host["MAX"]
                     print(" -x ", end="")
+                elif len(host["Jobs"]) == host["RUN"]:
+                    print("  1*", end="")
+                    users[un]["Hosts"][hn] += 1
+                    users[un]["Hostgroups"][hg] += 1
                 else:
                     print("{:>3}*".format(job["Processors"][hn]), end="")
                     users[un]["Hosts"][hn] += job["Processors"][hn]
