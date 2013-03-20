@@ -7,7 +7,7 @@ Python API for the LSF batch job scheduler
 Requirements
 ------------
 * bjobs and bhosts available from the command line
-* python version 2.7 or newer
+* python version 2.7.x
 
 
 Installation
