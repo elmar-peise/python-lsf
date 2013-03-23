@@ -139,12 +139,15 @@ class Joblist(list):
             "name": 16,
             "status": 8,
             "user": 12,
-            "time": 16
+            "time": 12,
         }
         if wide:
             lens["name"] = 32
+            lens["queue"] = 8
         h = "Job".ljust(lens["id"]) + "Job Name".ljust(lens["name"])
         h += "Status".ljust(lens["status"]) + "User".ljust(lens["user"])
+        if wide:
+            h += "Queue".ljust(lens["queue"])
         h += "Wait/Runtime".rjust(lens["time"]) + "    Resources"
         h = h.replace(" ", "-")
         if title:
@@ -180,6 +183,9 @@ class Joblist(list):
             else:
                 c = 0
             l += color((username + " ").ljust(lens["user"]), c)
+            # Queue
+            if wide:
+                l += job["Queue"].ljust(lens["queue"])
             # Wait/Runtime
             if "endtime" in job:
                 t = int(job["endtime"] - job["starttime"])
