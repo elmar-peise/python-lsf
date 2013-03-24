@@ -10,41 +10,7 @@ import argparse
 import re
 
 
-def main_raising():
-    parser = argparse.ArgumentParser(
-        description="More comprehensive version of bjobs."
-    )
-    parser.add_argument(
-        "-l", "--long",
-        help="long job description",
-        action="store_true",
-    )
-    parser.add_argument(
-        "-w", "--wide",
-        help="don't shorten strings",
-        action="store_true",
-    )
-    exg = parser.add_mutually_exclusive_group()
-    exg.add_argument(
-        "-p", "--pending",
-        help="show pending jobs with reasons and potential hosts",
-        action="store_true",
-    )
-    exg.add_argument(
-        "--group",
-        help="group jobs by attribute",
-        metavar="BY",
-    )
-    parser.add_argument(
-        "-aices",
-        help="short for -G p_aices",
-        action="store_true",
-    )
-    parser.add_argument_group("further arguments",
-                              description="are passed to bjobs")
-
-    args, bjobsargs = parser.parse_known_args()
-
+def ejobs(args, bjobsargs):
     if args.pending:
         args.group = "PENDING REASONS"
     if args.aices:
@@ -126,15 +92,54 @@ def main_raising():
 
 
 def main():
-    try:
-        main_raising()
-    except KeyboardInterrupt:
-        pass
-    except SystemExit:
-        pass
-    except:
-        print(color("ERROR -- probably a job status changed while " +
-                    sys.argv[0] + " processed it", "r"), file=sys.stderr)
+    parser = argparse.ArgumentParser(
+        description="More comprehensive version of bjobs."
+    )
+    parser.add_argument(
+        "-l", "--long",
+        help="long job description",
+        action="store_true",
+    )
+    parser.add_argument(
+        "-w", "--wide",
+        help="don't shorten strings",
+        action="store_true",
+    )
+    exg = parser.add_mutually_exclusive_group()
+    exg.add_argument(
+        "-p", "--pending",
+        help="show pending jobs with reasons and potential hosts",
+        action="store_true",
+    )
+    exg.add_argument(
+        "--group",
+        help="group jobs by attribute",
+        metavar="BY",
+    )
+    parser.add_argument(
+        "-aices",
+        help="short for -G p_aices",
+        action="store_true",
+    )
+    parser.add_argument(
+        "-d", "--debug",
+        help="show debug info on errors",
+        action="store_true",
+    )
+    parser.add_argument_group("further arguments",
+                              description="are passed to bjobs")
+
+    args, bjobsargs = parser.parse_known_args()
+
+    if args.debug:
+        ejobs(args, bjobsargs)
+    else:
+        try:
+            ejobs(args, bjobsargs)
+        except Exception:
+            print(color("ERROR -- probably a job status changed while " +
+                        sys.argv[0] + " processed it", "r"), file=sys.stderr)
+
 
 if __name__ == "__main__":
     main()
