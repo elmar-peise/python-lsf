@@ -32,7 +32,7 @@ class Job():
         "Specified Hosts": "Specified Hosts <(.*?)>[,;]",
         "Execution Home": "Execution Home <(.*?)>[,;]",
         "Execution CWD": "Execution CWD <(.*?)>[,;]",
-        "Processors": "Hosts/Processors <(.*?)>[,;]",
+        "Processors": "(?:Hosts/Processors|\[\d+\] started on) <(.*?)>[,;]",
         "Started on": "Started on <(.*?)>[,;]",
         "Complete": "Completed <(.*?)>",
         "PENDING REASONS": "PENDING REASONS:\n(.*?)\n\n",
