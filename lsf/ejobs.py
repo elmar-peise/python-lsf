@@ -42,9 +42,10 @@ def ejobs(args, bjobsargs):
     for reasons in sorted(joblists.keys(), key=len):
         pendjobs = joblists[reasons]
         if len(reasons) == 1 and reasons[0][1] is True:
-            if reasons[0][0] in [
-                "New job is waiting for scheduling"
-            ]:
+            if reasons[0][0] in (
+                "New job is waiting for scheduling",
+                "Dependency condition invalid or never satisfied",
+            ):
                 title = "{} [{}]".format(reasons[0][0], len(pendjobs))
                 pendjobs.display(args.long, args.wide, title)
                 continue
@@ -78,7 +79,6 @@ def ejobs(args, bjobsargs):
                 req = [case[1]]
             else:
                 req = case[0]
-                req = re.sub(" && \(hpcwork\)", "", req)
                 req = re.sub(" && \(hostok\)", "", req)
                 req = re.sub(" && \(mem>\d+\)", "", req)
                 req = ["-R", req]
@@ -136,6 +136,8 @@ def main():
     else:
         try:
             ejobs(args, bjobsargs)
+        except KeyboardInterrupt:
+            pass
         except Exception:
             print(color("ERROR -- probably a job status changed while " +
                         sys.argv[0] + " processed it", "r"), file=sys.stderr)

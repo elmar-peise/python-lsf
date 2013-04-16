@@ -77,6 +77,8 @@ def main():
     else:
         try:
             ehosts(args, bhostsargs)
+        except KeyboardInterrupt:
+            pass
         except Exception:
             print(color("ERROR -- probably a job status changed while " +
                         sys.argv[0] + " processed it", "r"), file=sys.stderr)
