@@ -135,10 +135,10 @@ class Joblist(list):
             return
         whoami = os.getenv("USER")
         lens = {
-            "id": 16,
+            "id": 12,
             "name": 16,
             "status": 8,
-            "user": 12,
+            "user": 10,
             "time": 12,
         }
         if wide:
@@ -148,7 +148,7 @@ class Joblist(list):
         h += "Status".ljust(lens["status"]) + "User".ljust(lens["user"])
         if wide:
             h += "Queue".ljust(lens["queue"])
-        h += "Wait/Runtime".rjust(lens["time"]) + "    Resources"
+        h += "Wait/Runtime".rjust(lens["time"]) + "  Resources"
         h = h.replace(" ", "-")
         if title:
             h += (" " + title + " ").center(screencols - len(h), "-")
@@ -202,7 +202,7 @@ class Joblist(list):
             l += s.rjust(lens["time"])
             # Resources
             # Time
-            l += "    " + format_duration(job["RUNLIMIT"]) + "    "
+            l += "  " + format_duration(job["RUNLIMIT"]) + "  "
             if job["Status"] == "RUN":
                 # Execution hosts
                 if wide:
@@ -220,12 +220,12 @@ class Joblist(list):
                 l += format_mem(job["MEMLIMIT"]).rjust(8)
                 # Hosts or architecture
                 if "Specified Hosts" in job:
-                    l += "    " + job["Specified Hosts"].ljust(16)
+                    l += "  " + job["Specified Hosts"].ljust(16)
                 else:
                     match = re.search("\(model==(.*?)\)",
                                       job["Requested Resources"])
                     if match:
-                        l += "    " + match.groups()[0].ljust(16)
+                        l += "  " + match.groups()[0].ljust(16)
                 if "Reserved" in job:
                     l += "rsvd:"
                     for proc, n in job["Reserved"].iteritems():
