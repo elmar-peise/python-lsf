@@ -8,6 +8,9 @@ import re
 from subprocess import Popen, PIPE
 from operator import itemgetter
 
+import threading
+from time import strptime
+
 
 class Hostlist(list):
     """List of LSF hosts"""
@@ -70,7 +73,18 @@ class Hostlist(list):
             return
         users = {}
         whoami = os.getenv("USER")
+        threads = {}
+        strptime("", "")  # hack to make pseude thread-safe
         for host in self:
+            # read job data in parallel
+            if host["STATUS"] != "cosed_Excl" and (len(host["Jobs"]) !=
+                                                   host["RUN"]):
+                for job in host["Jobs"]:
+                    if not job.initialized and not job.initializing:
+                        t = threading.Thread(target=job.init)
+                        t.start()
+                        threads[job["Job"]] = t
+            # display
             hn = host["HOST"]
             hg = host["Hostgroup"]
             print(indent + hn.ljust(12), end="")
@@ -88,6 +102,8 @@ class Hostlist(list):
                 print("  {:>3}*".format(host["RSV"]), end="")
                 print(color("reserved", "y"), end="")
             for job in host["Jobs"]:
+                if job["Job"] in threads:
+                    threads[job["Job"]].join()
                 print("  ", end="")
                 un = job["User"]
                 if not un in users:
