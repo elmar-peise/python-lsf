@@ -75,8 +75,8 @@ class Hostlist(list):
         whoami = os.getenv("USER")
         threads = {}
         strptime("", "")  # hack to make pseude thread-safe
+        # read job data in parallel
         for host in self:
-            # read job data in parallel
             if host["STATUS"] != "cosed_Excl" and (len(host["Jobs"]) !=
                                                    host["RUN"]):
                 for job in host["Jobs"]:
@@ -84,6 +84,7 @@ class Hostlist(list):
                         t = threading.Thread(target=job.init)
                         t.start()
                         threads[job["Job"]] = t
+        for host in self:
             # display
             hn = host["HOST"]
             hg = host["Hostgroup"]
