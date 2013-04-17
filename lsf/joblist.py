@@ -122,18 +122,19 @@ class Joblist(list):
                 result[value].append(job)
         return result
 
-    def display(self, long=False, wide=False, title=None):
+    def display(self, long=False, wide=False, title=None, parallel=True):
         """list the jobs"""
         if len(self) == 0:
             return
         # read job data in parallel
         threads = {}
-        strptime("", "")  # hack to make pseude thread-safe
-        for job in self:
-            if not job.initialized and not job.initializing:
-                t = threading.Thread(target=job.init)
-                t.start()
-                threads[job["Job"]] = t
+        if parallel:
+            strptime("", "")  # hack to make pseude thread-safe
+            for job in self:
+                if not job.initialized and not job.initializing:
+                    t = threading.Thread(target=job.init)
+                    t.start()
+                    threads[job["Job"]] = t
         # begin output
         screencols = int(check_output(["tput", "cols"]))
         if long:

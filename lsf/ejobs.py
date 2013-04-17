@@ -37,7 +37,8 @@ def ejobs(args, bjobsargs):
                 title = "{} = {} [{}]".format(args.group, groupn, len(joblist))
             else:
                 title = None
-            joblist.display(args.long, args.wide, title)
+            joblist.display(args.long, args.wide, title,
+                            parallel=not args.nopar)
         return
     for reasons in sorted(joblists.keys(), key=len):
         pendjobs = joblists[reasons]
@@ -47,7 +48,8 @@ def ejobs(args, bjobsargs):
                 "Dependency condition invalid or never satisfied",
             ):
                 title = "{} [{}]".format(reasons[0][0], len(pendjobs))
-                pendjobs.display(args.long, args.wide, title)
+                pendjobs.display(args.long, args.wide, title,
+                                 parallel=not args.nopar)
                 continue
         lists = {}
         resgrouped = pendjobs.groupby("Requested Resources")
@@ -57,7 +59,8 @@ def ejobs(args, bjobsargs):
                 lists[res, hosts] = hlist
         for case, casejobs in lists.iteritems():
             title = "[{}]".format(len(casejobs))
-            casejobs.display(args.long, args.wide, title)
+            casejobs.display(args.long, args.wide, title,
+                             parallel=not args.nopar)
             print()
             print("Pending reasons:")
             cs = {
@@ -87,7 +90,8 @@ def ejobs(args, bjobsargs):
             sys.stdout.flush()
             hl = Hostlist(req)
             hl.sort()
-            hl.display(wide=args.wide, indent="    ")
+            hl.display(wide=args.wide, indent="    ",
+                       parallel=not args.nopar)
             hl = {h["HOST"]: h for h in Hostlist(req)}
 
 
@@ -119,6 +123,11 @@ def main():
     parser.add_argument(
         "-aices",
         help="short for -G p_aices",
+        action="store_true",
+    )
+    parser.add_argument(
+        "--nopar",
+        help="faster response, longer runtime",
         action="store_true",
     )
     parser.add_argument(

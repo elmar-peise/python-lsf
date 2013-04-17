@@ -37,7 +37,7 @@ def ehosts(args, bhostsargs):
     hostlist = Hostlist(bhostsargs)
     print("                              ", end="\r")
     hostlist.sort()
-    hostlist.display(wide=args.wide)
+    hostlist.display(wide=args.wide, parallel=not args.nopar)
 
 
 def main():
@@ -57,6 +57,11 @@ def main():
     parser.add_argument(
         "-m", "--model",
         help="short for -R select[model==MODEL]",
+    )
+    parser.add_argument(
+        "--nopar",
+        help="faster response, longer runtime",
+        action="store_true",
     )
     parser.add_argument(
         "-d", "--debug",

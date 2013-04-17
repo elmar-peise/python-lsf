@@ -67,23 +67,24 @@ class Hostlist(list):
         list.append(self, value)
         Hostlist.allhosts.add(value)
 
-    def display(self, wide=False, indent=""):
+    def display(self, wide=False, indent="", parallel=True):
         """list the hosts"""
         if len(self) == 0:
             return
         users = {}
         whoami = os.getenv("USER")
-        threads = {}
-        strptime("", "")  # hack to make pseude thread-safe
         # read job data in parallel
-        for host in self:
-            if host["STATUS"] != "cosed_Excl" and (len(host["Jobs"]) !=
-                                                   host["RUN"]):
-                for job in host["Jobs"]:
-                    if not job.initialized and not job.initializing:
-                        t = threading.Thread(target=job.init)
-                        t.start()
-                        threads[job["Job"]] = t
+        threads = {}
+        if parallel:
+            strptime("", "")  # hack to make pseude thread-safe
+            for host in self:
+                if host["STATUS"] != "cosed_Excl" and (len(host["Jobs"]) !=
+                                                       host["RUN"]):
+                    for job in host["Jobs"]:
+                        if not job.initialized and not job.initializing:
+                            t = threading.Thread(target=job.init)
+                            t.start()
+                            threads[job["Job"]] = t
         for host in self:
             # display
             hn = host["HOST"]
