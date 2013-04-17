@@ -30,7 +30,7 @@ in order to make the scripts available on the command line.
 Usage
 -----
 
-ejobs and ehosts has essentially the same interface as LFS' bjobs and bhosts.
+ejobs and ehosts have essentially the same interfaces as LFS' bjobs and bhosts.
 Check
 
     ejobs -h
