@@ -10,6 +10,9 @@ import re
 from time import time
 from subprocess import Popen, check_output, PIPE
 
+import threading
+from time import strptime
+
 
 class Joblist(list):
     """List of LSF jobs"""
@@ -123,6 +126,15 @@ class Joblist(list):
         """list the jobs"""
         if len(self) == 0:
             return
+        # read job data in parallel
+        threads = {}
+        strptime("", "") # hack to make pseude thread-safe
+        for job in self:
+            if not job.initialized and not job.initializing:
+                t = threading.Thread(target=job.init)
+                t.start()
+                threads[job["Job"]] = t
+        # begin output
         screencols = int(check_output(["tput", "cols"]))
         if long:
             if title:
@@ -156,6 +168,8 @@ class Joblist(list):
             h += (screencols - len(h)) * "-"
         print(h)
         for job in self:
+            if job["Job"] in threads:
+                threads[job["Job"]].join()
             # Job
             l = (job["Job"] + " ").ljust(lens["id"])
             # Job Name
