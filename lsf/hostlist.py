@@ -73,7 +73,7 @@ class Hostlist(list):
         for host in self:
             hn = host["HOST"]
             hg = host["Hostgroup"]
-            print(indent + hn.ljust(16), end="")
+            print(indent + hn.ljust(12), end="")
             free = host["MAX"] - host["RUN"] - host["RSV"]
             if host["STATUS"] == "closed_Excl":
                 free = 0
@@ -85,10 +85,10 @@ class Hostlist(list):
                 c = "y"
             print(color("{:>3}*free".format(free), c), end="")
             if host["RSV"] > 0:
-                print("\t{:>3}*".format(host["RSV"]), end="")
+                print("  {:>3}*".format(host["RSV"]), end="")
                 print(color("reserved", "y"), end="")
             for job in host["Jobs"]:
-                print("\t", end="")
+                print("  ", end="")
                 un = job["User"]
                 if not un in users:
                     users[un] = {
