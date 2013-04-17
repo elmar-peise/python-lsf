@@ -128,7 +128,7 @@ class Joblist(list):
             return
         # read job data in parallel
         threads = {}
-        strptime("", "") # hack to make pseude thread-safe
+        strptime("", "")  # hack to make pseude thread-safe
         for job in self:
             if not job.initialized and not job.initializing:
                 t = threading.Thread(target=job.init)
