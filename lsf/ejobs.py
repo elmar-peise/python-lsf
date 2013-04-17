@@ -90,8 +90,7 @@ def ejobs(args, bjobsargs):
             sys.stdout.flush()
             hl = Hostlist(req)
             hl.sort()
-            hl.display(wide=args.wide, indent="    ",
-                       parallel=not args.nopar)
+            hl.display(wide=args.wide, indent="    ", parallel=not args.nopar)
             hl = {h["HOST"]: h for h in Hostlist(req)}
 
 

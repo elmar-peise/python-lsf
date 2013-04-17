@@ -244,6 +244,9 @@ class Joblist(list):
                 if "Reserved" in job:
                     l += "rsvd:"
                     for proc, n in job["Reserved"].iteritems():
-                        l += " " + str(n) + "*" + proc
+                        if job["Exclusive Execution"]:
+                            l += " " + proc
+                        else:
+                            l += " " + str(n) + "*" + proc
             print(l)
             sys.stdout.flush()
