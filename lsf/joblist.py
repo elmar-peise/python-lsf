@@ -220,11 +220,15 @@ class Joblist(list):
                 l += format_mem(job["MEMLIMIT"]).rjust(8)
                 # Hosts or architecture
                 if "Specified Hosts" in job:
-                    l += "    " + job["Specified Hosts"]
+                    l += "    " + job["Specified Hosts"].ljust(16)
                 else:
                     match = re.search("\(model==(.*?)\)",
                                       job["Requested Resources"])
                     if match:
-                        l += "    " + match.groups()[0]
+                        l += "    " + match.groups()[0].ljust(16)
+                if "Reserved" in job:
+                    l += "rsvd:"
+                    for proc, n in job["Reserved"].iteritems():
+                        l += " " + str(n) + "*" + proc
             print(l)
             sys.stdout.flush()

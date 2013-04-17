@@ -33,6 +33,7 @@ class Job():
         "Execution Home": "Execution Home <(.*?)>[,;]",
         "Execution CWD": "Execution CWD <(.*?)>[,;]",
         "Processors": "(?:Hosts/Processors|\[\d+\] started on) <(.*?)>[,;]",
+        "Reserved": "Reserved <\d+> job slots? on host(?:\(s\))? <(.*?)>[,;]",
         "Started on": "Started on <(.*?)>[,;]",
         "Complete": "Completed <(.*?)>",
         "PENDING REASONS": "PENDING REASONS:\n(.*?)\n\n",
@@ -43,6 +44,7 @@ class Job():
     numregexps = {
         "Job Priority": "Job Priority <(\d+)>,",
         "Processors Requested": ", (\d+) Processors Requested,",
+        "nReserved": "Reserved <(\d+)> job slots? on host",
         "CPU time": "The CPU time used is (.*?) seconds.",
     }
     tfregexps = {
@@ -166,6 +168,16 @@ class Job():
             self["Hostgroupsstr"] = " ".join(strs)
         if not "Processors Requested" in self:
             self["Processors Requested"] = 1
+        if "nReserved" in self:
+            if self["nReserved"] == 1:
+                self["Reserved"] = {self["Reserved"]: 1}
+            else:
+                print(self["Reserved"])
+                procs = {}
+                for proc in self["Reserved"].split("> <"):
+                    proc = proc.split("*")
+                    procs[proc[1]] = int(proc[0])
+                self["Reserved"] = procs
         if "PENDING REASONS" in self:
             reasons = self["PENDING REASONS"]
             match = re.findall(" (.*?): (\d+) hosts?;", reasons)
@@ -216,7 +228,7 @@ class Job():
         for k in ("Job", "Job Name", "User", "Status", "Command", "submittime",
                   "starttime", "endtime", "Pending Reasons", "RUNLIMIT",
                   "MEMLIMIT", "Processors Requested", "Processors",
-                  "Exclusive Execution", "Requested Resources",
+                  "Exclusive Execution", "Requested Resources", "Reserved",
                   "Job Description"):
             if k in data:
                 result += data[k]
