@@ -16,10 +16,12 @@ def ejobs(args, bjobsargs):
     if args.aices:
         bjobsargs = ["-G", "p_aices"] + bjobsargs
 
-    print("Reading job list from LSF ...", end="\r")
+    if sys.stdout.isatty():
+        print("Reading job list from LSF ...", end="\r")
     sys.stdout.flush()
     joblist = Joblist(bjobsargs)
-    print("                             ", end="\r")
+    if sys.stdout.isatty():
+        print("                             ", end="\r")
     if args.pending:
         joblists = joblist.groupby("Status")
         if "PEND" in joblists:
@@ -86,7 +88,8 @@ def ejobs(args, bjobsargs):
                 req = re.sub(" && \(mem>\d+\)", "", req)
                 req = ["-R", req]
             print("Potential hosts:")
-            print("Reading host list from LSF ...", end="\r")
+            if sys.stdout.isatty():
+                print("Reading host list from LSF ...", end="\r")
             sys.stdout.flush()
             hl = Hostlist(req)
             hl.sort()

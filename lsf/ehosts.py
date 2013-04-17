@@ -32,10 +32,12 @@ def ehosts(args, bhostsargs):
     if len(r):
         bhostsargs += ["-R", r]
 
-    print("Reading host list from LSF ...", end="\r")
+    if sys.stdout.isatty():
+        print("Reading host list from LSF ...", end="\r")
     sys.stdout.flush()
     hostlist = Hostlist(bhostsargs)
-    print("                              ", end="\r")
+    if sys.stdout.isatty():
+        print("                              ", end="\r")
     hostlist.sort()
     hostlist.display(wide=args.wide, parallel=not args.nopar)
 
