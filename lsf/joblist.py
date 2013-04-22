@@ -240,9 +240,9 @@ class Joblist(list):
                     match = re.search("\(model==(.*?)\)",
                                       job["Requested Resources"])
                     if match:
-                        l += "  " + match.groups()[0].ljust(16)
+                        l += "  " + match.groups()[0].ljust(14)
                 if "Reserved" in job:
-                    l += "rsvd:"
+                    l += "  rsvd:"
                     for proc, n in job["Reserved"].iteritems():
                         if job["Exclusive Execution"]:
                             l += " " + proc
