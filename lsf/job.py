@@ -172,7 +172,6 @@ class Job():
             if self["nReserved"] == 1:
                 self["Reserved"] = {self["Reserved"]: 1}
             else:
-                print(self["Reserved"])
                 procs = {}
                 for proc in self["Reserved"].split("> <"):
                     proc = proc.split("*")
