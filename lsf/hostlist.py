@@ -78,8 +78,9 @@ class Hostlist(list):
         if parallel:
             strptime("", "")  # hack to make pseude thread-safe
             for host in self:
-                if host["STATUS"] != "cosed_Excl" and (len(host["Jobs"]) !=
-                                                       host["RUN"]):
+                if all((host["STATUS"] != "cosed_Excl",
+                        host["RUN"] != 0,
+                        len(host["Jobs"]) != host["RUN"])):
                     for job in host["Jobs"]:
                         if not job.initialized and not job.initializing:
                             t = threading.Thread(target=job.init)
@@ -90,7 +91,7 @@ class Hostlist(list):
             hn = host["HOST"]
             hg = host["Hostgroup"]
             print(indent + hn.ljust(12), end="")
-            free = host["MAX"] - host["RUN"] - host["RSV"]
+            free = max(0, host["MAX"] - host["RUN"] - host["RSV"])
             if host["STATUS"] == "closed_Excl":
                 free = 0
             if free == 0:
@@ -103,40 +104,41 @@ class Hostlist(list):
             if host["RSV"] > 0:
                 print("  {:>3}*".format(host["RSV"]), end="")
                 print(color("reserved", "y"), end="")
-            for job in host["Jobs"]:
-                if job["Job"] in threads:
-                    threads[job["Job"]].join()
-                print("  ", end="")
-                un = job["User"]
-                if not un in users:
-                    users[un] = {
-                        "Userstr": job["Userstr"],
-                        "Hosts": {},
-                        "Hostgroups": {},
-                    }
-                if not hn in users[un]["Hosts"]:
-                    users[un]["Hosts"][hn] = 0
-                if not hg in users[un]["Hostgroups"]:
-                    users[un]["Hostgroups"][hg] = 0
-                if host["STATUS"] == "closed_Excl":
-                    users[un]["Hosts"][hn] += host["MAX"]
-                    users[un]["Hostgroups"][hg] += host["MAX"]
-                    print(" -x ", end="")
-                elif len(host["Jobs"]) == host["RUN"]:
-                    print("  1*", end="")
-                    users[un]["Hosts"][hn] += 1
-                    users[un]["Hostgroups"][hg] += 1
-                else:
-                    print("{:>3}*".format(job["Processors"][hn]), end="")
-                    users[un]["Hosts"][hn] += job["Processors"][hn]
-                    users[un]["Hostgroups"][hg] += job["Processors"][hn]
-                if un == whoami:
-                    print(color(un, "g"), end="")
-                else:
-                    print(un, end="")
-                if wide:
-                    print(": " + job["Job Name"], end="")
-                sys.stdout.flush()
+            if host["RUN"] > 0:
+                for job in host["Jobs"]:
+                    if job["Job"] in threads:
+                        threads[job["Job"]].join()
+                    print("  ", end="")
+                    un = job["User"]
+                    if not un in users:
+                        users[un] = {
+                            "Userstr": job["Userstr"],
+                            "Hosts": {},
+                            "Hostgroups": {},
+                        }
+                    if not hn in users[un]["Hosts"]:
+                        users[un]["Hosts"][hn] = 0
+                    if not hg in users[un]["Hostgroups"]:
+                        users[un]["Hostgroups"][hg] = 0
+                    if host["STATUS"] == "closed_Excl":
+                        users[un]["Hosts"][hn] += host["MAX"]
+                        users[un]["Hostgroups"][hg] += host["MAX"]
+                        print(" -x ", end="")
+                    elif len(host["Jobs"]) == host["RUN"]:
+                        print("  1*", end="")
+                        users[un]["Hosts"][hn] += 1
+                        users[un]["Hostgroups"][hg] += 1
+                    else:
+                        print("{:>3}*".format(job["Processors"][hn]), end="")
+                        users[un]["Hosts"][hn] += job["Processors"][hn]
+                        users[un]["Hostgroups"][hg] += job["Processors"][hn]
+                    if un == whoami:
+                        print(color(un, "g"), end="")
+                    else:
+                        print(un, end="")
+                    if wide:
+                        print(": " + job["Job Name"], end="")
+                    sys.stdout.flush()
             print()
         if len(users):
             print("Users:")
