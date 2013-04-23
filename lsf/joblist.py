@@ -149,7 +149,7 @@ class Joblist(list):
         whoami = os.getenv("USER")
         lens = {
             "id": 12,
-            "name": 16,
+            "name": 20,
             "status": 8,
             "user": 10,
             "time": 12,
