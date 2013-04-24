@@ -16,7 +16,7 @@ from time import strptime
 
 class Joblist(list):
     """List of LSF jobs"""
-    alljobs = set()
+    alljobs = dict()
 
     def __init__(self, args=None, jobs=None):
         """Read joblist from bjobs or form another list"""
@@ -35,7 +35,7 @@ class Joblist(list):
             raise TypeError("Joblist elements must be Job not " +
                             value.__class__.__name__)
         list.__setitem__(self, key, value)
-        Joblist.alljobs.add(value)
+        Joblist.alljobs[value["Job"]] = value
 
     def append(self, value):
         """Access jobs"""
@@ -43,7 +43,7 @@ class Joblist(list):
             raise TypeError("Joblist elements must be Job not " +
                             value.__class__.__name__)
         list.append(self, value)
-        Joblist.alljobs.add(value)
+        Joblist.alljobs[value["Job"]] = value
 
     def __setslice__(self, i, j, sequence):
         """Access jobs"""
@@ -52,7 +52,7 @@ class Joblist(list):
                 raise TypeError("item " + value.__class__.__name__ +
                                 ": Joblist elements must be Job not " + k)
             else:
-                Joblist.alljobs.add(value)
+                Joblist.alljobs[value["Job"]] = value
         list.__setslice__(self, i, j, sequence)
 
     def __add__(self, other):
@@ -70,7 +70,7 @@ class Joblist(list):
                 raise TypeError("item " + value.__class__.__name__ +
                                 ": Joblist elements must be Job not " + k)
             else:
-                Joblist.alljobs.add(value)
+                Joblist.alljobs[value["Job"]] = value
         for job in sequence:
             self.append(job)
 
@@ -90,13 +90,9 @@ class Joblist(list):
             match = re.search("(\[\d+\])$", line[-4])
             if match:
                 data["Job"] += match.groups()[0]
-            found = False
-            for job in Joblist.alljobs:
-                if job["Job"] == data["Job"]:
-                    self.append(job)
-                    found = True
-                    break
-            if not found:
+            if data["Job"] in Joblist.alljobs:
+                self.append(Joblist.alljobs[data["Job"]])
+            else:
                 self.append(modulejob.Job(data))
 
     def groupby(self, key=None):

@@ -14,7 +14,7 @@ from time import strptime
 
 class Hostlist(list):
     """List of LSF hosts"""
-    allhosts = set()
+    allhosts = dict()
 
     def __init__(self, args=None, names=None):
         """Init list from LSF or othr host list"""
@@ -50,13 +50,9 @@ class Hostlist(list):
                 "USUSP": int(line[7]),
                 "RSV": int(line[8]),
             }
-            found = False
-            for host in Hostlist.allhosts:
-                if host["HOST"] == data["HOST"]:
-                    self.append(host)
-                    found = True
-                    break
-            if not found:
+            if data["HOST"] in Hostlist.allhosts:
+                self.append(Hostlist.allhosts[data["HOST"]])
+            else:
                 self.append(modulehost.Host(data))
 
     def append(self, value):
@@ -65,7 +61,7 @@ class Hostlist(list):
             raise TypeError("Hostlist elements must be Host not " +
                             value.__class__.__name__)
         list.append(self, value)
-        Hostlist.allhosts.add(value)
+        Hostlistlallhosts[value["HOST"]] = value
 
     def display(self, wide=False, indent="", parallel=True):
         """list the hosts"""
