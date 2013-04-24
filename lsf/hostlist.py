@@ -90,8 +90,9 @@ class Hostlist(list):
             # display
             hn = host["HOST"]
             hg = host["Hostgroup"]
-            print(indent + hn.ljust(12), end="")
-            free = max(0, host["MAX"] - host["RUN"] - host["RSV"])
+            l = indent + hn.ljust(12)
+            free = max(0, host["MAX"] - host["RUN"] - host["SSUSP"] -
+                       host["USUSP"] - host["RSV"])
             if host["STATUS"] == "closed_Excl":
                 free = 0
             if free == 0:
@@ -100,15 +101,19 @@ class Hostlist(list):
                 c = "g"
             else:
                 c = "y"
-            print(color("{:>3}*free".format(free), c), end="")
+            l += color("{:>3}*free".format(free), c)
+            if host["SSUSP"] > 0:
+                l += "  {:>3}*".format(host["SSUSP"]) + color("ssusp", "r")
+            if host["USUSP"] > 0:
+                l += "  {:>3}*".format(host["USUSP"]) + color("ususp", "r")
             if host["RSV"] > 0:
-                print("  {:>3}*".format(host["RSV"]), end="")
-                print(color("reserved", "y"), end="")
+                l += "  {:>3}*".format(host["RSV"]) + color("reserved", "y")
+            print(l, end="")
             if host["RUN"] > 0:
                 for job in host["Jobs"]:
                     if job["Job"] in threads:
                         threads[job["Job"]].join()
-                    print("  ", end="")
+                    l = "  "
                     un = job["User"]
                     if not un in users:
                         users[un] = {
@@ -123,21 +128,22 @@ class Hostlist(list):
                     if host["STATUS"] == "closed_Excl":
                         users[un]["Hosts"][hn] += host["MAX"]
                         users[un]["Hostgroups"][hg] += host["MAX"]
-                        print(" -x ", end="")
+                        l += " -x "
                     elif len(host["Jobs"]) == host["RUN"]:
-                        print("  1*", end="")
+                        l += "  1*"
                         users[un]["Hosts"][hn] += 1
                         users[un]["Hostgroups"][hg] += 1
                     else:
-                        print("{:>3}*".format(job["Processors"][hn]), end="")
+                        l += "{:>3}*".format(job["Processors"][hn])
                         users[un]["Hosts"][hn] += job["Processors"][hn]
                         users[un]["Hostgroups"][hg] += job["Processors"][hn]
                     if un == whoami:
-                        print(color(un, "g"), end="")
+                        l += color(un, "g")
                     else:
-                        print(un, end="")
+                        l += un
                     if wide:
-                        print(": " + job["Job Name"], end="")
+                        l += ": " + job["Job Name"]
+                    print(l, end="")
                     sys.stdout.flush()
             print()
         if len(users):
@@ -147,7 +153,7 @@ class Hostlist(list):
                     c = "g"
                 else:
                     c = 0
-                print("\t" + color(user["Userstr"].ljust(40), c), end="")
+                l = "    " + color(user["Userstr"].ljust(40), c)
                 for hn, count in user["Hostgroups"].iteritems():
-                    print("\t{:>3}*{}*".format(count, hn), end="")
-                print()
+                    l += "  {:>3}*{}*".format(count, hn)
+                print(l)
