@@ -77,9 +77,9 @@ def ejobs(args, bjobsargs):
                 if reason in cs:
                     s = color(reason, cs[reason])
                 if count is True:
-                    print("\t       " + s)
+                    print("           " + s)
                 else:
-                    print("\t{:>4}  ".format(count) + s)
+                    print("    {:>4}  ".format(count) + s)
             if case[1]:
                 req = [case[1]]
             else:
