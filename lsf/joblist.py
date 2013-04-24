@@ -141,6 +141,8 @@ class Joblist(list):
             if title:
                 print(title.center(screencols, "-"))
             for job in self:
+                if job["Job"] in threads:
+                    threads[job["Job"]].join()
                 f = " {Job} --- {Job Name} --- {User} --- {Status} "
                 header = f.format(**job)
                 print(header.center(screencols, "-"))
