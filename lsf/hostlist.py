@@ -61,7 +61,7 @@ class Hostlist(list):
             raise TypeError("Hostlist elements must be Host not " +
                             value.__class__.__name__)
         list.append(self, value)
-        Hostlistlallhosts[value["HOST"]] = value
+        Hostlist.allhosts[value["HOST"]] = value
 
     def display(self, wide=False, indent="", parallel=True):
         """list the hosts"""
