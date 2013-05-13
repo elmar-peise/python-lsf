@@ -46,6 +46,8 @@ class Host():
         self.data = {"HOST": self["HOST"]}
         p = Popen(["bhosts", "-l", self["HOST"]], stdout=PIPE, stderr=PIPE)
         out, err = p.communicate()
+        out = out.decode()
+        err = err.decode()
         if err and not out:
             print("{} is not a host".format(self["HOST"]), file=sys.stderr)
             return False

@@ -89,6 +89,8 @@ class Job():
         """Kill the job"""
         p = Popen(["bkill", str(self["Job"])], stdout=PIPE, stderr=PIPE)
         out, err = p.communicate()
+        out = out.decode()
+        err = err.decode()
         if "User permission denied" in err:
             self.initialized = False
             return False
@@ -102,6 +104,8 @@ class Job():
         self.data = {"Job": self["Job"]}
         p = Popen(["bjobs", "-l", self["Job"]], stdout=PIPE, stderr=PIPE)
         out, err = p.communicate()
+        out = out.decode()
+        err = err.decode()
         if err and not out:
             print(self["Job"] + " is not a job", file=sys.stderr)
             return False
@@ -318,6 +322,8 @@ def submit(data):
     script = "#!/bin/bash -l\n" + data["Command"]
     p = Popen(cmd, stdout=PIPE, stderr=PIPE, stdin=PIPE)
     out, err = p.communicate(script)
+    out = out.decode()
+    err = err.decode()
     match = re.search("Job <(.*?)> is submitted", out)
     if match:
         return Job(match.groups()[0])

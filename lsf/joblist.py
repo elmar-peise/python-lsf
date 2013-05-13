@@ -78,6 +78,8 @@ class Joblist(list):
         """Read jobs from LSF"""
         p = Popen(["bjobs", "-w"] + args, stdout=PIPE, stderr=PIPE)
         out, err = p.communicate()
+        out = out.decode()
+        err = err.decode()
         if "No unfinished job found" in err:
             return
         for line in out.split("\n")[1:-1]:

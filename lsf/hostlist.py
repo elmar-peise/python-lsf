@@ -36,6 +36,8 @@ class Hostlist(list):
         """read hosts from LSF"""
         p = Popen(["bhosts", "-X", "-w"] + args, stdout=PIPE, stderr=PIPE)
         out, err = p.communicate()
+        out = out.decode()
+        err = err.decode()
         for line in out.split("\n")[1:-1]:
             line = line.split()
             data = {
