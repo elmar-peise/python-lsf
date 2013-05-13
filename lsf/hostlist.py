@@ -86,18 +86,19 @@ class Hostlist(list):
             # display
             hn = host["HOST"]
             hg = host["Hostgroup"]
-            l = indent + hn.ljust(12)
-            free = max(0, host["MAX"] - host["RUN"] - host["SSUSP"] -
-                       host["USUSP"] - host["RSV"])
-            if host["STATUS"] == "closed_Excl":
-                free = 0
-            if free == 0:
-                c = "r"
-            elif free == host["MAX"]:
-                c = "g"
+            l = indent + hn.ljust(14)
+            if host["STATUS"][0:7] == "closed_":
+                l += color(host["STATUS"][7:].rjust(8), "r")
             else:
-                c = "y"
-            l += color("{:>3}*free".format(free), c)
+                free = max(0, host["MAX"] - host["RUN"] - host["SSUSP"] -
+                           host["USUSP"] - host["RSV"])
+                if free == 0:
+                    c = "r"
+                elif free == host["MAX"]:
+                    c = "g"
+                else:
+                    c = "y"
+                l += color("{:>3}*free".format(free), c)
             if host["SSUSP"] > 0:
                 l += "  {:>3}*".format(host["SSUSP"]) + color("ssusp", "r")
             if host["USUSP"] > 0:
