@@ -66,10 +66,14 @@ def ejobs(args, bjobsargs):
             print()
             print("Pending reasons:")
             cs = {
+                "Running an exclusive job": "y",
                 "Job's requirement for exclusive execution not satisfied": "y",
                 "An exclusive job has reserved the host": "y",
-                "Not enough slots or resources "
-                "for whole duration of the job": "r",
+                "Job slot limit reached": "y",
+                "Not enough processors to meet the job's spanning requirement":
+                "y",
+                "Not enough slots or resources for whole duration of the job":
+                "r",
                 "Not enough hosts to meet the job's spanning requirement": "r",
             }
             for reason, count in reasons:
