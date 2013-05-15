@@ -220,7 +220,7 @@ class Joblist(list):
             l += "  " + format_duration(job["RUNLIMIT"]) + "  "
             if job["Status"] == "RUN":
                 # Execution hosts
-                if wide:
+                if wide or len(job["Processors"]) == 1:
                     l += job["Processorsstr"]
                 else:
                     l += job["Hostgroupsstr"]
