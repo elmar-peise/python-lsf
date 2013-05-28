@@ -48,6 +48,7 @@ def ejobs(args, bjobsargs):
             if reasons[0][0] in (
                 "New job is waiting for scheduling",
                 "Dependency condition invalid or never satisfied",
+                "The schedule of the job is postponed for a while",
             ):
                 title = "{} [{}]".format(reasons[0][0], len(pendjobs))
                 pendjobs.display(args.long, args.wide, title,
