@@ -104,8 +104,8 @@ class Job():
         self.data = {"Job": self["Job"]}
         p = Popen(["bjobs", "-l", self["Job"]], stdout=PIPE, stderr=PIPE)
         out, err = p.communicate()
-        out = out.decode()
-        err = err.decode()
+        out = str(out.decode())
+        err = str(err.decode())
         if err and not out:
             print(self["Job"] + " is not a job", file=sys.stderr)
             return False
@@ -149,7 +149,7 @@ class Job():
         if "Started on" in self:
             self["Processors"] = self["Started on"]
             del self["Started on"]
-        if "Processors" in self:
+        if "Processors" in self and isinstance(self['Processors'], str):
             procs = {}
             for proc in self["Processors"].split("> <"):
                 proc = proc.split("*")
@@ -183,9 +183,9 @@ class Job():
                 self["Reserved"] = procs
         if "PENDING REASONS" in self:
             reasons = self["PENDING REASONS"]
-            match = re.findall(" (.*?): (\d+) hosts?;", reasons)
+            match = re.findall(" (.*?): (\d+) hosts?;", str(reasons))
             d = {r: int(n) for r, n in match}
-            match = re.findall("^ ([^:]*?);", reasons)
+            match = re.findall("^ ([^:]*?);", str(reasons))
             d.update((m, True) for m in match)
             self["PENDING REASONS"] = d
         if "RUNLIMIT" in self:
@@ -268,7 +268,7 @@ class Job():
         return self.data.__delitem__(key)
 
 
-def submit(data):
+def submit(data, shell = False):
     """Submit a job to LSF"""
     if not "Command" in data:
         print("no command given", file=sys.stderr)
@@ -319,14 +319,18 @@ def submit(data):
         elif type(val) is list:
             for v in val:
                 cmd += [key, str(v)]
-    script = "#!/bin/bash -l\n" + data["Command"]
+    if shell:
+        script = '#!/bin/bash -l\n'
+    else:
+        script = ''
+    script += data["Command"]
     p = Popen(cmd, stdout=PIPE, stderr=PIPE, stdin=PIPE)
     out, err = p.communicate(script)
     out = out.decode()
     err = err.decode()
     match = re.search("Job <(.*?)> is submitted", out)
     if match:
-        return Job(match.groups()[0])
+        return Job(str(match.groups()[0]))
     else:
         print("problem with job submission:\n" + err, file=sys.stderr)
         return False
