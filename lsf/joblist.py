@@ -97,9 +97,9 @@ class Joblist(list):
             else:
                 self.append(modulejob.Job(data))
 
-    def wait(self, check_freq = 1):
+    def wait(self, check_freq=1):
         """Wait for all jobs in this list to complete.
-        
+
         @param - check_freq time (in seconds) to sleep between checking."""
         while True:
             done = True

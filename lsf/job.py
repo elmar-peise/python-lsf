@@ -268,7 +268,7 @@ class Job():
         return self.data.__delitem__(key)
 
 
-def submit(data, shell = False):
+def submit(data, shell=False):
     """Submit a job to LSF"""
     if not "Command" in data:
         print("no command given", file=sys.stderr)
