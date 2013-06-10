@@ -245,7 +245,7 @@ class Joblist(list):
                     l += job["Hostgroupsstr"]
             elif job["Status"] == "PEND":
                 # #cores
-                l += str(job["Processors Requested"]).rjust(2)
+                l += str(job["Processors Requested"]).rjust(3)
                 if "Exclusive Execution" in job and job["Exclusive Execution"]:
                     l += " excl "
                 else:
