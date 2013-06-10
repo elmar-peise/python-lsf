@@ -7,7 +7,7 @@ import job as modulejob
 import sys
 import os
 import re
-from time import time
+from time import time, sleep
 from subprocess import Popen, check_output, PIPE
 
 import threading
@@ -96,6 +96,25 @@ class Joblist(list):
                 self.append(Joblist.alljobs[data["Job"]])
             else:
                 self.append(modulejob.Job(data))
+
+    def wait(self, check_freq = 1):
+        """Wait for all jobs in this list to complete.
+        
+        @param - check_freq time (in seconds) to sleep between checking."""
+        while True:
+            done = True
+            for j in self:
+                j.read()
+                try:
+                    if j['Status'] not in ['EXIT', 'DONE']:
+                        done = False
+                except KeyError:
+                    # If job has been forgotten about then
+                    # this also counts as done.
+                    pass
+            if done:
+                return
+            sleep(check_freq)
 
     def groupby(self, key=None):
         """sort the jobs in groups by attributes"""
