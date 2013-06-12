@@ -104,8 +104,8 @@ class Job():
         self.data = {"Job": self["Job"]}
         p = Popen(["bjobs", "-l", self["Job"]], stdout=PIPE, stderr=PIPE)
         out, err = p.communicate()
-        out = str(out.decode())
-        err = str(err.decode())
+        out = str(out.decode(errors="ignore"))
+        err = str(err.decode(errors="ignore"))
         if err and not out:
             print(self["Job"] + " is not a job", file=sys.stderr)
             return False
