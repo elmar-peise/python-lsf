@@ -51,6 +51,7 @@ def ejobs(args, bjobsargs):
                 "New job is waiting for scheduling",
                 "Dependency condition invalid or never satisfied",
                 "The schedule of the job is postponed for a while",
+                "Job array has reached its running element limit",
                 "The queue's pre-exec command exited with non-zero status",
             ):
                 title = "{} [{}]".format(reasons[0][0], len(pendjobs))
