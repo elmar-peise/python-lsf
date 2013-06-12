@@ -14,7 +14,9 @@ def ejobs(args, bjobsargs):
     if args.pending:
         args.group = "PENDING REASONS"
     if args.aices:
-        bjobsargs = ["-G", "p_aices"] + bjobsargs
+        bjobsargs = ["-P", "aices", "-G", "p_aices"] + bjobsargs
+    if args.aices2:
+        bjobsargs = ["-P", "aices2", "-G", "p_aices"] + bjobsargs
 
     if sys.stdout.isatty():
         print("Reading job list from LSF ...", end="\r")
@@ -129,7 +131,12 @@ def main():
     )
     parser.add_argument(
         "-aices",
-        help="short for -G p_aices",
+        help="short for -P aices",
+        action="store_true",
+    )
+    parser.add_argument(
+        "-aices2",
+        help="short for -P aices2",
         action="store_true",
     )
     parser.add_argument(
