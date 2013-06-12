@@ -98,7 +98,9 @@ class Job():
             return True
 
     def read(self):
-        """read information on the job from LSF"""
+        """read information on the job from LSF.
+        Return true on successful reading of the job.
+        """
         if not self["Job"]:
             return False
         self.data = {"Job": self["Job"]}
@@ -107,10 +109,8 @@ class Job():
         out = str(out.decode(errors="ignore"))
         err = str(err.decode(errors="ignore"))
         if err and not out:
-            print(self["Job"] + " is not a job", file=sys.stderr)
             return False
         if 78 * "-" in out:
-            print(self["Job"] + " is an array job", file=sys.stderr)
             return False
         outjoin = out.replace("\n                     ", "")
         #data retrieval
