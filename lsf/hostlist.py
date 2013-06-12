@@ -152,7 +152,7 @@ class Hostlist(list):
                     c = "g"
                 else:
                     c = 0
-                l = "    " + color(user["Userstr"].ljust(40), c)
+                l = "    " + color(user["Userstr"].ljust(48), c)
                 for hn, count in user["Hostgroups"].iteritems():
                     l += "  {:>3}*{}*".format(count, hn)
                 print(l)
