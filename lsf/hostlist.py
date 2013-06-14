@@ -76,12 +76,14 @@ class Hostlist(list):
         if parallel:
             strptime("", "")  # hack to make pseude thread-safe
             for host in self:
-                if all((host["STATUS"] != "cosed_Excl",
-                        host["RUN"] != 0,
-                        len(host["Jobs"]) != host["RUN"])):
+                if not any((host["STATUS"] == "cosed_Excl",
+                            host["RUN"] == 0,
+                            len(host["Jobs"]) == host["RUN"],
+                            len(host["Jobs"]) == 1)):
                     for job in host["Jobs"]:
                         if not job.initialized and not job.initializing:
                             t = threading.Thread(target=job.init)
+                            t.deamon = True
                             t.start()
                             threads[job["Job"]] = t
         for host in self:
@@ -109,12 +111,15 @@ class Hostlist(list):
                 l += "  {:>3}*".format(host["RSV"]) + color("reserved", "y")
             print(l, end="")
             if host["RUN"] > 0:
+                jobsleft = len(host["Jobs"])
+                runleft = host["RUN"]
                 for job in host["Jobs"]:
-                    if job["Job"] in threads:
-                        threads[job["Job"]].join()
                     l = "  "
                     un = job["User"]
                     if not un in users:
+                        if job["Job"] in threads:
+                            threads[job["Job"]].join()
+                            del threads[job["Job"]]
                         users[un] = {
                             "Userstr": job["Userstr"],
                             "Hosts": {},
@@ -128,20 +133,30 @@ class Hostlist(list):
                         users[un]["Hosts"][hn] += host["MAX"]
                         users[un]["Hostgroups"][hg] += host["MAX"]
                         l += " -x "
-                    elif len(host["Jobs"]) == host["RUN"]:
+                    elif jobsleft == 1:
+                        l += "{:>3}*".format(runleft)
+                        users[un]["Hosts"][hn] += runleft
+                        users[un]["Hostgroups"][hg] += runleft
+                    elif jobsleft == runleft:
                         l += "  1*"
                         users[un]["Hosts"][hn] += 1
                         users[un]["Hostgroups"][hg] += 1
+                        runleft -= 1
                     else:
+                        if job["Job"] in threads:
+                            threads[job["Job"]].join()
+                            del threads[job["Job"]]
                         l += "{:>3}*".format(job["Processors"][hn])
                         users[un]["Hosts"][hn] += job["Processors"][hn]
                         users[un]["Hostgroups"][hg] += job["Processors"][hn]
+                        runleft -= job["Processors"][hn]
                     if un == whoami:
                         l += color(un, "g")
                     else:
                         l += un
                     if wide:
                         l += ": " + job["Job Name"]
+                    jobsleft -= 1
                     print(l, end="")
                     sys.stdout.flush()
             print()
