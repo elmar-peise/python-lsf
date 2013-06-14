@@ -3,6 +3,7 @@ from __future__ import print_function, division
 
 import hostlist as modulehostlist
 from utility import *
+from error import LSFError
 
 import sys
 import re
@@ -333,5 +334,8 @@ def submit(data, shell=False):
     if match:
         return Job(str(match.groups()[0]))
     else:
-        print("problem with job submission:\n" + err, file=sys.stderr)
-        return False
+        match = re.search("Error: (.*)\n", err)
+        if match:
+            raise LSFError(1, match.groups()[0])
+        else:
+            raise LSFError(1, "unknown LSF exception: " + err)
