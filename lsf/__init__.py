@@ -1,4 +1,7 @@
-__all__ = ["Job", "submit", "Joblist", "Host", "Hostlist", "ejobs", "ehosts"]
+__all__ = ["LSFError", "Job", "submit", "Joblist", "Host", "Hostlist", "ejobs",
+           "ehosts", "esub"]
+
+from error import LSFError
 import job
 import joblist
 import host
@@ -10,3 +13,4 @@ Hostlist = hostlist.Hostlist
 from job import submit
 import ejobs
 import ehosts
+import esub

@@ -1,0 +1,5 @@
+#!/usr/bin/env python
+from lsf import esub
+
+if __name__ == "__main__":
+    esub.main()
