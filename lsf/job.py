@@ -338,4 +338,4 @@ def submit(data, shell=False):
         if match:
             raise LSFError(1, match.groups()[0])
         else:
-            raise LSFError(1, "unknown LSF exception: " + err)
+            raise LSFError(1, err)
