@@ -6,11 +6,21 @@ from error import LSFError
 from utility import color
 
 import sys
+import os
 import argparse
 import re
+import subprocess
 
 
 def esub(args, bsubargs, jobscript):
+    if args.show:
+        try:
+            with open(".esubrecord") as fin:
+                subprocess.call(["ejobs"] + fin.read().split())
+            os.unlink(".esubrecord")
+        except:
+            pass
+        return
     data = {"Command": ""}
     if args.aices:
         data["-P"] = "aices"
@@ -43,7 +53,11 @@ def esub(args, bsubargs, jobscript):
             data["Command"] += line
     try:
         job = submit(data)
-        print(job["Job"])
+        if args.record:
+            with open(".esubrecord", "a") as fout:
+                fout.write(" " + str(job["Job"]))
+        else:
+            subprocess.call(["ejobs", str(job["Job"])])
     except LSFError as e:
         print(color(e.strerror, "r"))
         sys.exit(-1)
@@ -52,6 +66,16 @@ def esub(args, bsubargs, jobscript):
 def main():
     parser = argparse.ArgumentParser(
         description="Wrapper for bsub."
+    )
+    parser.add_argument(
+        "--record",
+        help="record submitted job ids",
+        action="store_true",
+    )
+    parser.add_argument(
+        "--show",
+        help="list recorded jobs",
+        action="store_true",
     )
     parser.add_argument(
         "-aices",
@@ -68,7 +92,9 @@ def main():
 
     args, bsubargs = parser.parse_known_args()
 
-    jobscript = sys.stdin.read()
+    jobscript = None
+    if not args.show:
+        jobscript = sys.stdin.read()
 
     esub(args, bsubargs, jobscript)
 
