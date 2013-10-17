@@ -43,6 +43,8 @@ def esub(args, bsubargs, jobscript):
                 data["Command"] += " " + arg
     for line in jobscript.splitlines(True):
         if line.startswith("#BSUB"):
+            if "#" in line:
+                line = line.split("#")[0]
             match = re.match("#BSUB (-\w+)$", line)
             if match:
                 data[match.groups()[0]] = True
