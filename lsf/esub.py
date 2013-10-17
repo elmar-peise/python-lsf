@@ -49,7 +49,13 @@ def esub(args, bsubargs, jobscript):
                 data[match.groups()[0]] = True
             match = re.match("#BSUB (-\w+) \"?(.*?)\"?$", line)
             if match:
-                data[match.groups()[0]] = match.groups()[1]
+                key, value = match.groups()
+                if key in data:
+                    if not isinstance(data[key], list):
+                        data[key] = [data[key]]
+                    data[key].append(value)
+                else:
+                    data[key] = value
         else:
             data["Command"] += line
     try:
