@@ -47,6 +47,7 @@ class Job():
         "Processors Requested": ", (\d+) Processors Requested,",
         "nReserved": "Reserved <(\d+)> job slots? on host",
         "CPU time": "The CPU time used is (.*?) seconds.",
+        "ptile": "span\[ptile=(\d+)\]",
     }
     tfregexps = {
         "Notify when job ends": "Notify when job (begins/)?ends",
@@ -174,6 +175,9 @@ class Job():
             self["Hostgroupsstr"] = " ".join(strs)
         if not "Processors Requested" in self:
             self["Processors Requested"] = 1
+        self["Nodes Requested"] = self["Processors Requested"]
+        if "ptile" in self:
+            self["Nodes Requested"] //= self["ptile"]
         if "nReserved" in self:
             if self["nReserved"] == 1:
                 self["Reserved"] = {self["Reserved"]: 1}
@@ -232,7 +236,7 @@ class Job():
         result = ""
         for k in ("Job", "Job Name", "User", "Status", "Command", "submittime",
                   "starttime", "endtime", "Pending Reasons", "RUNLIMIT",
-                  "MEMLIMIT", "Processors Requested", "Processors",
+                  "MEMLIMIT", "Processors Requested", "Processors", "ptile",
                   "Exclusive Execution", "Requested Resources", "Reserved",
                   "Job Description"):
             if k in data:
