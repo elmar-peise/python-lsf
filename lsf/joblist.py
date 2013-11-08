@@ -139,7 +139,8 @@ class Joblist(list):
                 result[value].append(job)
         return result
 
-    def display(self, long=False, wide=False, title=None, parallel=True):
+    def display(self, long=False, wide=False, title=None, parallel=True,
+                header=True):
         """list the jobs"""
         if len(self) == 0:
             return
@@ -176,17 +177,18 @@ class Joblist(list):
         if wide:
             lens["name"] = 32
             lens["project"] = 10
-        h = "Job".ljust(lens["id"]) + "Job Name".ljust(lens["name"])
-        h += "Status".ljust(lens["status"]) + "User".ljust(lens["user"])
-        if wide:
-            h += "Project".ljust(lens["project"])
-        h += "Wait/Runtime".rjust(lens["time"]) + "  Resources"
-        h = h.replace(" ", "-")
-        if title:
-            h += (" " + title + " ").center(screencols - len(h), "-")
-        else:
-            h += (screencols - len(h)) * "-"
-        print(h)
+        if header:
+            h = "Job".ljust(lens["id"]) + "Job Name".ljust(lens["name"])
+            h += "Status".ljust(lens["status"]) + "User".ljust(lens["user"])
+            if wide:
+                h += "Project".ljust(lens["project"])
+            h += "Wait/Runtime".rjust(lens["time"]) + "  Resources"
+            h = h.replace(" ", "-")
+            if title:
+                h += (" " + title + " ").center(screencols - len(h), "-")
+            else:
+                h += (screencols - len(h)) * "-"
+            print(h)
         for job in self:
             if job["Job"] in threads:
                 threads[job["Job"]].join()

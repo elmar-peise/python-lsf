@@ -42,7 +42,7 @@ def ejobs(args, bjobsargs):
             else:
                 title = None
             joblist.display(args.long, args.wide, title,
-                            parallel=not args.nopar)
+                            parallel=not args.nopar, header=not args.noheader)
         return
     for reasons in sorted(joblists.keys(), key=len):
         pendjobs = joblists[reasons]
@@ -56,7 +56,8 @@ def ejobs(args, bjobsargs):
             ):
                 title = "{} [{}]".format(reasons[0][0], len(pendjobs))
                 pendjobs.display(args.long, args.wide, title,
-                                 parallel=not args.nopar)
+                                 parallel=not args.nopar,
+                                 header=not args.noheader)
                 continue
         lists = {}
         resgrouped = pendjobs.groupby("Requested Resources")
@@ -67,7 +68,7 @@ def ejobs(args, bjobsargs):
         for case, casejobs in lists.iteritems():
             title = "[{}]".format(len(casejobs))
             casejobs.display(args.long, args.wide, title,
-                             parallel=not args.nopar)
+                             parallel=not args.nopar, header=not args.noheader)
             print()
             print("Pending reasons:")
             cs = {
@@ -150,6 +151,11 @@ def main():
     parser.add_argument(
         "-d", "--debug",
         help="show debug info on errors",
+        action="store_true",
+    )
+    parser.add_argument(
+        "--noheader",
+        help=argparse.SUPPRESS,
         action="store_true",
     )
     parser.add_argument_group("further arguments",

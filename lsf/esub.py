@@ -15,8 +15,6 @@ import subprocess
 def esub(args, bsubargs, jobscript):
     if args.show:
         try:
-            with open(".esubrecord") as fin:
-                subprocess.call(["ejobs"] + fin.read().split())
             os.unlink(".esubrecord")
         except:
             pass
@@ -61,8 +59,12 @@ def esub(args, bsubargs, jobscript):
     try:
         job = submit(data)
         if args.record:
-            with open(".esubrecord", "a") as fout:
-                fout.write(" " + str(job["Job"]))
+            if not os.path.isfile(".esubrecord"):
+                with open(".esubrecord", "a") as fout:
+                    fout.write("esub temporary file; can safely be deleted")
+                subprocess.call(["ejobs", str(job["Job"])])
+            else:
+                subprocess.call(["ejobs", "--noheader", str(job["Job"])])
         else:
             subprocess.call(["ejobs", str(job["Job"])])
     except LSFError as e:
