@@ -60,7 +60,7 @@ def esub(args, bsubargs, jobscript):
         job = submit(data)
         if args.record:
             if not os.path.isfile(".esubrecord"):
-                with open(".esubrecord", "a") as fout:
+                with open(".esubrecord", "w") as fout:
                     fout.write("esub temporary file; can safely be deleted")
                 subprocess.call(["ejobs", str(job["Job"])])
             else:
