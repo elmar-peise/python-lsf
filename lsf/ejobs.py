@@ -81,6 +81,8 @@ def ejobs(args, bjobsargs):
                 "Not enough slots or resources for whole duration of the job":
                 "r",
                 "Not enough hosts to meet the job's spanning requirement": "r",
+                "Job requirements for reserving resource (mem) not satisfied":
+                "r",
             }
             for reason, count in reasons:
                 s = reason
