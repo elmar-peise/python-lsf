@@ -162,7 +162,9 @@ class Hostlist(list):
             print()
         if len(users):
             print("Users:")
-            for un, user in users.iteritems():
+            bysum = lambda u: sum(-h[1] for h in
+                                  u[1]["Hostgroups"].iteritems())
+            for un, user in sorted(users.items(), key=bysum):
                 if un == whoami:
                     c = "g"
                 else:
