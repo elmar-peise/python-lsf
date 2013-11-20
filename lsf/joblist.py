@@ -249,9 +249,9 @@ class Joblist(list):
                 # #cores
                 l += str(job["Nodes Requested"]).rjust(3)
                 if "Exclusive Execution" in job and job["Exclusive Execution"]:
-                    l += " excl "
+                    l += " nexcl" if "ptile" in job else " excl "
                 else:
-                    l += " cores"
+                    l += " nodes" if "ptile" in job else " cores"
                 # Mmeory
                 l += format_mem(job["MEMLIMIT"]).rjust(8)
                 # Hosts or architecture
