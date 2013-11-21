@@ -161,7 +161,11 @@ class Job():
                 else:
                     procs[proc[1]] = int(proc[0])
             self["Processors"] = procs
-            strs = (str(c).rjust(3) + "*" + p for p, c in procs.iteritems())
+            if self["Exclusive Execution"]:
+                strs = (p for p in procs)
+            else:
+                strs = (str(c).rjust(3) + "*" + p
+                        for p, c in procs.iteritems())
             self["Processorsstr"] = " ".join(strs)
             self["Hosts"] = modulehostlist.Hostlist([p for p in procs])
             if self["Exclusive Execution"]:
