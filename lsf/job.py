@@ -236,10 +236,10 @@ class Job():
             data[k] = k.ljust(wk) + s + "\n"
         result = ""
         for k in ("Job", "Job Name", "User", "Status", "Command", "submittime",
-                  "starttime", "endtime", "Pending Reasons", "RUNLIMIT",
-                  "MEMLIMIT", "Processors Requested", "Processors", "ptile",
-                  "Exclusive Execution", "Requested Resources", "Reserved",
-                  "Job Description"):
+                  "starttime", "endtime", "CPU time", "Pending Reasons",
+                  "RUNLIMIT", "MEMLIMIT", "Processors Requested", "Processors",
+                  "ptile", "Exclusive Execution", "Requested Resources",
+                  "Reserved", "Job Description"):
             if k in data:
                 result += data[k]
                 del data[k]
