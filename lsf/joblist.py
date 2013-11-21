@@ -264,10 +264,9 @@ class Joblist(list):
                         l += "  " + match.groups()[0].ljust(14)
                 if "Reserved" in job:
                     l += "  rsvd:"
-                    for proc, n in job["Reserved"].iteritems():
-                        if job["Exclusive Execution"]:
-                            l += " " + proc
-                        else:
-                            l += " " + str(n) + "*" + proc
+                    if wide or len(job["Reserved"]) == 1:
+                        l += job["Reservedstr"]
+                    else:
+                        l += job["Reserved Hostgroupsstr"]
             print(l)
             sys.stdout.flush()

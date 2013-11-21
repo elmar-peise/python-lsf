@@ -164,6 +164,9 @@ class Job():
             strs = (str(c).rjust(3) + "*" + p for p, c in procs.iteritems())
             self["Processorsstr"] = " ".join(strs)
             self["Hosts"] = modulehostlist.Hostlist([p for p in procs])
+            if self["Exclusive Execution"]:
+                for host in self["Hosts"]:
+                    procs[host["HOST"]] = host["MAX"]
             hgs = {}
             for host in self["Hosts"]:
                 hg = host["Hostgroup"]
@@ -180,14 +183,28 @@ class Job():
         if "ptile" in self:
             self["Nodes Requested"] //= self["ptile"]
         if "nReserved" in self:
+            procs = {}
             if self["nReserved"] == 1:
-                self["Reserved"] = {self["Reserved"]: 1}
+                procs[self["Reserved"]] = 1
             else:
-                procs = {}
                 for proc in re.split("> ?<", self["Reserved"]):
                     proc = proc.split("*")
                     procs[proc[1]] = int(proc[0])
-                self["Reserved"] = procs
+            self["Reserved"] = procs
+            strs = (str(c).rjust(3) + "*" + p for p, c in procs.iteritems())
+            self["Reservedstr"] = " ".join(strs)
+            self["Reserved Hosts"] = modulehostlist.Hostlist([p for p in
+                                                              procs])
+            rgs = {}
+            for host in self["Reserved Hosts"]:
+                rg = host["Hostgroup"]
+                if not rg in rgs:
+                    rgs[rg] = 0
+                rgs[rg] += procs[host["HOST"]]
+            self["Reserved Hostgroups"] = rgs
+            strs = (str(c).rjust(3) + "*" + p + "*"
+                    for p, c in rgs.iteritems())
+            self["Reserved Hostgroupsstr"] = " ".join(strs)
         if "PENDING REASONS" in self:
             reasons = self["PENDING REASONS"]
             match = re.findall(" (.*?): (\d+) hosts?;", str(reasons))
