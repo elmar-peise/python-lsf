@@ -154,7 +154,7 @@ class Job():
         if "Processors" in self and isinstance(self['Processors'], str):
             procs = {}
             self["Processors"] = self["Processors"].replace("><", "> <")
-            for proc in self["Processors"].split("> <"):
+            for proc in re.split("> ?<", self["Processors"]):
                 proc = proc.split("*")
                 if len(proc) == 1:
                     procs[proc[0]] = 1
@@ -184,7 +184,7 @@ class Job():
                 self["Reserved"] = {self["Reserved"]: 1}
             else:
                 procs = {}
-                for proc in self["Reserved"].split("> <"):
+                for proc in re.split("> ?<", self["Reserved"]):
                     proc = proc.split("*")
                     procs[proc[1]] = int(proc[0])
                 self["Reserved"] = procs
