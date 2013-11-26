@@ -26,7 +26,6 @@ class Job():
         "CWD": "CWD <(.*?)>[,;]",
         "Output File": "Output File <(.*?)>[,;]",
         "Error File": "Error File <(.*?)>[,;]",
-        "Requested Resources": "Requested Resources <(.*?) ?>[,;]",
         "Dependency Condition": "Dependency Condition <(.*?)>[,;]",
         "Share group charged": "Share group charged <(.*?)>[,;]",
         "Job Description": "Job Description <(.*?)>",
@@ -41,6 +40,8 @@ class Job():
         "RUNLIMIT": "RUNLIMIT\s*\n (.*?) min of",
         "MEMLIMIT": "MEMLIMIT\s*\n .*? (\d+ [BKMGT])\s+\n",
         "CORELIMIT": "CORELIMIT\s*\n (\d+ [BKMGT])",
+        "Requested Resources":
+        "RESOURCE REQUIREMENT DETAILS:\n Combined: (.*?)\n Effective",
     }
     numregexps = {
         "Job Priority": "Job Priority <(\d+)>,",
