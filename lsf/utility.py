@@ -23,7 +23,10 @@ def format_duration(t):
     s = "{:0>2}".format(t % 60)
     t //= 60
     # minutes
-    s = "{}:".format(t % 60) + s
+    if t >= 60:
+        s = "{:0>2}:".format(t % 60) + s
+    else:
+        s = "{:>2}:".format(t % 60) + s
     t //= 60
     if t == 0:
         return "       " + s
