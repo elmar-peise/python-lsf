@@ -26,7 +26,6 @@ class Job():
         "CWD": "CWD <(.*?)>[,;]",
         "Output File": "Output File <(.*?)>[,;]",
         "Error File": "Error File <(.*?)>[,;]",
-        "Requested Resources": "Requested Resources <(.*?) ?>[,;]",
         "Dependency Condition": "Dependency Condition <(.*?)>[,;]",
         "Share group charged": "Share group charged <(.*?)>[,;]",
         "Job Description": "Job Description <(.*?)>",
@@ -39,8 +38,10 @@ class Job():
         "Complete": "Completed <(.*?)>",
         "PENDING REASONS": "PENDING REASONS:\n(.*?)\n\n",
         "RUNLIMIT": "RUNLIMIT\s*\n (.*?) min of",
-        "MEMLIMIT": "MEMLIMIT\s*\n .*? (\d+ [BKMGT])\s+\n",
+        "MEMLIMIT": "MEMLIMIT\s*\n .*? ([\d.]+ [BKMGT])\s*\n",
         "CORELIMIT": "CORELIMIT\s*\n (\d+ [BKMGT])",
+        "Requested Resources":
+        "RESOURCE REQUIREMENT DETAILS:\n Combined: (.*?)\n Effective",
     }
     numregexps = {
         "Job Priority": "Job Priority <(\d+)>,",
@@ -218,14 +219,14 @@ class Job():
             self["PENDING REASONS"] = d
         if "RUNLIMIT" in self:
             self["RUNLIMIT"] = int(60 * float(self["RUNLIMIT"]))
+        units = {"B": 0, "K": 1, "M": 2, "G": 3, "T": 4}
         if "MEMLIMIT" in self:
             groups = re.search("(.*) ([BKMGT])", self["MEMLIMIT"]).groups()
-            units = {"B": 0, "K": 1, "M": 2, "G": 3, "T": 4}
-            self["MEMLIMIT"] = int(groups[0]) * 1024 ** units[groups[1]]
+            self["MEMLIMIT"] = int(float(groups[0]) * 1024 ** units[groups[1]])
         if "CORELIMIT" in self:
             groups = re.search("(.*) ([BKMGT])", self["CORELIMIT"]).groups()
-            units = {"B": 0, "K": 1, "M": 2, "G": 3, "T": 4}
-            self["CORELIMIT"] = int(groups[0]) * 1024 ** units[groups[1]]
+            self["CORELIMIT"] = int(float(groups[0]) * 1024 **
+                                    units[groups[1]])
         return True
 
     def __str__(self):
