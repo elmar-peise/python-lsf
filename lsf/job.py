@@ -38,8 +38,8 @@ class Job():
         "Complete": "Completed <(.*?)>",
         "PENDING REASONS": "PENDING REASONS:\n(.*?)\n\n",
         "RUNLIMIT": "RUNLIMIT\s*\n (.*?) min of",
-        "MEMLIMIT": "MEMLIMIT\s*\n .*? ([\d.]+ [BKMGT])\s*\n",
-        "CORELIMIT": "CORELIMIT\s*\n (\d+ [BKMGT])",
+        "limitline": "(STACKLIMIT.*?)\n",
+        "limitvline": "STACKLIMIT.*?\n(.*?)\n",
         "Requested Resources":
         "RESOURCE REQUIREMENT DETAILS:\n Combined: (.*?)\n Effective",
     }
@@ -220,13 +220,13 @@ class Job():
         if "RUNLIMIT" in self:
             self["RUNLIMIT"] = int(60 * float(self["RUNLIMIT"]))
         units = {"B": 0, "K": 1, "M": 2, "G": 3, "T": 4}
-        if "MEMLIMIT" in self:
-            groups = re.search("(.*) ([BKMGT])", self["MEMLIMIT"]).groups()
-            self["MEMLIMIT"] = int(float(groups[0]) * 1024 ** units[groups[1]])
-        if "CORELIMIT" in self:
-            groups = re.search("(.*) ([BKMGT])", self["CORELIMIT"]).groups()
-            self["CORELIMIT"] = int(float(groups[0]) * 1024 **
-                                    units[groups[1]])
+        limits = self["limitline"].split()
+        limitvs = self["limitvline"].split()
+        for i in range(len(limits)):
+            self[limits[i]] = int(float(limitvs[2 * i]) * 1024 **
+                                  units[limitvs[2 * i + 1]])
+        del self["limitline"]
+        del self["limitvline"]
         return True
 
     def __str__(self):
@@ -238,11 +238,12 @@ class Job():
         data = {}
         for k in self.data.keys():
             val = self[k]
+            print(k, val)
             if k in Job.timeregexps:
                 val = format_time(val)
             elif k in ("RUNLIMIT", "CPU time"):
                 val = format_duration(val)
-            elif k == "MEMLIMIT":
+            elif k in ("STACKLIMIT", "CORELIMIT", "MEMLIMIT", "SWAPLIMIT"):
                 val = format_mem(val)
             elif type(val) is dict:
                 val = "\n".join("{}\t{}".format(dv, dk)
@@ -259,7 +260,8 @@ class Job():
         result = ""
         for k in ("Job", "Job Name", "User", "Status", "Command", "submittime",
                   "starttime", "endtime", "CPU time", "Pending Reasons",
-                  "RUNLIMIT", "MEMLIMIT", "Processors Requested", "Processors",
+                  "RUNLIMIT", "STACKLIMIT", "MEMLIMIT", "CORELIMIT",
+                  "SWAPLIMIT", "Processors Requested", "Processors",
                   "ptile", "Exclusive Execution", "Requested Resources",
                   "Reserved", "Job Description"):
             if k in data:
