@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 from __future__ import print_function, division
 
-from job import submit
+from submit import submit
 from error import LSFError
 from utility import color
 
