@@ -29,7 +29,7 @@ class Job():
         "Dependency Condition": "Dependency Condition <(.*?)>[,;]",
         "Share group charged": "Share group charged <(.*?)>[,;]",
         "Job Description": "Job Description <(.*?)>",
-        "Specified Hosts": "Specified Hosts <(.*?)>[,;]",
+        "Specified Hosts": "Specified Hosts <(.*?)>;",
         "Execution Home": "Execution Home <(.*?)>[,;]",
         "Execution CWD": "Execution CWD <(.*?)>[,;]",
         "Processors": "(?:Hosts/Processors|\[\d+\] started on) <(.*?)>[,;]",
@@ -210,6 +210,8 @@ class Job():
             strs = (str(c).rjust(3) + "*" + p + "*"
                     for p, c in rgs.iteritems())
             self["Reserved Hostgroupsstr"] = " ".join(strs)
+        if "Specified Hosts" in self:
+            self["Specified Hosts"] = self["Specified Hosts"].split(">, <")
         if "PENDING REASONS" in self:
             reasons = self["PENDING REASONS"]
             match = re.findall(" (.*?): (\d+) hosts?;", str(reasons))

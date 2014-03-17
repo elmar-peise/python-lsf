@@ -259,7 +259,7 @@ class Joblist(list):
                 l += format_mem(job["MEMLIMIT"]).rjust(8)
                 # Hosts or architecture
                 if "Specified Hosts" in job:
-                    l += "  " + job["Specified Hosts"].ljust(16)
+                    l += "  " + " ".join(job["Specified Hosts"]).ljust(16)
                 else:
                     match = re.search("\(model==(.*?)\)",
                                       job["Requested Resources"])
