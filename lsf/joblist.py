@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 from __future__ import print_function, division
 
-from utility import *
+from utility import color, format_duration, format_mem
 import job as modulejob
 
 import sys

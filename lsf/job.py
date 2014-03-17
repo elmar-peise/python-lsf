@@ -2,10 +2,8 @@
 from __future__ import print_function, division
 
 import hostlist as modulehostlist
-from utility import *
-from error import LSFError
+from utility import format_time, format_duration, format_mem
 
-import sys
 import re
 from time import strftime, strptime, mktime
 from subprocess import Popen, check_output, PIPE

@@ -1,6 +1,5 @@
 from __future__ import print_function, division
 
-from utility import *
 import joblist as modulejoblist
 
 import sys
@@ -59,7 +58,7 @@ class Host():
                 self[key] = int(self[key])
             except:
                 pass
-        self["Hostgroup"] = re.match("(.*?)\d+", line[0]).groups()[0],
+        self["Hostgroup"] = re.match("(.*?)\d+", self["HOST"][0]).groups()[0],
         return True
 
     def readjobs(self):
