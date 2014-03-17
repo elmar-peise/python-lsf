@@ -1,8 +1,9 @@
 from __future__ import print_function, division
 
-from utility import *
+from utility import color
 import host as modulehost
 
+import sys
 import os
 import re
 from subprocess import Popen, PIPE
@@ -76,7 +77,7 @@ class Hostlist(list):
         if parallel:
             strptime("", "")  # hack to make pseude thread-safe
             for host in self:
-                if not any((host["STATUS"] == "cosed_Excl",
+                if not any((host["STATUS"] in ["unavail", "cosed_Excl"],
                             host["RUN"] == 0,
                             len(host["Jobs"]) == host["RUN"],
                             len(host["Jobs"]) == 1)):
@@ -91,7 +92,9 @@ class Hostlist(list):
             hn = host["HOST"]
             hg = host["Hostgroup"]
             l = indent + hn.ljust(14)
-            if host["STATUS"][0:7] == "closed_":
+            if host["STATUS"] == "unavail":
+                l += color(" unavail", "r")
+            elif host["STATUS"][0:7] == "closed_":
                 l += color(host["STATUS"][7:].rjust(8), "r")
             else:
                 free = max(0, host["MAX"] - host["RUN"] - host["SSUSP"] -
