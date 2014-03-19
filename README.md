@@ -6,7 +6,7 @@ Python API for the LSF batch job scheduler
 
 Requirements
 ------------
-* bjobs and bhosts available from the command line
+* bjobs, bhosts, and bsub available from the command line
 * python version 2.7.x
 
 
@@ -30,10 +30,12 @@ in order to make the scripts available on the command line.
 Usage
 -----
 
-ejobs and ehosts have essentially the same interfaces as LFS' bjobs and bhosts.
+ejobs and ehosts have essentially the same interfaces as LSF' bjobs and bhosts.
 Check
 
     ejobs -h
     ehosts -h
+    esub -h
     man bjobs
     man bhosts
+    man bsub
