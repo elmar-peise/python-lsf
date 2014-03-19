@@ -172,6 +172,8 @@ def main():
             ejobs(args, bjobsargs)
         except KeyboardInterrupt:
             pass
+        except IOError:
+            pass
         except Exception:
             print(color("ERROR -- probably a job status changed while " +
                         sys.argv[0] + " processed it", "r"), file=sys.stderr)
