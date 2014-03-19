@@ -126,17 +126,14 @@ class Joblist(list):
                 value = None
             else:
                 value = job[key]
-            vlist = [value]
-            if type(value) is list:
-                vlist = value
             if type(value) is dict:
-                vlist = value.keys()
-            if key == "PENDING REASONS":
-                vlist = [tuple(value.items())]
-            for value in vlist:
-                if not value in result:
-                    result[value] = Joblist()
-                result[value].append(job)
+                value = tuple(value.items())
+            if type(value) is list:
+                value = tuple(value)
+            if not value in result:
+                result[value] = Joblist()
+            result[value].append(job)
+            continue
         return result
 
     def display(self, long=False, wide=False, title=None, parallel=True,
