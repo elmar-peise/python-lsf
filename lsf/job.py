@@ -249,7 +249,6 @@ class Job():
         data = {}
         for k in self.data.keys():
             val = self[k]
-            print(k, val)
             if k in Job.timeregexps:
                 val = format_time(val)
             elif k in ("RUNLIMIT", "CPU time"):
