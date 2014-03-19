@@ -93,7 +93,7 @@ def ejobs(args, bjobsargs):
                 else:
                     print("    {:>4}  ".format(count) + s)
             if case[1]:
-                req = [case[1]]
+                req = list(case[1])
             else:
                 req = case[0]
                 req = re.sub(" && \(hostok\)", "", req)
