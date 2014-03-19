@@ -210,6 +210,17 @@ class Job():
             self["Reserved Hostgroupsstr"] = " ".join(strs)
         if "Specified Hosts" in self:
             self["Specified Hosts"] = self["Specified Hosts"].split(">, <")
+            self["Specified Hostsstr"] = " ".join(self["Specified Hosts"])
+            hgs = {}
+            for host in self["Specified Hosts"]:
+                g = re.match("(.*?)\d+", host).groups()[0]
+                if not g in hgs:
+                    hgs[g] = 0
+                hgs[g] += 1
+            self["Specified Hostgroups"] = hgs
+            strs = (str(c).rjust(3) + "*" + h + "*"
+                    for h, c in hgs.iteritems())
+            self["Specified Hostgroupsstr"] = " ".join(strs)
         if "PENDING REASONS" in self:
             reasons = self["PENDING REASONS"]
             match = re.findall(" (.*?): (\d+) hosts?;", str(reasons))
