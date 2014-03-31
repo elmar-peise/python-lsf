@@ -119,7 +119,7 @@ class Hostlist(list):
                 for job in host["Jobs"]:
                     l = "  "
                     un = job["User"]
-                    if not un in users:
+                    if un not in users:
                         if job["Job"] in threads:
                             threads[job["Job"]].join()
                             del threads[job["Job"]]
@@ -128,9 +128,9 @@ class Hostlist(list):
                             "Hosts": {},
                             "Hostgroups": {},
                         }
-                    if not hn in users[un]["Hosts"]:
+                    if hn not in users[un]["Hosts"]:
                         users[un]["Hosts"][hn] = 0
-                    if not hg in users[un]["Hostgroups"]:
+                    if hg not in users[un]["Hostgroups"]:
                         users[un]["Hostgroups"][hg] = 0
                     if host["STATUS"] == "closed_Excl":
                         users[un]["Hosts"][hn] += host["MAX"]

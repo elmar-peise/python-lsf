@@ -70,7 +70,7 @@ class Job():
         if type(init) in (int, str):
             self.data = {"Job": str(init)}
         elif type(init) == dict:
-            if not "Job" in init:
+            if "Job" not in init:
                 raise KeyError("No 'Job' in Job init data")
             self.data = init
         else:
@@ -114,7 +114,7 @@ class Job():
         if 78 * "-" in out:
             return False
         outjoin = out.replace("\n                     ", "")
-        #data retrieval
+        # data retrieval
         for key, regexp in Job.strregexps.iteritems():
             match = re.search(regexp, outjoin, re.DOTALL)
             if match:
@@ -134,7 +134,7 @@ class Job():
                 tstr = strftime("%Y ") + match.groups()[0]
                 t = strptime(tstr, "%Y %b %d %H:%M:%S")
                 self[key] = mktime(t)
-        #processing
+        # processing
         if "User" in self:
             if "Mail" in self:
                 self["Userstr"] = "{User} <{Mail}>".format(**self)
@@ -173,14 +173,14 @@ class Job():
             hgs = {}
             for host in self["Hosts"]:
                 hg = host["Hostgroup"]
-                if not hg in hgs:
+                if hg not in hgs:
                     hgs[hg] = 0
                 hgs[hg] += procs[host["HOST"]]
             self["Hostgroups"] = hgs
             strs = (str(c).rjust(3) + "*" + p + "*"
                     for p, c in hgs.iteritems())
             self["Hostgroupsstr"] = " ".join(strs)
-        if not "Processors Requested" in self:
+        if "Processors Requested" not in self:
             self["Processors Requested"] = 1
         self["Nodes Requested"] = self["Processors Requested"]
         if "ptile" in self:
@@ -201,7 +201,7 @@ class Job():
             rgs = {}
             for host in self["Reserved Hosts"]:
                 rg = host["Hostgroup"]
-                if not rg in rgs:
+                if rg not in rgs:
                     rgs[rg] = 0
                 rgs[rg] += procs[host["HOST"]]
             self["Reserved Hostgroups"] = rgs
@@ -214,7 +214,7 @@ class Job():
             hgs = {}
             for host in self["Specified Hosts"]:
                 g = re.match("(.*?)\d+", host).groups()[0]
-                if not g in hgs:
+                if g not in hgs:
                     hgs[g] = 0
                 hgs[g] += 1
             self["Specified Hostgroups"] = hgs

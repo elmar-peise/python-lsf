@@ -122,7 +122,7 @@ class Joblist(list):
             return {None: self}
         result = {}
         for job in self:
-            if not key in job:
+            if key not in job:
                 value = None
             else:
                 value = job[key]
@@ -130,7 +130,7 @@ class Joblist(list):
                 value = tuple(value.items())
             if type(value) is list:
                 value = tuple(value)
-            if not value in result:
+            if value not in result:
                 result[value] = Joblist()
             result[value].append(job)
             continue

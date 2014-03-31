@@ -11,14 +11,14 @@ from subprocess import Popen, PIPE
 
 def submit(data, shell=False):
     """Submit a job to LSF"""
-    if not "Command" in data:
+    if "Command" not in data:
         print("no command given", file=sys.stderr)
         return False
     if "Job Name" in data:
         data["-J"] = data["Job Name"]
     if "Output File" in data:
         data["-o"] = data["Output File"]
-    if not "-o" in data and "-J" in data:
+    if "-o" not in data and "-J" in data:
         data["-o"] = data["-J"] + ".%J.out"
     if "Error File" in data:
         data["-e"] = data["Error File"]
