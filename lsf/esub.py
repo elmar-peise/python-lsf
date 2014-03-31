@@ -67,7 +67,7 @@ def esub(args, bsubargs, jobscript):
                     fout.write("esub temporary file; can safely be deleted")
                 subprocess.call(["ejobs", str(job["Job"])])
             else:
-                subprocess.call(["ejobs", "--noheader", str(job["Job"])])
+                subprocess.Popen(["ejobs", "--noheader", str(job["Job"])])
         else:
             subprocess.call(["ejobs", str(job["Job"])])
     except LSFError as e:
