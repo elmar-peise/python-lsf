@@ -36,9 +36,12 @@ def esub(args, bsubargs, jobscript):
         else:
             if last:
                 data[last] = arg
+                last = False
             else:
                 cmd = True
                 data["Command"] += " " + arg
+    if last:
+        data[last] = True
     for line in jobscript.splitlines(True):
         if line.startswith("#BSUB"):
             line = "#" + line.split("#")[1]
