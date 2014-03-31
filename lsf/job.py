@@ -36,8 +36,8 @@ class Job():
         "Complete": "Completed <(.*?)>",
         "PENDING REASONS": "PENDING REASONS:\n(.*?)\n\n",
         "RUNLIMIT": "RUNLIMIT\s*\n (.*?) min of",
-        "limitline": "(STACKLIMIT.*?)\n",
-        "limitvline": "STACKLIMIT.*?\n(.*?)\n",
+        "limitline": "(STACKLIMIT.*?|[^\n]*?MEMLIMIT)\n",
+        "limitvline": "(?:STACKLIMIT.*?|[^\n]*?MEMLIMIT)\n(.*?)\n",
         "Requested Resources":
         "RESOURCE REQUIREMENT DETAILS:\n Combined: (.*?)\n Effective",
     }

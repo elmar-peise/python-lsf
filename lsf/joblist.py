@@ -158,7 +158,10 @@ class Joblist(list):
             for job in self:
                 if job["Job"] in threads:
                     threads[job["Job"]].join()
-                f = " {Job} --- {Job Name} --- {User} --- {Status} "
+                if "Job Name" in job:
+                    f = " {Job} --- {Job Name} --- {User} --- {Status} "
+                else:
+                    f = " {Job} --- --- {User} --- {Status} "
                 header = f.format(**job)
                 print(header.center(screencols, "-"))
                 print(job)
@@ -194,7 +197,7 @@ class Joblist(list):
             # Job
             l = (job["Job"] + " ").ljust(lens["id"])
             # Job Name
-            jobname = job["Job Name"]
+            jobname = job["Job Name"] if "Job Name" in job else ""
             if not wide:
                 if len(jobname) >= lens["name"]:
                     jobname = jobname[:lens["name"] - 2] + "*"
