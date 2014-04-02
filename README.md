@@ -8,6 +8,7 @@ Requirements
 ------------
 * bjobs, bhosts, and bsub available from the command line
 * python version 2.7.x
+* (developed with LSF version 9.1.1.1)
 
 
 Installation
