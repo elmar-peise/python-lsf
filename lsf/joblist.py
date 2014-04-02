@@ -267,7 +267,7 @@ class Joblist(list):
                     else:
                         l += "  " + job["Specified Hostgroupsstr"]
                 else:
-                    match = re.search("\(model==(.*?)\)",
+                    match = re.search("\(model\s*==\s*(\w+)\)",
                                       job["Requested Resources"])
                     if match:
                         l += "  " + match.groups()[0].ljust(14)
