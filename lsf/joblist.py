@@ -245,9 +245,12 @@ class Joblist(list):
             if job["Status"] == "RUN":
                 # Execution hosts
                 if wide or len(job["Processors"]) == 1:
-                    l += job["Processorsstr"]
+                    l += job["Processorsstr"].ljust(16)
                 else:
                     l += job["Hostgroupsstr"]
+                if "MEM" in job:
+                    l += "{:>2}% ".format(100 * job["MEM"] // job["MEMLIMIT"])
+                l += format_mem(job["MEMLIMIT"])
             elif job["Status"] == "PEND":
                 # #cores
                 l += str(job["Nodes Requested"]).rjust(3)

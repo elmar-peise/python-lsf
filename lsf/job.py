@@ -40,6 +40,10 @@ class Job():
         "limitvline": "(?:STACKLIMIT.*?|[^\n]*?MEMLIMIT)\n(.*?)\n",
         "Requested Resources":
         "RESOURCE REQUIREMENT DETAILS:\n Combined: (.*?)\n Effective",
+        "MAX MEM": "MAX MEM: (.*?)bytes",
+        "AVG MEM": "AVG MEM: (.*?)bytes",
+        "MEM": "MEM: (.*?)bytes",
+        "SWAP": "SWAP: (.*?)bytes",
     }
     numregexps = {
         "Job Priority": "Job Priority <(\d+)>,",
@@ -47,6 +51,7 @@ class Job():
         "nReserved": "Reserved <(\d+)> job slots? on host",
         "CPU time": "The CPU time used is (.*?) seconds.",
         "ptile": "span\[ptile=(\d+)\]",
+        "NTHREAD": "NTHREAD: (\d+)\n",
     }
     tfregexps = {
         "Notify when job ends": "Notify when job (begins/)?ends",
@@ -236,6 +241,10 @@ class Job():
         for i in range(len(limits)):
             self[limits[i]] = int(float(limitvs[2 * i]) * 1024 **
                                   units[limitvs[2 * i + 1]])
+        for k in ("MEM", "MAX MEM", "AVG MEM", "SWAP"):
+            if k in self:
+                val, unit = self[k].split()
+                self[k] = int(float(val) * 1024 ** units[unit])
         del self["limitline"]
         del self["limitvline"]
         return True
@@ -253,7 +262,8 @@ class Job():
                 val = format_time(val)
             elif k in ("RUNLIMIT", "CPU time"):
                 val = format_duration(val)
-            elif k in ("STACKLIMIT", "CORELIMIT", "MEMLIMIT", "SWAPLIMIT"):
+            elif k in ("STACKLIMIT", "CORELIMIT", "MEMLIMIT", "SWAPLIMIT",
+                       "MEM", "MAX MEM", "AVG MEM", "SWAP"):
                 val = format_mem(val)
             elif type(val) is dict:
                 val = "\n".join("{}\t{}".format(dv, dk)
@@ -269,11 +279,12 @@ class Job():
             data[k] = k.ljust(wk) + s + "\n"
         result = ""
         for k in ("Job", "Job Name", "User", "Status", "Command", "submittime",
-                  "starttime", "endtime", "CPU time", "Pending Reasons",
-                  "RUNLIMIT", "STACKLIMIT", "MEMLIMIT", "CORELIMIT",
-                  "SWAPLIMIT", "Processors Requested", "Processors",
-                  "ptile", "Exclusive Execution", "Requested Resources",
-                  "Reserved", "Job Description"):
+                  "starttime", "endtime", "CPU time", "MEM", "MAX MEM",
+                  "AVG MEM", "NTHREADS", "SWAP", "Pending Reasons", "RUNLIMIT",
+                  "STACKLIMIT", "MEMLIMIT", "CORELIMIT", "SWAPLIMIT",
+                  "Processors Requested", "Processors", "ptile",
+                  "Exclusive Execution", "Requested Resources", "Reserved",
+                  "Job Description"):
             if k in data:
                 result += data[k]
                 del data[k]
