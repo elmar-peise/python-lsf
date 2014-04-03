@@ -168,7 +168,7 @@ class Joblist(list):
             return
         whoami = os.getenv("USER")
         lens = {
-            "id": 12,
+            "id": 14,
             "name": 20,
             "status": 8,
             "user": 10,
@@ -242,24 +242,26 @@ class Joblist(list):
             # Resources
             # Time
             l += "  " + format_duration(job["RUNLIMIT"]) + "  "
+            # Memory
+            l += format_mem(job["MEMLIMIT"]).rjust(7)
             if job["Status"] == "RUN":
-                # Execution hosts
-                if wide or len(job["Processors"]) == 1:
-                    l += job["Processorsstr"].ljust(16)
-                else:
-                    l += job["Hostgroupsstr"]
                 if "MEM" in job:
-                    l += "{:>2}% ".format(100 * job["MEM"] // job["MEMLIMIT"])
-                l += format_mem(job["MEMLIMIT"])
+                    maxmem = job["MEMLIMIT"] * job["Processors Requested"]
+                    l += " {:>2}% ".format(100 * job["MEM"] // maxmem)
+                # Execution hosts
+                if job["Exclusive Execution"]:
+                    l += "    "
+                if wide or len(job["Processors"]) == 1:
+                    l += job["Processorsstr"].ljust(18)
+                else:
+                    l += job["Hostgroupsstr"].ljust(18)
             elif job["Status"] == "PEND":
                 # #cores
-                l += str(job["Nodes Requested"]).rjust(3)
+                l += str(job["Nodes Requested"]).rjust(4)
                 if "Exclusive Execution" in job and job["Exclusive Execution"]:
                     l += " nexcl" if "ptile" in job else " excl "
                 else:
                     l += " nodes" if "ptile" in job else " cores"
-                # Mmeory
-                l += format_mem(job["MEMLIMIT"]).rjust(8)
                 # Hosts or architecture
                 if "Specified Hosts" in job:
                     if wide or len(job["Specified Hosts"]) == 1:
