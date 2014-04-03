@@ -287,9 +287,6 @@ class Job():
                   "Job Description"):
             if k in data:
                 result += data[k]
-                del data[k]
-        for v in data.itervalues():
-            result += v
         return result
 
     def __getitem__(self, key):
