@@ -2,13 +2,13 @@ from __future__ import print_function, division
 
 from utility import color
 import host as modulehost
+import joblist as modulejoblist
 
 import sys
 import os
 import re
 from subprocess import Popen, PIPE
 from operator import itemgetter
-
 import threading
 from time import strptime
 
@@ -57,6 +57,22 @@ class Hostlist(list):
                 self.append(Hostlist.allhosts[data["HOST"]])
             else:
                 self.append(modulehost.Host(data))
+
+    def readjobs(self):
+        hostnames = [host["HOST"] for host in self]
+        jl = modulejoblist.Joblist(["-u", "all", "-m", " ".join(hostnames)])
+        byhost = {}
+        hosts = {}
+        for job in jl:
+            for host in job["Processors"]:
+                if host not in byhost:
+                    byhost[host] = []
+                byhost[host].append(job)
+        for host in self:
+            if host["HOST"] in byhost:
+                host["Jobs"] = modulejoblist.Joblist(jobs=byhost[host["HOST"]])
+            else:
+                host["Jobs"] = modulejoblist.Joblist()
 
     def append(self, value):
         """Access hosts"""
