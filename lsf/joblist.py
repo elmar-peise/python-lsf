@@ -252,6 +252,8 @@ class Joblist(list):
                 if "MEM" in job:
                     maxmem = job["MEMLIMIT"] * job["Processors Requested"]
                     l += " {:>3}%m".format(100 * job["MEM"] // maxmem)
+                else:
+                    l += "      "
                 # Execution hosts
                 if job["Exclusive Execution"]:
                     l += "    "
