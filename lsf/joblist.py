@@ -7,11 +7,10 @@ import job as modulejob
 import sys
 import os
 import re
-from time import time, sleep
+from time import strptime, sleep
 from subprocess import Popen, check_output, PIPE
 
 import threading
-from time import strptime
 
 
 class Joblist(list):
@@ -226,18 +225,11 @@ class Joblist(list):
                 l += job["Queue"].ljust(lens["queue"])
                 l += job["Project"].ljust(lens["project"])
             # Wait/Runtime
-            if "endtime" in job:
-                t = int(job["endtime"] - job["starttime"])
-            elif "starttime" in job:
-                t = int(time() - job["starttime"])
-            elif "submittime" in job:
-                t = int(time() - job["submittime"])
+            if "runtime" in job:
+                t = job["runtime"]
             else:
-                t = False
-            if t:
-                s = format_duration(t)
-            else:
-                s = ""
+                t = job["waittime"]
+            s = format_duration(t)
             l += s.rjust(lens["time"])
             # Resources
             # Time
@@ -245,16 +237,18 @@ class Joblist(list):
             # Memory
             l += format_mem(job["MEMLIMIT"]).rjust(7)
             if job["Status"] == "RUN":
+                # %usage
+                l += " {:>2}%t".format(100 * job["runtime"] // job["RUNLIMIT"])
                 if "MEM" in job:
                     maxmem = job["MEMLIMIT"] * job["Processors Requested"]
-                    l += " {:>2}% ".format(100 * job["MEM"] // maxmem)
+                    l += " {:>2}%m".format(100 * job["MEM"] // maxmem)
                 # Execution hosts
                 if job["Exclusive Execution"]:
                     l += "    "
                 if wide or len(job["Processors"]) == 1:
-                    l += job["Processorsstr"].ljust(18)
+                    l += job["Processorsstr"]
                 else:
-                    l += job["Hostgroupsstr"].ljust(18)
+                    l += job["Hostgroupsstr"]
             elif job["Status"] == "PEND":
                 # #cores
                 l += str(job["Nodes Requested"]).rjust(4)

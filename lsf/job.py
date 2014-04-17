@@ -7,6 +7,7 @@ from utility import format_time, format_duration, format_mem
 import re
 from time import strftime, strptime, mktime
 from subprocess import Popen, check_output, PIPE
+from time import time
 
 
 class Job():
@@ -247,6 +248,14 @@ class Job():
                 self[k] = int(float(val) * 1024 ** units[unit])
         del self["limitline"]
         del self["limitvline"]
+        if "endtime" in self:
+            self["runtime"] = int(self["endtime"] - self["starttime"])
+        elif "starttime" in self:
+            self["runtime"] = int(time() - self["starttime"])
+        if "starttime" in self:
+            self["waittime"] = int(self["starttime"] - self["submittime"])
+        else:
+            self["waittime"] = int(time() - self["submittime"])
         return True
 
     def __str__(self):

@@ -18,7 +18,7 @@ def color(string, c):
 def format_duration(t):
     t = int(t)
     if t == 0:
-        return "            0"
+        return "           0"
     # seconds
     s = "{:0>2}".format(t % 60)
     t //= 60
