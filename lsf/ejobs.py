@@ -17,6 +17,8 @@ def ejobs(args, bjobsargs):
         bjobsargs = ["-P", "aices", "-G", "p_aices"] + bjobsargs
     if args.aices2:
         bjobsargs = ["-P", "aices2", "-G", "p_aices"] + bjobsargs
+    if not args.pending and "-r" not in bjobsargs and "-s" not in bjobsargs:
+        bjobsargs += ["-a"]
 
     if sys.stdout.isatty():
         print("Reading job list from LSF ...", end="\r")
