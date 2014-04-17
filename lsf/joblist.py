@@ -75,7 +75,7 @@ class Joblist(list):
 
     def readjobs(self, args):
         """Read jobs from LSF"""
-        p = Popen(["bjobs", "-w"] + args, stdout=PIPE, stderr=PIPE)
+        p = Popen(["bjobs", "-w", "-X"] + args, stdout=PIPE, stderr=PIPE)
         out, err = p.communicate()
         out = out.decode()
         err = err.decode()
@@ -86,11 +86,21 @@ class Joblist(list):
             data = {
                 "Job": line[0],
                 "User": line[1],
-                "Status": line[2]
+                "Status": line[2],
+                "queue": line[3],
+                "Job Name": line[6]
             }
             match = re.search("(\[\d+\])$", line[-4])
             if match:
                 data["Job"] += match.groups()[0]
+            procs = {}
+            for proc in line[5].split(":"):
+                proc = proc.split("*")
+                if len(proc) == 1:
+                    procs[proc[0]] = 1
+                else:
+                    procs[proc[1]] = int(proc[0])
+            data["Processors"] = procs
             if data["Job"] in Joblist.alljobs:
                 self.append(Joblist.alljobs[data["Job"]])
             else:
