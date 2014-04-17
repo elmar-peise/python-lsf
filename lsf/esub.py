@@ -14,10 +14,11 @@ import subprocess
 
 def esub(args, bsubargs, jobscript):
     if args.show:
-        try:
+        if os.path.isfile(".esubrecord"):
+            with open(".esubrecord") as fin:
+                cmd = ["wait"] + map(str.strip, fin)
+                subprocess.call(cmd, shell=True)
             os.unlink(".esubrecord")
-        except:
-            pass
         return
     data = {"Command": ""}
     if args.aices:
@@ -64,10 +65,12 @@ def esub(args, bsubargs, jobscript):
         if args.record:
             if not os.path.isfile(".esubrecord"):
                 with open(".esubrecord", "w") as fout:
-                    fout.write("esub temporary file; can safely be deleted")
+                    pass
                 subprocess.call(["ejobs", str(job["Job"])])
             else:
-                subprocess.Popen(["ejobs", "--noheader", str(job["Job"])])
+                p = subprocess.Popen(["ejobs", "--noheader", str(job["Job"])])
+                with open(".esubrecord", "a") as fout:
+                    print(p.pid, file=fout)
         else:
             subprocess.call(["ejobs", str(job["Job"])])
     except LSFError as e:
