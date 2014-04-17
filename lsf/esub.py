@@ -66,9 +66,10 @@ def esub(args, bsubargs, jobscript):
             if not os.path.isfile(".esubrecord"):
                 with open(".esubrecord", "w") as fout:
                     pass
-                subprocess.call(["ejobs", str(job["Job"])])
+                subprocess.call(["ejobs", "-noa" str(job["Job"])])
             else:
-                p = subprocess.Popen(["ejobs", "--noheader", str(job["Job"])])
+                p = subprocess.Popen(["ejobs", "-noa", "--noheader",
+                                      str(job["Job"])])
                 with open(".esubrecord", "a") as fout:
                     print(p.pid, file=fout)
         else:

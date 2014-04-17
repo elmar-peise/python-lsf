@@ -17,7 +17,7 @@ def ejobs(args, bjobsargs):
         bjobsargs = ["-P", "aices", "-G", "p_aices"] + bjobsargs
     if args.aices2:
         bjobsargs = ["-P", "aices2", "-G", "p_aices"] + bjobsargs
-    if not args.pending and "-r" not in bjobsargs and "-s" not in bjobsargs:
+    if not any((args.pending, args.noa, "-r" in bjobsargs, "-s" in bjobsargs)):
         bjobsargs += ["-a"]
 
     if sys.stdout.isatty():
@@ -159,6 +159,11 @@ def main():
     )
     parser.add_argument(
         "--noheader",
+        help=argparse.SUPPRESS,
+        action="store_true",
+    )
+    parser.add_argument(
+        "--noa",
         help=argparse.SUPPRESS,
         action="store_true",
     )
