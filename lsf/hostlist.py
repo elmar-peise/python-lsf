@@ -70,23 +70,9 @@ class Hostlist(list):
         """list the hosts"""
         if len(self) == 0:
             return
+        self.readjobs()
         users = {}
         whoami = os.getenv("USER")
-        # read job data in parallel
-        threads = {}
-        if parallel:
-            strptime("", "")  # hack to make pseude thread-safe
-            for host in self:
-                if not any((host["STATUS"] in ["unavail", "cosed_Excl"],
-                            host["RUN"] == 0,
-                            len(host["Jobs"]) == host["RUN"],
-                            len(host["Jobs"]) == 1)):
-                    for job in host["Jobs"]:
-                        if not job.initialized and not job.initializing:
-                            t = threading.Thread(target=job.init)
-                            t.deamon = True
-                            t.start()
-                            threads[job["Job"]] = t
         for host in self:
             # display
             hn = host["HOST"]
@@ -120,9 +106,6 @@ class Hostlist(list):
                     l = "  "
                     un = job["User"]
                     if un not in users:
-                        if job["Job"] in threads:
-                            threads[job["Job"]].join()
-                            del threads[job["Job"]]
                         users[un] = {
                             "Userstr": job["Userstr"],
                             "Hosts": {},
@@ -146,9 +129,6 @@ class Hostlist(list):
                         users[un]["Hostgroups"][hg] += 1
                         runleft -= 1
                     else:
-                        if job["Job"] in threads:
-                            threads[job["Job"]].join()
-                            del threads[job["Job"]]
                         l += "{:>3}*".format(job["Processors"][hn])
                         users[un]["Hosts"][hn] += job["Processors"][hn]
                         users[un]["Hostgroups"][hg] += job["Processors"][hn]
