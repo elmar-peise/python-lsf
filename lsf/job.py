@@ -158,7 +158,6 @@ class Job():
             del self["Started on"]
         if "Processors" in self and isinstance(self['Processors'], str):
             procs = {}
-            self["Processors"] = self["Processors"].replace("><", "> <")
             for proc in re.split("> ?<", self["Processors"]):
                 proc = proc.split("*")
                 if len(proc) == 1:
