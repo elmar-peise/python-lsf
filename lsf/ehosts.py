@@ -23,6 +23,7 @@ def ehosts(args, bhostsargs):
     hostlist = Hostlist(bhostsargs)
     if sys.stdout.isatty():
         print("                              ", end="\r")
+    sys.stdout.flush()
     hostlist.sort()
     hostlist.display(wide=args.wide, parallel=not args.nopar)
 

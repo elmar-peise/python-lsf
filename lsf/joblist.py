@@ -238,10 +238,10 @@ class Joblist(list):
             l += format_mem(job["MEMLIMIT"]).rjust(7)
             if job["Status"] == "RUN":
                 # %usage
-                l += " {:>2}%t".format(100 * job["runtime"] // job["RUNLIMIT"])
+                l += " {:>3}%t".format(100 * job["runtime"] // job["RUNLIMIT"])
                 if "MEM" in job:
                     maxmem = job["MEMLIMIT"] * job["Processors Requested"]
-                    l += " {:>2}%m".format(100 * job["MEM"] // maxmem)
+                    l += " {:>3}%m".format(100 * job["MEM"] // maxmem)
                 # Execution hosts
                 if job["Exclusive Execution"]:
                     l += "    "
