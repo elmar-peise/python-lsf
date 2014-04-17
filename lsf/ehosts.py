@@ -10,29 +10,12 @@ import argparse
 
 
 def ehosts(args, bhostsargs):
-    r = ""
-    select = []
-    # get selects from -R
-    if args.R:
-        match = re.search("select\[(.*?)\]", args.R)
-        if match:
-            select += match.groups()
-        r = re.sub("select\[.*\]", "", args.R)
-
-    # add selects
     if args.aices:
-        select += ("aices",)
+        bhostsargs += ["-R", "select[aices]"]
     if args.aices2:
-        select += ("aices2",)
-    if args.model:
-        select += ("model==" + args.model,)
-
-    if len(select):
-        select = " && ".join("(" + s + ")" for s in select)
-        r = (r + " select[" + select + "]").strip()
-
-    if len(r):
-        bhostsargs += ["-R", r]
+        bhostsargs += ["-R", "select[aices]"]
+    if args.aices2:
+        bhostsargs += ["-R", "select[model==" + args.model + "]"]
 
     if sys.stdout.isatty():
         print("Reading host list from LSF ...", end="\r")
