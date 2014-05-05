@@ -163,7 +163,7 @@ def main():
         action="store_true",
     )
     parser.add_argument(
-        "--noa",
+        "-a",
         help=argparse.SUPPRESS,
         action="store_true",
     )
