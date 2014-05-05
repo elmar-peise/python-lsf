@@ -153,7 +153,7 @@ def main():
         action="store_true",
     )
     parser.add_argument(
-        "-d", "--debug",
+        "--debug",
         help="show debug info on errors",
         action="store_true",
     )
