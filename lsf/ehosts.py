@@ -61,10 +61,6 @@ def main():
         help="show debug info on errors",
         action="store_true",
     )
-    parser.add_argument(
-        "-R",
-        help=argparse.SUPPRESS
-    )
     parser.add_argument_group("further arguments",
                               description="are passed to bhosts")
 

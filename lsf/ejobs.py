@@ -17,7 +17,7 @@ def ejobs(args, bjobsargs):
         bjobsargs = ["-P", "aices", "-G", "p_aices"] + bjobsargs
     if args.aices2:
         bjobsargs = ["-P", "aices2", "-G", "p_aices"] + bjobsargs
-    if not any((args.pending, args.noa, "-r" in bjobsargs, "-s" in bjobsargs)):
+    if args.a:
         bjobsargs += ["-a"]
 
     if sys.stdout.isatty():
