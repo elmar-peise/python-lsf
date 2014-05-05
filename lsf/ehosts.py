@@ -13,8 +13,8 @@ def ehosts(args, bhostsargs):
     if args.aices:
         bhostsargs += ["-R", "select[aices]"]
     if args.aices2:
-        bhostsargs += ["-R", "select[aices]"]
-    if args.aices2:
+        bhostsargs += ["-R", "select[aices2]"]
+    if args.model:
         bhostsargs += ["-R", "select[model==" + args.model + "]"]
 
     if sys.stdout.isatty():
