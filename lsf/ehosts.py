@@ -48,7 +48,7 @@ def ehosts(args, bhostsargs):
     if not args.nosort:
         hosts.sort(key=lambda h: h["host_name"])
     # print
-    printhosts(hosts, jobs, wide=args.wide)
+    printhosts(hosts, jobs, wide=args.wide, header=not args.noheader)
 
 
 def main():
@@ -72,13 +72,18 @@ def main():
         action="store_true"
     )
     parser.add_argument(
-        "--nojobs",
-        help="don't show jobs",
+        "--noheader",
+        help="don't show the header"
         action="store_true"
     )
     parser.add_argument(
         "--nosort",
         help="don't sort lexigraphically",
+        action="store_true"
+    )
+    parser.add_argument(
+        "--nojobs",
+        help="don't show jobs",
         action="store_true"
     )
     parser.add_argument(

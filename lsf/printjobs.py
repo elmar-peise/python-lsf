@@ -17,7 +17,6 @@ def printjobs(jobs, long=False, wide=False, title=None, header=True,
     if len(jobs) == 0:
         return
     # begin output
-    screencols = int(check_output(["tput", "cols"]))
     whoami = os.getenv("USER")
     lens = {
         "jobid": 14,
@@ -38,7 +37,7 @@ def printjobs(jobs, long=False, wide=False, title=None, header=True,
         h += "wait/runtime".rjust(lens["time"]) + "  resources"
         h = h.upper()
         if title:
-            h += (" " + title + " ").center(screencols - len(h))
+            h += "  (( " + title + " ))"
         print(h, file=file)
     for job in jobs:
         # jobid
