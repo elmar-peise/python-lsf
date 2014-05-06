@@ -37,17 +37,15 @@ def format_duration(t):
     if t == 0:
         return "    " + s
     # days
-    s = "{:>2}d ".format(t) + s
+    c = "r" if t >= 7 else "y"
+    s = color("{:>2}d ".format(t), c) + s
     return s
 
 
-def format_time(t):
-    return strftime("%d.%m.%Y %H:%M:%S", gmtime(t))
-
-
-def format_mem(s):
+def format_mem(s, c=0):
     i = 0
-    while s >= 1024:
-        s //= 1024
+    while abs(s) >= 1024:
+        s /= 1024
         i += 1
-    return str(s) + ["B  ", "KiB", "MiB", "GiB", "TiB", "PiB", "EiB"][i]
+    e = ["B  ", "KiB", "MiB", "GiB", "TiB", "PiB", "EiB"][i]
+    return color("%6.1f" % s, c) + e
