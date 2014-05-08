@@ -67,7 +67,7 @@ def printjobs(jobs, long=False, wide=False, title=None, header=True,
         # Project
         if wide:
             l += job["queue"].ljust(lens["queue"])
-            l += job["proj_name"].ljust(lens["proj_name"])
+            l += job["project"].ljust(lens["project"])
         # Wait/Runtime
         if job["stat"] == "PEND":
             t = time() - job["submit_time"]

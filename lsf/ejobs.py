@@ -55,7 +55,7 @@ def ejobs(args, bjobsargs):
             if len(reasons) > 1:
                 title = None
             else:  # only use singular reason as title
-                title = reasons[0][0]
+                title = reasons[0].items()[0]
                 if isinstance(resons[0][1], int):
                     title += ": %d" % reasons[0][1]
         printjobs(jobs, wide=args.wide, header=not args.noheader, title=title)

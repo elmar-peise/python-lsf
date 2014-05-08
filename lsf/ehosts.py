@@ -73,7 +73,7 @@ def main():
     )
     parser.add_argument(
         "--noheader",
-        help="don't show the header"
+        help="don't show the header",
         action="store_true"
     )
     parser.add_argument(
