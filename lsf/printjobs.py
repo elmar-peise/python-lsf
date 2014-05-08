@@ -33,7 +33,7 @@ def printjobs(jobs, long=False, wide=False, title=None, header=True,
         h = "".join(n.ljust(lens[n]) for n in ("jobid", "name", "stat",
                                                "user"))
         if wide:
-            h = "".join(n.ljust(lens[n]) for n in ["queue", "project"])
+            h += "".join(n.ljust(lens[n]) for n in ("queue", "project"))
         h += "wait/runtime".rjust(lens["time"]) + "  resources"
         h = h.upper()
         if title:
@@ -77,30 +77,33 @@ def printjobs(jobs, long=False, wide=False, title=None, header=True,
         l += s.rjust(lens["time"])
         # Resources
         # Time
-        if job["stat"] == "RUN":
-            if job["runlimit"]:
-                l += "  " + format_duration(job["runlimit"])
-            if job["%complete"]:
-                ptime = int(job["%complete"])
-                c = "r" if ptime > 90 else "y" if ptime > 75 else 0
-                l += " " + color("%3d" % ptime, c) + "%t"
-            if job["memlimit"] and job["mem"]:
-                pmem = int(100 * job["mem"] / job["memlimit"])
-                l += " " + ("%d%%m" % pmem).rjust(5)
-            if job["mem"]:
-                l += " " + format_mem(job["mem"]).rjust(9)
+        if job["runlimit"]:
+            l += "  " + format_duration(job["runlimit"])
+        if job["%complete"]:
+            ptime = int(job["%complete"])
+            c = "r" if ptime > 90 else "y" if ptime > 75 else 0
+            l += " " + color("%3d" % ptime, c) + "%t"
+        # Memory
+        if job["memlimit"] and job["mem"] and job["slots"]:
+            memlimit = job["memlimit"] * job["slots"]
+            pmem = int(100 * job["mem"] / memlimit)
+            c = "r" if pmem > 90 else "y" if pmem > 75 else 0
+            l += " " + color("%3d" % pmem, c) + "%m"
+        if job["mem"]:
+            l += " " + format_mem(job["mem"]).rjust(9)
+        else:
+            l += "          "
+        # Hosts
+        if job["exec_host"]:
+            if wide or len(job["exec_host"]) == 1:
+                d = job["exec_host"]
             else:
-                l += "          "
-            if job["exec_host"]:
-                if wide or len(job["exec_host"]) == 1:
-                    d = job["exec_host"]
-                else:
-                    d = defaultdict(int)
-                    for key, val in job["exec_host"].iteritems():
-                        d[re.match("(.*?)\d+", key).groups()[0]] += val
-                for key, val in d.iteritems():
-                    c = "r" if val >= 100 else "y" if val >= 20 else 0
-                    l += color(" %3d" % val, c) + "*%s" % key
+                d = defaultdict(int)
+                for key, val in job["exec_host"].iteritems():
+                    d[re.match("(.*?)\d+", key).groups()[0]] += val
+            for key, val in d.iteritems():
+                c = "r" if val >= 100 else "y" if val >= 20 else 0
+                l += color(" %3d" % val, c) + "*%s" % key
         print(l, file=file)
         # if job["stat"] in ("EXIT", "DONE"):
         #     print(sorted([(k, v) for k, v in job.iteritems() if v]))
