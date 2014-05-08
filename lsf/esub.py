@@ -1,10 +1,10 @@
 #!/usr/bin/env python
 from __future__ import print_function, division
 
-from submit import submit
-from error import LSFError
+from submitjob import submitjob
 from utility import color
 
+import shlex
 import sys
 import os
 import argparse
@@ -13,23 +13,26 @@ import subprocess
 
 
 def esub(args, bsubargs, jobscript):
-    if args.show:
-        if os.path.isfile(".esubrecord"):
-            with open(".esubrecord") as fin:
-                cmd = ["wait"] + map(str.strip, fin)
-                subprocess.call(cmd, shell=True)
-            os.unlink(".esubrecord")
-        return
-    data = {"Command": ""}
+    data = {"command": ""}
     if args.aices:
-        data["-P"] = "aices"
+        data["project"] = "aices"
     if args.aices2:
-        data["-P"] = "aices2"
+        data["project"] = "aices2"
+    scriptargs = []
+    for line in jobscript.splitlines(True):
+        if line.startswith("#!"):
+            data["command"] += line
+        elif line.startswith("#BSUB "):
+            scriptargs += shlex.split(line[6:].split("#")[0])
+        else:
+            data["command"] += line.split("#")[0]
+    bsubargs = scriptargs + bsubargs
     last = False
     cmd = False
     for arg in bsubargs:
         if cmd:
-            data["Command"] += " " + arg
+            data["command"] += " " + arg
+            continue
         if arg[0] == "-":
             if last:
                 data[last] = True
@@ -40,40 +43,13 @@ def esub(args, bsubargs, jobscript):
                 last = False
             else:
                 cmd = True
-                data["Command"] += " " + arg
+                data["command"] = arg
     if last:
         data[last] = True
-    for line in jobscript.splitlines(True):
-        if line.startswith("#BSUB"):
-            line = "#" + line.split("#")[1]
-            match = re.match("#BSUB (-\w+)$", line)
-            if match:
-                data[match.groups()[0]] = True
-            match = re.match("#BSUB (-\w+) \"?(.*?)\"?$", line)
-            if match:
-                key, value = match.groups()
-                if key in data:
-                    if not isinstance(data[key], list):
-                        data[key] = [data[key]]
-                    data[key].append(value)
-                else:
-                    data[key] = value
-        else:
-            data["Command"] += line
+    jobid = submitjob(data)
     try:
-        job = submit(data)
-        if args.record:
-            if not os.path.isfile(".esubrecord"):
-                with open(".esubrecord", "w") as fout:
-                    pass
-                subprocess.call(["ejobs", str(job["Job"])])
-            else:
-                p = subprocess.Popen(["ejobs", "--noheader", str(job["Job"])])
-                with open(".esubrecord", "a") as fout:
-                    print(p.pid, file=fout)
-        else:
-            subprocess.call(["ejobs", str(job["Job"])])
-    except LSFError as e:
+        subprocess.call(["ejobs", "--noheader", jobid])
+    except Exception as e:
         print(color(e.strerror, "r"))
         sys.exit(-1)
 
@@ -81,16 +57,6 @@ def esub(args, bsubargs, jobscript):
 def main():
     parser = argparse.ArgumentParser(
         description="Wrapper for bsub."
-    )
-    parser.add_argument(
-        "--record",
-        help="record submitted job ids",
-        action="store_true",
-    )
-    parser.add_argument(
-        "--show",
-        help="list recorded jobs",
-        action="store_true",
     )
     parser.add_argument(
         "-aices",
@@ -107,11 +73,11 @@ def main():
 
     args, bsubargs = parser.parse_known_args()
 
-    jobscript = None
-    if not args.show:
-        jobscript = sys.stdin.read()
-
-    esub(args, bsubargs, jobscript)
+    jobscript = sys.stdin.read()
+    try:
+        esub(args, bsubargs, jobscript)
+    except KeyboardInterrupt:
+        pass
 
 
 if __name__ == "__main__":
