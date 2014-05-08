@@ -97,7 +97,10 @@ def main():
 
     args, bhostsargs = parser.parse_known_args()
 
-    ehosts(args, bhostsargs)
+    try:
+        ehosts(args, bhostsargs)
+    except KeyboardInterrupt:
+        pass
 
 
 if __name__ == "__main__":

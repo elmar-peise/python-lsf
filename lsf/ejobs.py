@@ -141,7 +141,10 @@ def main():
 
     args, bjobsargs = parser.parse_known_args()
 
-    ejobs(args, bjobsargs)
+    try:
+        ejobs(args, bjobsargs)
+    except KeyboardInterrupt:
+        pass
 
 
 if __name__ == "__main__":
