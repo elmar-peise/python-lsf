@@ -5,6 +5,7 @@ from utility import color
 
 from readjobs import readjobs
 from printjobs import printjobs
+from printjobssum import printjobssum
 from groupjobs import groupjobs
 
 import sys
@@ -41,9 +42,15 @@ def ejobs(args, bjobsargs):
     if args.sortby:
         jobs.sort(key=lambda j: j[args.sortby])
 
+    # summarize?
+    if args.sum:
+        printjobsfun = printjobssum
+    else:
+        printjobsfun = printjobs
+
     # no grouping
     if not args.groupby:
-        printjobs(jobs, wide=args.wide, header=not args.noheader)
+        printjobsfun(jobs, wide=args.wide, header=not args.noheader)
         return
 
     # grouping
@@ -58,7 +65,8 @@ def ejobs(args, bjobsargs):
                 title = reasons[0].items()[0]
                 if isinstance(resons[0][1], int):
                     title += ": %d" % reasons[0][1]
-        printjobs(jobs, wide=args.wide, header=not args.noheader, title=title)
+        printjobsfun(jobs, wide=args.wide, header=not args.noheader,
+                     title=title)
         if args.pending:
             if len(reasons) > 1:
                 # show pending reasons
@@ -127,6 +135,11 @@ def main():
     parser.add_argument(
         "--noheader",
         help="don't show the header",
+        action="store_true"
+    )
+    parser.add_argument(
+        "-sum",
+        help="summarize across jobs",
         action="store_true"
     )
     parser.add_argument(

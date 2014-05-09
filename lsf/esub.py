@@ -46,9 +46,9 @@ def esub(args, bsubargs, jobscript):
                 data["command"] = arg
     if last:
         data[last] = True
-    jobid = submitjob(data)
     try:
-        subprocess.call(["ejobs", "--noheader", jobid])
+        jobid = submitjob(data)
+        subprocess.Popen(["ejobs", "--noheader", jobid])
     except Exception as e:
         print(color(e.strerror, "r"))
         sys.exit(-1)

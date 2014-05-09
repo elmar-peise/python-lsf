@@ -64,7 +64,7 @@ def readjobs(args):
                 job[key] = None
             elif key in ("exit_code", "nexec_host", "slots", "job_priority"):
                 job[key] = int(val)
-            elif key in ("cpu_used", "run_time"):
+            elif key in ("cpu_used", "run_time", "idle_factor"):
                 job[key] = float(val.split()[0])
             elif key in ("submit_time", "start_time", "finish_time"):
                 if val[-1] in "ELXA":
@@ -76,7 +76,7 @@ def readjobs(args):
                     year = str(int(year) - 1)
                     job[key] = mktime(strptime(year + " " + val,
                                                "%Y %b %d %H:%M"))
-            elif key in ("time_left"):
+            elif key == "time_left":
                 if val[-1] in "ELXA":
                     val = val[:-2]
                 try:
@@ -85,9 +85,9 @@ def readjobs(args):
                 except:
                     job[key] = mktime(strptime(year + " " + val,
                                                "%Y %b %d %H:%M"))
-            elif key in ("%complete"):
+            elif key == "%complete":
                 job[key] = float(val.split("%")[0])
-            elif key in ("exec_host"):
+            elif key == "exec_host":
                 val = val.split(":")
                 hosts = {}
                 for v in val:
@@ -97,11 +97,12 @@ def readjobs(args):
                     else:
                         hosts[v] = 1
                 job[key] = hosts
-            elif key in ("swap", "mem", "memlimit", "corelimit", "stacklimit"):
+            elif key in ("swap", "mem", "avg_mem", "max_mem", "memlimit",
+                         "swaplimit", "corelimit", "stacklimit"):
                 val = val.split()
                 e = {"K": 1, "M": 2, "G": 3, "T": 4}[val[1][0]]
                 job[key] = int(float(val[0]) * 1024 ** e)
-            elif key in ("pids"):
+            elif key == "pids":
                 if val:
                     job[key] = map(int, val.split(","))
                 else:

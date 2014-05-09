@@ -47,24 +47,15 @@ def printjobs(jobs, long=False, wide=False, title=None, header=True,
         if not wide:
             if len(jobname) >= lens["name"]:
                 jobname = jobname[:lens["name"] - 2] + "*"
-            jobname += " "
         l += jobname.ljust(lens["name"])
         # Status
-        if job["stat"] == "PEND":
-            c = "r"
-        elif job["stat"] == "RUN":
-            c = "g"
-        else:
-            c = "y"
-        l += color((job["stat"] + " ").ljust(lens["stat"]), c)
+        stat = job["stat"]
+        c = "r" if stat == "PEND" else "g" if stat == "RUN" else "y"
+        l += color(stat.ljust(lens["stat"]), c)
         # User
-        username = job["user"]
-        if job["user"] == whoami:
-            c = "g"
-        else:
-            c = 0
-        l += color((username + " ").ljust(lens["user"]), c)
-        # Project
+        c = "g" if sumjob["user"] == whoami else 0
+        l += color((sumjob["user"] + " ").ljust(lens["user"]), c)
+        # Queue and Project
         if wide:
             l += job["queue"].ljust(lens["queue"])
             l += job["project"].ljust(lens["project"])
