@@ -11,7 +11,7 @@ def parseval(val):
         return int(val)
     if re.match("\d+.\d+$", val):
         return float(val)
-    if re.match("\d+.\d+%$", val):
+    if re.match("\d+(.\d+)?%$", val):
         return 100 * float(val[:-1])
     if re.match("\d+(.\d+)?[KMGT]$", val):
         e = {"K": 1, "M": 2, "G": 3, "T": 4}[val[-1]]

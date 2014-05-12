@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 from __future__ import print_function, division
 
-from utility import color, format_duration, format_mem
+from utility import color, format_duration, format_mem, findstringpattern
 
 import os
 import sys
@@ -11,29 +11,11 @@ from subprocess import check_output
 from collections import defaultdict
 
 
-def findstringpattern(strings):
-    if not len(strings):
-        return ""
-    if all(strings[0] == s for s in strings[1:]):
-        return strings[0]
-    prefix = ""
-    while strings[0] and all(strings[0][0] == s[0] for s in strings[1:] if s):
-        prefix += strings[0][0]
-        strings = [s[1:] for s in strings]
-    suffix = ""
-    while strings[0] and all(strings[0][-1] == s[-1]
-                             for s in strings[1:] if s):
-        suffix = strings[0][-1] + suffix
-        strings = [s[:-1] for s in strings]
-    return prefix + "*" + suffix
-
-
 def printjobssum(jobs, long=False, wide=False, title=None, header=True,
                  file=sys.stdout):
-    """list the jobs"""
+    """summarize the jobs in one line"""
     if len(jobs) == 0:
         return
-    # begin output
     whoami = os.getenv("USER")
     lens = {
         "name": 20,
@@ -46,17 +28,6 @@ def printjobssum(jobs, long=False, wide=False, title=None, header=True,
         lens["name"] = 32
         lens["queue"] = 8
         lens["project"] = 8
-    if header and printjobssum.header:
-        h = ""
-        if title:
-            h += "group".ljust(lens["title"])
-        h += "".join(n.ljust(lens[n]) for n in ("name", "stat", "user"))
-        if wide:
-            h += "".join(n.ljust(lens[n]) for n in ("queue", "project"))
-        h += "runtime".rjust(lens["time"]) + "  resources"
-        h = h.upper()
-        print(h, file=file)
-        printjobssum.header = False
     sumjob = {}
     for key in jobs[0]:
         if key in ("job_name", "job_description", "input_file", "output_file",
@@ -65,8 +36,8 @@ def printjobssum(jobs, long=False, wide=False, title=None, header=True,
                    "pre_exec_command", "post_exec_command",
                    "resize_notification_command", "effective_resreq"):
             # find string pattern
-            sumjob[key] = findstringpattern([job[key] for job in jobs if
-                                             job[key]])
+            sumjob[key] = findstringpattern([job[key] for job in jobs
+                                             if job[key]])
         elif key in ("runlimit", "swaplimit", "stacklimi", "memlimit",
                      "filelimit", "processlimit", "corelimit", "run_time",
                      "swap", "slots", "mem", "max_mem", "avg_mem",
@@ -84,7 +55,7 @@ def printjobssum(jobs, long=False, wide=False, title=None, header=True,
             # compute statistics
             sumjob[key] = defaultdict(int)
             for job in jobs:
-                sumjob[key][job["stat"]] += 1
+                sumjob[key][job[key]] += 1
         elif key == "exec_host":
             # collect host counts
             sumjob[key] = defaultdict(int)
@@ -102,8 +73,19 @@ def printjobssum(jobs, long=False, wide=False, title=None, header=True,
                 if job[key] and job[key] not in sumjob[key]:
                     sumjob[key].append(job[key])
     # begin output
-    # title
+    if header and printjobssum.header:
+        h = ""
+        if title:
+            h += "group".ljust(lens["title"])
+        h += "".join(n.ljust(lens[n]) for n in ("name", "stat", "user"))
+        if wide:
+            h += "".join(n.ljust(lens[n]) for n in ("queue", "project"))
+        h += "runtime".rjust(lens["time"]) + "  resources"
+        h = h.upper()
+        print(h, file=file)
+        printjobssum.header = False
     l = ""
+    # title
     if title:
         l += color(title.ljust(lens["title"]), "b")
     # Job Name

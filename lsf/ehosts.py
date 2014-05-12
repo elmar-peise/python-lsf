@@ -4,6 +4,7 @@ from __future__ import print_function, division
 from readhosts import readhosts
 from readjobs import readjobs
 from printhosts import printhosts
+from printhostssum import printhostssum
 # from hostlist import Hostlist
 # from utility import color
 
@@ -44,11 +45,17 @@ def ehosts(args, bhostsargs):
         hostnames = [h["host_name"] for h in hosts]
         jobs = readjobs(["-u", "all", "-r", "-m", " ".join(hostnames)])
 
+    # summarize?
+    if args.sum:
+        printhostsfun = printhostssum
+    else:
+        printhostsfun = printhosts
+
     # sort
     if not args.nosort:
         hosts.sort(key=lambda h: h["host_name"])
     # print
-    printhosts(hosts, jobs, wide=args.wide, header=not args.noheader)
+    printhostsfun(hosts, jobs, wide=args.wide, header=not args.noheader)
 
 
 def main():
@@ -89,6 +96,11 @@ def main():
     parser.add_argument(
         "--model",
         help="short for -R model==MODEL"
+    )
+    parser.add_argument(
+        "-sum",
+        help="summarize across hosts",
+        action="store_true"
     )
     parser.add_argument_group(
         "further arguments",

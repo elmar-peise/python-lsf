@@ -49,3 +49,22 @@ def format_mem(s, c=0):
         i += 1
     e = ["B  ", "KiB", "MiB", "GiB", "TiB", "PiB", "EiB"][i]
     return color("%6.1f" % s, c) + e
+
+
+def findstringpattern(strings):
+    if not len(strings):
+        return ""
+    if all(strings[0] == s for s in strings[1:]):
+        return strings[0]
+    prefix = ""
+    while strings[0] and all(strings[0][0] == s[0] for s in strings[1:] if s):
+        prefix += strings[0][0]
+        strings = [s[1:] for s in strings]
+    suffix = ""
+    while strings[0] and all(strings[0][-1] == s[-1]
+                             for s in strings[1:] if s):
+        suffix = strings[0][-1] + suffix
+        strings = [s[:-1] for s in strings]
+    return prefix + "*" + suffix
+
+
