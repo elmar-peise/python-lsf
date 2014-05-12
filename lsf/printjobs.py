@@ -37,7 +37,7 @@ def printjobs(jobs, long=False, wide=False, title=None, header=True,
         h += "wait/runtime".rjust(lens["time"]) + "  resources"
         h = h.upper()
         if title:
-            h += "  (( " + title + " ))"
+            h += "  " + color(title, "b")
         print(h, file=file)
     for job in jobs:
         # jobid
@@ -53,8 +53,8 @@ def printjobs(jobs, long=False, wide=False, title=None, header=True,
         c = "r" if stat == "PEND" else "g" if stat == "RUN" else "y"
         l += color(stat.ljust(lens["stat"]), c)
         # User
-        c = "g" if sumjob["user"] == whoami else 0
-        l += color((sumjob["user"] + " ").ljust(lens["user"]), c)
+        c = "g" if job["user"] == whoami else 0
+        l += color((job["user"] + " ").ljust(lens["user"]), c)
         # Queue and Project
         if wide:
             l += job["queue"].ljust(lens["queue"])

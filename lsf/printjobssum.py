@@ -53,18 +53,17 @@ def printjobssum(jobs, long=False, wide=False, title=None, header=True,
         h += "".join(n.ljust(lens[n]) for n in ("name", "stat", "user"))
         if wide:
             h += "".join(n.ljust(lens[n]) for n in ("queue", "project"))
-        h += "wait/runtime".rjust(lens["time"]) + "  resources"
+        h += "runtime".rjust(lens["time"]) + "  resources"
         h = h.upper()
         print(h, file=file)
         printjobssum.header = False
     sumjob = {}
     for key in jobs[0]:
-        if key in ("job_name", "job_description", "user", "queue", "project",
-                   "input_file", "output_file", "error_file", "output_dir",
-                   "sub_cwd", "exec_home", "exec_cwd", "exit_reson",
-                   "application", "command", "pre_exec_command",
-                   "post_exec_command", "resize_notification_command",
-                   "effective_resreq"):
+        if key in ("job_name", "job_description", "input_file", "output_file",
+                   "error_file", "output_dir", "sub_cwd", "exec_home",
+                   "exec_cwd", "exit_reson", "application", "command",
+                   "pre_exec_command", "post_exec_command",
+                   "resize_notification_command", "effective_resreq"):
             # find string pattern
             sumjob[key] = findstringpattern([job[key] for job in jobs if
                                              job[key]])
@@ -98,7 +97,10 @@ def printjobssum(jobs, long=False, wide=False, title=None, header=True,
             sumjob[key] = sum((job[key] for job in jobs if job[key]), [])
         else:
             # collect
-            sumjob[key] = [job[key] for job in jobs if job[key]]
+            sumjob[key] = []
+            for job in jobs:
+                if job[key] and job[key] not in sumjob[key]:
+                    sumjob[key].append(job[key])
     # begin output
     # title
     l = ""
@@ -119,12 +121,21 @@ def printjobssum(jobs, long=False, wide=False, title=None, header=True,
     else:
         l += "    "
     # User
-    c = "g" if sumjob["user"] == whoami else 0
-    l += color((sumjob["user"] + " ").ljust(lens["user"]), c)
+    if len(sumjob["user"]) == 1:
+        c = "g" if sumjob["user"][0] == whoami else 0
+        l += color(sumjob["user"][0].ljust(lens["user"]), c)
+    else:
+        l += color(str(len(sumjob["user"])).ljust(lens["user"]), "b")
     # Project
     if wide:
-        l += sumjob["queue"].ljust(lens["queue"])
-        l += sumjob["project"].ljust(lens["project"])
+        if len(sumjob["queue"]) == 1:
+            l += sumjob["queue"][0].ljust(lens["queue"])
+        else:
+            l += color(str(len(sumjob["queue"])).ljust(lens["queue"]), "b")
+        if len(sumjob["pjoect"]) == 1:
+            l += sumjob["project"][0].ljust(lens["project"])
+        else:
+            l += color(str(len(sumjob["project"])).ljust(lens["project"]), "b")
     # Wait/Runtime
     l += format_duration(sumjob["run_time"]).rjust(lens["time"])
     # Resources

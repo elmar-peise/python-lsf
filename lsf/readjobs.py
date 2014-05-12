@@ -154,14 +154,14 @@ def readjobs(args):
                 # pending reason
                 if ":" in line:
                     match = re.match(" (.*): (\d+) hosts?;", line).groups()
-                    job["pend_reason"][match[0]] = int(match[1])
+                    job["pend_reason"].append((match[0], int(match[1])))
                 else:
                     match = re.match(" (.*);", line).groups()
-                    job["pend_reason"][match[0]] = True
+                    job["pend_reason"].append((match[0], True))
             else:
                 # next job
                 job = jobs[line.split()[0]]
-                job["pend_reason"] = {}
+                job["pend_reason"] = []
     # aliases
     for job in jobs.values():
         for alias, key in aliases:

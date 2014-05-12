@@ -59,22 +59,23 @@ def ejobs(args, bjobsargs):
         jobs = jobgroups[title]
         if args.pending:  # grouped by pend_reason
             reasons = jobs[0]["pend_reason"]
-            if len(reasons) > 1:
+            if len(reasons) != 1:
                 title = None
             else:  # only use singular reason as title
-                title = reasons[0].items()[0]
-                if isinstance(resons[0][1], int):
-                    title += ": %d" % reasons[0][1]
+                reason = reasons[0]
+                title = reason[0]
+                if isinstance(reason[1], int):
+                    title += ": %d" % reason[1]
         printjobsfun(jobs, wide=args.wide, header=not args.noheader,
                      title=title)
         if args.pending:
             if len(reasons) > 1:
                 # show pending reasons
-                for reason, count in reasons.iteritems():
+                for reason, count in reasons:
                     if reason in pendingcolors:
                         reason = color(reason, pendingcolors[reason])
                     if count is True:
-                        print("        " + reasona)
+                        print("        " + reason)
                     else:
                         print("  %4d  %s" % (count, reason))
                 # show potential hosts
