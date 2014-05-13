@@ -109,7 +109,10 @@ def readjobs(args):
                     job[key] = []
         job["pend_reason"] = None
         job["runlimit"] = None
-        if job["run_time"] and job["%complete"]:
+        if job["effective_resreq"] and "runlimit" in job["effective_resreq"]:
+            match = re.match("runlimit=\d+", job["effective_resreq"])
+            job["runlimit"] = int(match.groups()[0])
+        elif job["run_time"] and job["%complete"]:
             t = job["run_time"] / job["%complete"] * 100
             # rounding
             if t > 10 * 60 * 60:
