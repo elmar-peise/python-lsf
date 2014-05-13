@@ -171,7 +171,12 @@ def readjobs(args):
                     job["pend_reason"].append((match[0], True))
             else:
                 # next job
-                job = jobs[line.split()[0]]
+                line = line.split()
+                jobid = line[0]
+                match = re.match(".*(\[\d+\])$", line[5])
+                if match:
+                    jobid += match.groups()[0]
+                job = jobs[jobid]
                 job["pend_reason"] = []
     # aliases
     for job in jobs.values():
