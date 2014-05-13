@@ -27,6 +27,7 @@ def printhostssum(hosts, jobs=[], wide=False, title=None, header=True,
         "title": 10
     }
     if wide:
+        lens["title"] = 20
         lens["model"] = 14
     sumhost = {}
     for key in hosts[0]:
@@ -77,6 +78,9 @@ def printhostssum(hosts, jobs=[], wide=False, title=None, header=True,
     l = ""
     # title
     if title:
+        if not wide:
+            if len(title) >= lens["title"]:
+                title = title[:lens["title"] - 2] + "*"
         l += color(title.ljust(lens["title"]), "b")
     # host_name
     l = host["host_name"].ljust(lens["host_name"])

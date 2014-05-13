@@ -25,6 +25,7 @@ def printjobssum(jobs, long=False, wide=False, title=None, header=True,
         "title": 10
     }
     if wide:
+        lens["title"] = 20
         lens["name"] = 32
         lens["queue"] = 8
         lens["project"] = 8
@@ -87,6 +88,9 @@ def printjobssum(jobs, long=False, wide=False, title=None, header=True,
     l = ""
     # title
     if title:
+        if not wide:
+            if len(title) >= lens["title"]:
+                title = title[:lens["title"] - 2] + "*"
         l += color(title.ljust(lens["title"]), "b")
     # Job Name
     jobname = sumjob["job_name"]
