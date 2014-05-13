@@ -61,7 +61,7 @@ def ejobs(args, bjobsargs):
         jobs = jobgroups[title]
         if args.pending:  # grouped by pend_reason
             reasons = jobs[0]["pend_reason"]
-            if len(reasons) != 1:
+            if not reasons or len(reasons) != 1:
                 title = None
             else:  # only use singular reason as title
                 reason = reasons[0]
@@ -71,7 +71,7 @@ def ejobs(args, bjobsargs):
         printjobsfun(jobs, wide=args.wide, header=not args.noheader,
                      title=title)
         if args.pending:
-            if len(reasons) > 1:
+            if reasons and len(reasons) > 1:
                 # show pending reasons
                 for reason, count in reasons:
                     if reason in pendingcolors:
