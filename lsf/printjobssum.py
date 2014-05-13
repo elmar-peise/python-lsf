@@ -123,7 +123,10 @@ def printjobssum(jobs, long=False, wide=False, title=None, header=True,
         else:
             l += color(str(len(sumjob["project"])).ljust(lens["project"]), "b")
     # Wait/Runtime
-    l += format_duration(sumjob["run_time"]).rjust(lens["time"])
+    if sumjob["run_time"] > 0:
+        l += format_duration(sumjob["run_time"]).rjust(lens["time"])
+    else:
+        l += "".rjust(lens["time"])
     # Resources
     # Time
     if sumjob["runlimit"]:
