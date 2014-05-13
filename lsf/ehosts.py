@@ -111,7 +111,7 @@ def main():
 
     try:
         ehosts(args, bhostsargs)
-    except KeyboardInterrupt:
+    except KeyboardInterrupt, IOError:
         pass
 
 

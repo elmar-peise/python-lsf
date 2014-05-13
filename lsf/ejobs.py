@@ -164,7 +164,7 @@ def main():
 
     try:
         ejobs(args, bjobsargs)
-    except KeyboardInterrupt:
+    except KeyboardInterrupt, IOError:
         pass
 
 
