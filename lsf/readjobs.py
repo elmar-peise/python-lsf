@@ -116,6 +116,10 @@ def readjobs(args):
                 job["runlimit"] = round(t / (60 * 60)) * 60 * 60
             else:
                 job["runlimit"] = round(t / 60) * 60
+        # extract array id
+        match = re.match(".*(\[\d+\])$", job["job_name"])
+        if match:
+            job["jobid"] += match.groups()[0]
         joborder.append(job["jobid"])
         jobs[job["jobid"]] = job
     if not joborder:
@@ -124,7 +128,11 @@ def readjobs(args):
     out = check_output(["bjobs", "-noheader", "-W"] + joborder)
     for line in out.splitlines():
         line = line.split()
-        job = jobs[line[0]]
+        jobid = line[0]
+        match = re.match(".*(\[\d+\])$", line[6])
+        if match:
+            jobid += match.groups()[0]
+        job = jobs[jobid]
         for n, key in (
                 (7, "submit_time"),
                 (13, "start_time"),
