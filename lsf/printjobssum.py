@@ -118,7 +118,7 @@ def printjobssum(jobs, long=False, wide=False, title=None, header=True,
             l += sumjob["queue"][0].ljust(lens["queue"])
         else:
             l += color(str(len(sumjob["queue"])).ljust(lens["queue"]), "b")
-        if len(sumjob["pjoect"]) == 1:
+        if len(sumjob["project"]) == 1:
             l += sumjob["project"][0].ljust(lens["project"])
         else:
             l += color(str(len(sumjob["project"])).ljust(lens["project"]), "b")
