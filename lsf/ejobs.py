@@ -52,7 +52,8 @@ def ejobs(args, bjobsargs):
 
     # no grouping
     if not args.groupby:
-        printjobsfun(jobs, wide=args.wide, header=not args.noheader)
+        printjobsfun(jobs, wide=args.wide, long=args.long, header=not
+                     args.noheader)
         return
 
     # grouping
@@ -95,13 +96,18 @@ def main():
         description="More comprehensive version of bjobs."
     )
     parser.add_argument(
+        "-w", "--wide",
+        help="don't shorten strings",
+        action="store_true"
+    )
+    parser.add_argument(
         "-l", "--long",
         help="long job description",
         action="store_true"
     )
     parser.add_argument(
-        "-w", "--wide",
-        help="don't shorten strings",
+        "-sum",
+        help="summarize across jobs",
         action="store_true"
     )
     exg = parser.add_mutually_exclusive_group()
@@ -115,7 +121,7 @@ def main():
         help="group jobs by KEY",
         metavar="KEY"
     )
-    exg.add_argument(
+    parser.add_argument(
         "--sortby",
         help="sort jobs by KEY",
         metavar="KEY"
@@ -138,11 +144,6 @@ def main():
     parser.add_argument(
         "--noheader",
         help="don't show the header",
-        action="store_true"
-    )
-    parser.add_argument(
-        "-sum",
-        help="summarize across jobs",
         action="store_true"
     )
     parser.add_argument(

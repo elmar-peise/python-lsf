@@ -42,6 +42,10 @@ def format_duration(t):
     return s
 
 
+def format_time(t):
+    return strftime("%x %X")
+
+
 def format_mem(s, c=0):
     i = 0
     while abs(s) >= 1024:
@@ -66,5 +70,3 @@ def findstringpattern(strings):
         suffix = strings[0][-1] + suffix
         strings = [s[:-1] for s in strings]
     return prefix + "*" + suffix
-
-
