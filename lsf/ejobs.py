@@ -34,6 +34,8 @@ def ejobs(args, bjobsargs):
         bjobsargs = ["-P", "aices", "-G", "p_aices"] + bjobsargs
     if args.aices2:
         bjobsargs = ["-P", "aices2", "-G", "p_aices"] + bjobsargs
+    if args.a:
+        bjobsargs += ["-a"]
 
     # read
     jobs = readjobs(bjobsargs)
@@ -141,6 +143,11 @@ def main():
     parser.add_argument(
         "-sum",
         help="summarize across jobs",
+        action="store_true"
+    )
+    parser.add_argument(
+        "-a",
+        help=argparse.SUPPRESS,
         action="store_true"
     )
     parser.add_argument(
