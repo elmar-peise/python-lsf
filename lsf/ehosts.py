@@ -2,11 +2,11 @@
 from __future__ import print_function, division
 
 from readhosts import readhosts
-from readjobs import readjobs
 from printhosts import printhosts
 from printhostssum import printhostssum
-# from hostlist import Hostlist
-# from utility import color
+from grouphosts import grouphosts
+
+from readjobs import readjobs
 
 import sys
 import re
@@ -73,6 +73,20 @@ def main():
         help="summarize across hosts",
         action="store_true"
     )
+    exg.add_argument(
+        "--groupby",
+        help="group jobs by KEY",
+        metavar="KEY"
+    )
+    parser.add_argument(
+        "--fast",
+        help="read less info frim LSF",
+        action="store_true"
+    )
+    parser.add_argument(
+        "--model",
+        help="short for -R model==MODEL"
+    )
     parser.add_argument(
         "-aices",
         help="short for -R aices",
@@ -92,15 +106,6 @@ def main():
         "--nosort",
         help="don't sort lexigraphically",
         action="store_true"
-    )
-    parser.add_argument(
-        "--fast",
-        help="read less info frim LSF",
-        action="store_true"
-    )
-    parser.add_argument(
-        "--model",
-        help="short for -R model==MODEL"
     )
     parser.add_argument_group(
         "further arguments",

@@ -6,10 +6,11 @@ from utility import color
 from readjobs import readjobs
 from printjobs import printjobs
 from printjobssum import printjobssum
+from groupjobs import groupjobs
+
 from readhosts import readhosts
 from printhosts import printhosts
 from printhostssum import printhostssum
-from groupjobs import groupjobs
 
 import sys
 import argparse
@@ -98,6 +99,7 @@ def ejobs(args, bjobsargs):
                     hosts.sort(key=lambda h: h["host_name"])
                     printhostsfun(hosts, jobs, wide=args.wide, header=not
                                   args.noheader)
+                    print()
 
 
 def main():
