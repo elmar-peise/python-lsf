@@ -6,7 +6,12 @@ from time import strptime, strftime, mktime, time
 from subprocess import Popen, check_output, PIPE
 
 
-def readjobs(args):
+def parsemem(value, unit):
+    e = {"B": 0, "K": 1, "M": 2, "G": 3, "T": 4}[unit]
+    return int(float(value) * 1024 ** e)
+
+
+def readjobs(args, fast=False):
     """Read jobs from bjobs"""
     keys = ("jobid", "stat", "user", "queue", "job_name", "job_description",
             "proj_name", "application", "service_class", "job_group",
@@ -62,7 +67,8 @@ def readjobs(args):
         for key, val in job.iteritems():
             if val == "-":
                 job[key] = None
-            elif key in ("exit_code", "nexec_host", "slots", "job_priority"):
+            elif key in ("exit_code", "nexec_host", "slots", "job_priority",
+                         "min_req_proc", "max_req_proc"):
                 job[key] = int(val)
             elif key in ("cpu_used", "run_time", "idle_factor"):
                 job[key] = float(val.split()[0])
@@ -100,18 +106,22 @@ def readjobs(args):
             elif key in ("swap", "mem", "avg_mem", "max_mem", "memlimit",
                          "swaplimit", "corelimit", "stacklimit"):
                 val = val.split()
-                e = {"K": 1, "M": 2, "G": 3, "T": 4}[val[1][0]]
-                job[key] = int(float(val[0]) * 1024 ** e)
+                job[key] = parsemem(val[0], val[1][0])
             elif key == "pids":
                 if val:
                     job[key] = map(int, val.split(","))
                 else:
                     job[key] = []
-        job["pend_reason"] = None
-        job["runlimit"] = None
-        if job["effective_resreq"] and "runlimit" in job["effective_resreq"]:
-            match = re.match("runlimit=\d+", job["effective_resreq"])
-            job["runlimit"] = int(match.groups()[0])
+        # set jet unknown keys
+        for key in ("pend_reason", "runlimit", "mail", "exclusive execution",
+                    "resreq", "combined_resreq", "notify_begin", "notify_end"):
+            job[key] = None
+        # info from resreq
+        if job["effective_resreq"]:
+            job["exclusive"] = "exclusive=1" in job["effective_resreq"]
+            if "runlimit" in job["effective_resreq"]:
+                match = re.match("runlimit=\d+", job["effective_resreq"])
+                job["runlimit"] = int(match.groups()[0])
         elif job["run_time"] and job["%complete"]:
             t = job["run_time"] / job["%complete"] * 100
             # rounding
@@ -127,6 +137,10 @@ def readjobs(args):
         jobs[job["jobid"]] = job
     if not joborder:
         return []
+    if fast:
+        for job in jobs.values():
+            job.update({alias: job[key] for alias, key in aliases})
+        return [jobs[jid] for jid in joborder]
     # get more accurate timestamps from -W output
     out = check_output(["bjobs", "-noheader", "-W"] + joborder)
     for line in out.splitlines():
@@ -154,7 +168,6 @@ def readjobs(args):
                     job[key] = t
                 except:
                     pass
-
     # get pending reasons (if any)
     pids = [jid for jid in joborder if jobs[jid]["stat"] == "PEND"]
     if pids:
@@ -178,8 +191,36 @@ def readjobs(args):
                     jobid += match.groups()[0]
                 job = jobs[jobid]
                 job["pend_reason"] = []
+    # get -UF (long) output (may be restricted)
+    out = check_output(["bjobs", "-UF"] + joborder)
+    out = out.split(78 * "-" + "\n")
+    for jobout in out:
+        lines = jobout.splitlines()
+        jobid = re.match("Job <(\d+(?:\[\d+\])?)>", lines[1]).groups()[0]
+        job = jobs[jobid]
+        # mail
+        match = re.search("Mail <(.*?)>", lines[1])
+        if match:
+            job["mail"] = match.groups()[0]
+        # flags
+        job["exclusive"] = "Exclusive Execution" in lines[2]
+        job["notify_begin"] = "Notify when job begins" in lines[2]
+        job["notify_end"] = bool(re.search("Notify when job (?:begins/)?ends",
+                                           lines[2]))
+        # resource request
+        match = re.search("Requested Resources <(.*?)>[,;]", lines[2])
+        if match:
+            job["resreq"] = match.groups()[0]
+        if lines[-2].startswith("Combined: "):
+            jon["combined_resreq"] = lines[-2].split(": ", 1)[1]
+        # runlimit
+        job["runlimit"] = int(float(lines[7].split()[0]) * 60)
+        # memlimits
+        keys = lines[9].lower().strip().split()
+        vals = lines[10].split()
+        for i, key in enumerate(keys):
+            job[key] = parsemem(vals[2 * i], vals[2 * i + 1])
     # aliases
     for job in jobs.values():
-        for alias, key in aliases:
-            job[alias] = job[key]
+        job.update({alias: job[key] for alias, key in aliases})
     return [jobs[jid] for jid in joborder]

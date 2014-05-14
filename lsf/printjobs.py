@@ -12,21 +12,23 @@ from collections import defaultdict
 
 
 def printjoblong(job, file=sys.stdout):
-    keys = ("jobid", "stat", "user", "queue", "job_name", "job_description",
-            "proj_name", "application", "service_class", "job_group",
-            "job_priority", "dependency", "command", "pre_exec_command",
-            "post_exec_command", "resize_notification_command", "pids",
-            "exit_code", "exit_reason", "from_host", "first_host", "exec_host",
-            "nexec_host", "submit_time", "start_time", "estimated_start_time",
+    keys = ("jobid", "stat", "user", "mail", "queue", "job_name",
+            "job_description", "proj_name", "application", "service_class",
+            "job_group", "job_priority", "dependency", "command",
+            "pre_exec_command", "post_exec_command",
+            "resize_notification_command", "pids", "exit_code", "exit_reason",
+            "from_host", "first_host", "exec_host", "nexec_host",
+            "submit_time", "start_time", "estimated_start_time",
             "specified_start_time", "specified_terminate_time", "time_left",
             "finish_time", "runlimit", "%complete", "warning_action",
             "action_warning_time", "cpu_used", "run_time", "idle_factor",
             "exception_status", "slots", "mem", "max_mem", "avg_mem",
             "memlimit", "swap", "swaplimit", "min_req_proc", "max_req_proc",
-            "effective_resreq", "network_req", "filelimit", "corelimit",
-            "stacklimit", "processlimit", "input_file", "output_file",
-            "error_file", "output_dir", "sub_cwd", "exec_home", "exec_cwd",
-            "forward_cluster", "forward_time", "pend_reason")
+            "resreq", "combined_resreq", "effective_resreq", "network_req",
+            "filelimit", "corelimit", "stacklimit", "processlimit",
+            "input_file", "output_file", "error_file", "output_dir", "sub_cwd",
+            "exec_home", "exec_cwd", "forward_cluster", "forward_time",
+            "pend_reason")
     for key in keys:
         if job[key]:
             print(key.ljust(20), file=file, end="")
@@ -140,6 +142,8 @@ def printjobs(jobs, wide=False, long=False, title=None,
             l += " " + color("%3d" % pmem, c) + "%m"
         if job["mem"]:
             l += " " + format_mem(job["mem"]).rjust(9)
+        elif job["memlimit"]:
+            l += " " + format_mem(job["memlimit"]).rjust(9)
         else:
             l += "          "
         # Hosts
@@ -152,7 +156,18 @@ def printjobs(jobs, wide=False, long=False, title=None,
                     d[re.match("(.*?)\d+", key).groups()[0]] += val
             for key, val in d.iteritems():
                 c = "r" if val >= 100 else "y" if val >= 20 else 0
-                l += color(" %3d" % val, c) + "*%s" % key
+                times = color("x", "r") if job["exclusive"] else "*"
+                l += color(" %3d" % val, c) + times + "%s" % key
+        else:
+            if job["min_req_proc"]:
+                times = color("x", "r") if job["exclusive"] else "*"
+                l += " %3d" % job["min_req_proc"] + times
+            elif job["exclusive"]:
+                l += "   1" + color("x", "r")
+            if job["resreq"]:
+                match = re.search("model==(\w+)", job["resreq"])
+                if match:
+                    l += match.groups()[0]
         print(l, file=file)
         # if job["stat"] in ("EXIT", "DONE"):
         #     print(sorted([(k, v) for k, v in job.iteritems() if v]))

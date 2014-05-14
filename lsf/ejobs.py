@@ -38,7 +38,7 @@ def ejobs(args, bjobsargs):
         bjobsargs += ["-a"]
 
     # read
-    jobs = readjobs(bjobsargs)
+    jobs = readjobs(bjobsargs, fast=args.fast)
 
     # sort
     if args.sortby:
@@ -129,6 +129,11 @@ def main():
     parser.add_argument(
         "--sort",
         help="short for --sortby jobid",
+        action="store_true"
+    )
+    parser.add_argument(
+        "--fast",
+        help="read less info from LSF",
         action="store_true"
     )
     parser.add_argument(
