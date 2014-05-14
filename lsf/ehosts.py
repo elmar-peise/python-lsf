@@ -38,8 +38,8 @@ def ehosts(args, bhostsargs):
                 bhostsargs[i] += " select[%s]" % select
 
     # read
-    hosts = readhosts(bhostsargs)
-    if args.nojobs:
+    hosts = readhosts(bhostsargs, fast=args.fast)
+    if args.fast:
         jobs = []
     else:
         hostnames = [h["host_name"] for h in hosts]
@@ -69,6 +69,11 @@ def main():
         action="store_true"
     )
     parser.add_argument(
+        "-sum",
+        help="summarize across hosts",
+        action="store_true"
+    )
+    parser.add_argument(
         "-aices",
         help="short for -R aices",
         action="store_true"
@@ -89,18 +94,13 @@ def main():
         action="store_true"
     )
     parser.add_argument(
-        "--nojobs",
-        help="don't show jobs",
+        "--fast",
+        help="read less info frim LSF",
         action="store_true"
     )
     parser.add_argument(
         "--model",
         help="short for -R model==MODEL"
-    )
-    parser.add_argument(
-        "-sum",
-        help="summarize across hosts",
-        action="store_true"
     )
     parser.add_argument_group(
         "further arguments",

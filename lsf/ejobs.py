@@ -8,6 +8,7 @@ from printjobs import printjobs
 from printjobssum import printjobssum
 from readhosts import readhosts
 from printhosts import printhosts
+from printhostssum import printhostssum
 from groupjobs import groupjobs
 
 import sys
@@ -49,8 +50,10 @@ def ejobs(args, bjobsargs):
     # summarize?
     if args.sum:
         printjobsfun = printjobssum
+        printhostsfun = printhostssum
     else:
         printjobsfun = printjobs
+        printhostsfun = printhosts
 
     # no grouping
     if not args.groupby:
@@ -93,8 +96,8 @@ def ejobs(args, bjobsargs):
                     jobs = readjobs(["-u", "all", "-r", "-m",
                                      " ".join(hostnames)])
                     hosts.sort(key=lambda h: h["host_name"])
-                    printhosts(hosts, jobs, wide=args.wide, header=not
-                               args.noheader)
+                    printhostsfun(hosts, jobs, wide=args.wide, header=not
+                                  args.noheader)
 
 
 def main():

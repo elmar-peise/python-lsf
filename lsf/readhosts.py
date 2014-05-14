@@ -19,7 +19,7 @@ def parseval(val):
     return val
 
 
-def readhosts(args):
+def readhosts(args, fast=False):
     """read hosts from LSF"""
     # read bhosts for dynamic information
     p = Popen(["bhosts", "-l"] + args, stdout=PIPE, stderr=PIPE)
@@ -70,6 +70,8 @@ def readhosts(args):
                 pass
     hostorder.append(host["host_name"])
     hosts[host["host_name"]] = host
+    if fast:
+        return [hosts[hn] for hn in hostorder]
     # read lshosts for static information
     out = check_output(["lshosts", "-w"] + hostorder)
     lines = out.splitlines()
