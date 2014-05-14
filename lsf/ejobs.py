@@ -67,7 +67,7 @@ def ejobs(args, bjobsargs):
             else:  # only use singular reason as title
                 reason = reasons[0]
                 title = reason[0]
-                if isinstance(reason[1], int):
+                if not isinstance(reason[1], bool):
                     title += ": %d" % reason[1]
         printjobsfun(jobs, wide=args.wide, header=not args.noheader,
                      title=title)
@@ -165,7 +165,7 @@ def main():
 
     try:
         ejobs(args, bjobsargs)
-    except KeyboardInterrupt, IOError:
+    except (KeyboardInterrupt, IOError):
         pass
 
 
