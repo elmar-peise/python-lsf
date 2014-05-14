@@ -104,7 +104,7 @@ def printhostssum(hosts, jobs=[], wide=False, title=None, header=True,
     if "mem" in sumhost["load"]:
         free, used = sumhost["load"]["mem"]
         total = free + used
-        if sumhost["maxmem"]:
+        if "maxmem" in sumhost and sumhost["maxmem"]:
             total = sumhost["maxmem"]
         f = used / total
         c = "r" if f > .75 else "y" if f > .5 else 0

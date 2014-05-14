@@ -51,7 +51,7 @@ def printhosts(hosts, jobs=[], wide=False, header=True, file=sys.stdout):
         if "mem" in host["load"]:
             free, used = host["load"]["mem"]
             total = free + used
-            if host["maxmem"]:
+            if "maxmem" in host and host["maxmem"]:
                 total = host["maxmem"]
             f = used / total
             c = "r" if f > .75 else "y" if f > .5 else 0
