@@ -113,26 +113,30 @@ def printhostssum(hosts, jobs=[], wide=False, title=None, header=True,
         if len(sumhost["model"]) == 1:
             l += sumhost["model"][0].ljust(lens["model"])
         else:
-            l += color(str(len(sumhost["model"])).ljust(lens["model"]), "b")
+            l += color(("  %d" % len(sumhost["model"])).ljust(lens["model"]),
+                       "b")
     l += " "
     if sumhost["rsv"] > 0:
         l += " %2d*" % sumhost["rsv"] + color("reserved", "y")
     if wide:
         for job in jobs:
             c = "g" if job["user"] == whoami else 0
-            l += " %3d*" % sum(job["exec_host"][hn] for hn in hostnames
-                               if hn in job["exec_host"])
-            l += color(job["user"].ljust(8), c)
+            times = color("x", "r") if job["exclusive"] else "*"
+            l += " %3d" % sum(job["exec_host"][hn] for hn in hostnames
+                              if hn in job["exec_host"])
+            l += times + color(job["user"].ljust(8), c)
     else:
         userhosts = defaultdict(int)
+        exclusive = defaultdict(lambda: True)
         for job in jobs:
             userhosts[job["user"]] += sum(job["exec_host"][hn]
                                           for hn in hostnames
                                           if hn in job["exec_host"])
-
+            exclusive[job["user"]] &= job["exclusive"]
         for user, count in userhosts.iteritems():
             c = "g" if user == whoami else 0
-            l += " %3d*" % count + color(user.ljust(8), c)
+            times = color("x", "r") if exclusive[user] else "*"
+            l += " %3d" % count + times + color(user.ljust(8), c)
 
     print(l, file=file)
     file.flush()

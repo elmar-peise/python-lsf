@@ -64,8 +64,9 @@ def printhosts(hosts, jobs=[], wide=False, header=True, file=sys.stdout):
         if host["host_name"] in jobsbyhost:
             jobs = jobsbyhost[host["host_name"]]
             for job in jobs:
+                times = color("x", "r") if job["exclusive"] else "*"
                 c = "g" if job["user"] == whoami else 0
-                l += " %2d*" % job["exec_host"][host["host_name"]]
+                l += " %2d" % job["exec_host"][host["host_name"]] + times
                 l += color(job["user"].ljust(8), c)
                 if wide:
                     if job["mem"]:

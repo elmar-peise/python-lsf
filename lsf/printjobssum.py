@@ -156,7 +156,10 @@ def printjobssum(jobs, long=False, wide=False, title=None, header=True,
                 d[re.match("(.*?)\d+", key).groups()[0]] += val
         for key, val in d.iteritems():
             c = "r" if val >= 100 else "y" if val >= 20 else 0
-            l += color(" %3d" % val, c) + "*%s" % key
+            exclusive = sumjob["exclusive"]
+            exclusive = len(exclusive) == 1 and True in exclusive
+            times = color("x", "r") if exclusive else "*"
+            l += color(" %3d" % val, c) + times + "%s" % key
     print(l, file=file)
     file.flush()
 
