@@ -6,13 +6,12 @@ from time import strftime, gmtime
 
 
 def color(string, c):
-    if sys.stdout.isatty():
-        names = {"r": 31, "g": 32, "y": 33, "b": 34}
-        if c in names:
-            c = names[c]
-        return "\033[{}m{}\033[0m".format(c, string)
-    else:
+    if not sys.stdout.isatty():
         return string
+    names = {"r": 31, "g": 32, "y": 33, "b": 34}
+    if c in names:
+        c = names[c]
+    return "\033[{}m{}\033[0m".format(c, string)
 
 
 def format_duration(t):
