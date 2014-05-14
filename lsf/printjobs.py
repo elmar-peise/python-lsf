@@ -169,6 +169,4 @@ def printjobs(jobs, wide=False, long=False, title=None,
                 if match:
                     l += match.groups()[0]
         print(l, file=file)
-        # if job["stat"] in ("EXIT", "DONE"):
-        #     print(sorted([(k, v) for k, v in job.iteritems() if v]))
         file.flush()

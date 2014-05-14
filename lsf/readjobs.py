@@ -113,8 +113,8 @@ def readjobs(args, fast=False):
                 else:
                     job[key] = []
         # set jet unknown keys
-        for key in ("pend_reason", "runlimit", "mail", "exclusive execution",
-                    "resreq", "combined_resreq", "notify_begin", "notify_end"):
+        for key in ("pend_reason", "runlimit", "mail", "exclusive", "resreq",
+                    "combined_resreq", "notify_begin", "notify_end"):
             job[key] = None
         # info from resreq
         if job["effective_resreq"]:
