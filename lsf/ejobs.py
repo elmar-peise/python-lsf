@@ -6,6 +6,8 @@ from utility import color
 from readjobs import readjobs
 from printjobs import printjobs
 from printjobssum import printjobssum
+from readhosts import readhosts
+from printhosts import printhosts
 from groupjobs import groupjobs
 
 import sys
@@ -82,13 +84,17 @@ def ejobs(args, bjobsargs):
                     else:
                         print("  %4d  %s" % (count, reason))
                 # show potential hosts
-                if jobs[0]["effective_resreq"]:
-                    req = jobs[0]["effective_resreq"]
+                if jobs[0]["resreq"] and not args.fast:
+                    req = jobs[0]["resreq"]
                     req = re.sub(" && \(hostok\)", "", req)
                     req = re.sub(" && \(mem>\d+\)", "", req)
                     hosts = readhosts(["-R", req])
+                    hostnames = [h["host_name"] for h in hosts]
+                    jobs = readjobs(["-u", "all", "-r", "-m",
+                                     " ".join(hostnames)])
                     hosts.sort(key=lambda h: h["host_name"])
-                    printhosts(hosts, wide=args.wide, header=not args.noheader)
+                    printhosts(hosts, jobs, wide=args.wide, header=not
+                               args.noheader)
 
 
 def main():
