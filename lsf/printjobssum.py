@@ -52,11 +52,6 @@ def printjobssum(jobs, long=False, wide=False, title=None, header=True,
                 sumjob[key] = sum(pcomp) / len(pcomp)
             else:
                 sumjob[key] = None
-        elif key == "stat":
-            # compute statistics
-            sumjob[key] = defaultdict(int)
-            for job in jobs:
-                sumjob[key][job[key]] += 1
         elif key == "exec_host":
             # collect host counts
             sumjob[key] = defaultdict(int)
@@ -67,12 +62,17 @@ def printjobssum(jobs, long=False, wide=False, title=None, header=True,
         elif key == "pids":
             # collect
             sumjob[key] = sum((job[key] for job in jobs if job[key]), [])
-        else:
+        elif key == "pend_reason":
             # collect
             sumjob[key] = []
             for job in jobs:
                 if job[key] and job[key] not in sumjob[key]:
                     sumjob[key].append(job[key])
+        else:
+            # collect and count
+            sumjob[key] = defaultdict(int)
+            for job in jobs:
+                sumjob[key][job[key]] += 1
     # begin output
     if header and printjobssum.header:
         h = ""
@@ -108,18 +108,19 @@ def printjobssum(jobs, long=False, wide=False, title=None, header=True,
         l += "    "
     # User
     if len(sumjob["user"]) == 1:
-        c = "g" if sumjob["user"][0] == whoami else 0
-        l += color(sumjob["user"][0].ljust(lens["user"]), c)
+        user = sumjob["user"].keys()[0]
+        c = "g" if user == whoami else 0
+        l += color(user.ljust(lens["user"]), c)
     else:
         l += color(str(len(sumjob["user"])).ljust(lens["user"]), "b")
     # Project
     if wide:
         if len(sumjob["queue"]) == 1:
-            l += sumjob["queue"][0].ljust(lens["queue"])
+            l += sumjob["queue"].keys()[0].ljust(lens["queue"])
         else:
             l += color(str(len(sumjob["queue"])).ljust(lens["queue"]), "b")
         if len(sumjob["project"]) == 1:
-            l += sumjob["project"][0].ljust(lens["project"])
+            l += sumjob["project"].keys()[0].ljust(lens["project"])
         else:
             l += color(str(len(sumjob["project"])).ljust(lens["project"]), "b")
     # Wait/Runtime
