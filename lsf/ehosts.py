@@ -54,8 +54,18 @@ def ehosts(args, bhostsargs):
     # sort
     if not args.nosort:
         hosts.sort(key=lambda h: h["host_name"])
-    # print
-    printhostsfun(hosts, jobs, wide=args.wide, header=not args.noheader)
+
+    # no grouping
+    if not args.groupby:
+        printhostsfun(hosts, jobs, wide=args.wide, header=not args.noheader)
+        return
+
+    # grouping
+    hostgroups = grouphosts(hosts, args.groupby)
+    for title in sorted(hostgroups.keys()):
+        hosts = hostgroups[title]
+        printhostsfun(hosts, jobs, wide=args.wide, header=not args.noheader,
+                      title=title)
 
 
 def main():
@@ -73,7 +83,7 @@ def main():
         help="summarize across hosts",
         action="store_true"
     )
-    exg.add_argument(
+    parser.add_argument(
         "--groupby",
         help="group jobs by KEY",
         metavar="KEY"
