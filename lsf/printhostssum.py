@@ -24,7 +24,7 @@ def printhostssum(hosts, jobs=[], wide=False, title=None, header=True,
     lens = {
         "host_name": 14,
         "status": 12,
-        "title": 10
+        "title": 15
     }
     if wide:
         lens["title"] = 20
@@ -83,7 +83,7 @@ def printhostssum(hosts, jobs=[], wide=False, title=None, header=True,
                 title = title[:lens["title"] - 2] + "*"
         l += color(title.ljust(lens["title"]), "b")
     # host_name
-    l = host["host_name"].ljust(lens["host_name"])
+    l += sumhost["host_name"].ljust(lens["host_name"])
     # status
     l += color("%3d " % sumhost["status"]["ok"], "g")
     closed = sum(n for stat, n in sumhost["status"].iteritems()
@@ -133,10 +133,10 @@ def printhostssum(hosts, jobs=[], wide=False, title=None, header=True,
                                           for hn in hostnames
                                           if hn in job["exec_host"])
             exclusive[job["user"]] &= job["exclusive"]
-        for user, count in userhosts.iteritems():
+        for user in sorted(userhosts.keys()):
             c = "g" if user == whoami else 0
             times = color("x", "r") if exclusive[user] else "*"
-            l += " %3d" % count + times + color(user.ljust(8), c)
+            l += " %3d" % userhosts[user] + times + color(user.ljust(8), c)
 
     print(l, file=file)
     file.flush()
