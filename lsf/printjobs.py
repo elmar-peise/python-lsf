@@ -126,26 +126,28 @@ def printjobs(jobs, wide=False, long=False, title=None,
             t = job["run_time"]
         s = format_duration(t)
         l += s.rjust(lens["time"])
-        # Resources
-        # Time
-        if job["runlimit"]:
-            l += "  " + format_duration(job["runlimit"])
+        # Resources %
         if job["%complete"]:
             ptime = int(job["%complete"])
             c = "r" if ptime > 90 else "y" if ptime > 75 else 0
             l += " " + color("%3d" % ptime, c) + "%t"
-        # Memory
+        elif job["stat"] == "RUN":
+            l += "      "
         if job["memlimit"] and job["mem"] and job["slots"]:
             memlimit = job["memlimit"] * job["slots"]
             pmem = int(100 * job["mem"] / memlimit)
             c = "r" if pmem > 90 else "y" if pmem > 75 else 0
             l += " " + color("%3d" % pmem, c) + "%m"
-        if job["mem"]:
-            l += " " + format_mem(job["mem"]).rjust(9)
-        elif job["memlimit"]:
-            l += " " + format_mem(job["memlimit"]).rjust(9)
+        elif job["stat"] == "RUN":
+            l += "      "
+        # Time
+        if job["runlimit"]:
+            l += "  " + format_duration(job["runlimit"])
+        # Memory
+        if job["memlimit"]:
+            l += format_mem(job["memlimit"]).rjust(10)
         else:
-            l += "          "
+            l += "".rjust(10)
         # Hosts
         if job["exec_host"]:
             if wide or len(job["exec_host"]) == 1:
