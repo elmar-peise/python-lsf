@@ -129,10 +129,11 @@ def printhostssum(hosts, jobs=[], wide=False, title=None, header=True,
         userhosts = defaultdict(int)
         exclusive = defaultdict(lambda: True)
         for job in jobs:
-            userhosts[job["user"]] += sum(job["exec_host"][hn]
-                                          for hn in hostnames
-                                          if hn in job["exec_host"])
-            exclusive[job["user"]] &= job["exclusive"]
+            s = sum(job["exec_host"][hn] for hn in hostnames
+                    if hn in job["exec_host"])
+            if s:
+                userhosts[job["user"]] += s
+                exclusive[job["user"]] &= job["exclusive"]
         for user in sorted(userhosts.keys()):
             c = "g" if user == whoami else 0
             times = color("x", "r") if exclusive[user] else "*"
