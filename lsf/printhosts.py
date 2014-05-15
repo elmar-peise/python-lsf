@@ -71,6 +71,8 @@ def printhosts(hosts, jobs=[], wide=False, header=True, file=sys.stdout):
                 if wide:
                     if job["mem"]:
                         l += format_mem(job["mem"])
+                    else:
+                        l += "         "
                     if job["%complete"] and job["runlimit"]:
                         ptime = job["%complete"]
                         c = "r" if ptime > 90 else "y" if ptime > 75 else 0
