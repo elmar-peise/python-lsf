@@ -158,7 +158,7 @@ def printjobs(jobs, wide=False, long=False, title=None,
             else:
                 d = defaultdict(int)
                 for key, val in job["exec_host"].iteritems():
-                    d[re.match("(.*?)\d+", key).groups()[0]] += val
+                    d[re.match("(.*?)\d+", key).groups()[0] + "*"] += val
             for key, val in d.iteritems():
                 c = "r" if val >= 100 else "y" if val >= 20 else 0
                 times = color("x", "r") if job["exclusive"] else "*"
@@ -169,6 +169,8 @@ def printjobs(jobs, wide=False, long=False, title=None,
                 l += " %3d" % job["min_req_proc"] + times
             elif job["exclusive"]:
                 l += "   1" + color("x", "r")
+            else:
+                l += "   1*"
             if job["resreq"]:
                 match = re.search("model==(\w+)", job["resreq"])
                 if match:

@@ -153,7 +153,7 @@ def printjobssum(jobs, long=False, wide=False, title=None, header=True,
         else:
             d = defaultdict(int)
             for key, val in sumjob["exec_host"].iteritems():
-                d[re.match("(.*?)\d+", key).groups()[0]] += val
+                d[re.match("(.*?)\d+", key).groups()[0] + "*"] += val
         for key, val in d.iteritems():
             c = "r" if val >= 100 else "y" if val >= 20 else 0
             exclusive = sumjob["exclusive"]
