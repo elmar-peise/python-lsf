@@ -28,7 +28,7 @@ def printjoblong(job, file=sys.stdout):
             "filelimit", "corelimit", "stacklimit", "processlimit",
             "input_file", "output_file", "error_file", "output_dir", "sub_cwd",
             "exec_home", "exec_cwd", "forward_cluster", "forward_time",
-            "pend_reason")
+            "pend_reason", "rsvd_host")
     for key in keys:
         if job[key]:
             print(key.ljust(20), file=file, end="")
@@ -39,7 +39,7 @@ def printjoblong(job, file=sys.stdout):
                 print(format_time(job[key]), file=file)
             elif key in ("cpu_used", "time_left", "runlimit"):
                 print(format_duration(job[key]), file=file)
-            elif key in ("pend_reason", "exec_host"):
+            elif key in ("pend_reason", "exec_host", "rsvd_host"):
                 items = job[key]
                 if isinstance(items, dict):
                     items = items.items()
