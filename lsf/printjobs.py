@@ -89,11 +89,13 @@ def printjobs(jobs, wide=False, long=False, title=None,
         lens["name"] = 32
         lens["queue"] = 8
         lens["project"] = 8
+        lens["prio."] = 6
     if header:
         h = "".join(n.ljust(lens[n]) for n in ("jobid", "name", "stat",
                                                "user"))
         if wide:
-            h += "".join(n.ljust(lens[n]) for n in ("queue", "project"))
+            h += "".join(n.ljust(lens[n]) for n in ("queue", "project",
+                                                    "prio."))
         h += "wait/runtime".rjust(lens["time"]) + "  resources"
         h = h.upper()
         if title:
@@ -119,6 +121,7 @@ def printjobs(jobs, wide=False, long=False, title=None,
         if wide:
             l += job["queue"].ljust(lens["queue"])
             l += job["project"].ljust(lens["project"])
+            l += str(job["priority"]).rjust(lens["prio."])
         # Wait/Runtime
         if job["stat"] == "PEND":
             t = time() - job["submit_time"]
