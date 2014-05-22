@@ -52,7 +52,7 @@ def printjobssum(jobs, long=False, wide=False, title=None, header=True,
                 sumjob[key] = sum(pcomp) / len(pcomp)
             else:
                 sumjob[key] = None
-        elif key == "exec_host":
+        elif key in ("exec_host", "rsvd_host"):
             # collect host counts
             sumjob[key] = defaultdict(int)
             for job in jobs:
@@ -160,6 +160,17 @@ def printjobssum(jobs, long=False, wide=False, title=None, header=True,
             exclusive = len(exclusive) == 1 and True in exclusive
             times = color("x", "r") if exclusive else "*"
             l += color(" %3d" % val, c) + times + "%s" % key
+    if sumjob["rsvd_host"]:
+        l += color("  rsvd:", "y")
+        if wide or len(sumjob["rsvd_host"]) == 1:
+            d = sumjob["rsvd_host"]
+        else:
+            d = defaultdict(int)
+            for key, val in sumjob["rsvd_host"].iteritems():
+                d[re.match("(.*?)\d+", key).groups()[0] + "*"] += val
+        for key, val in d.iteritems():
+            c = "r" if val >= 100 else "y" if val >= 20 else 0
+            l += color(" %3d" % val, c) + "*%s" % key
     print(l, file=file)
     file.flush()
 

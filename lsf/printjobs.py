@@ -173,5 +173,16 @@ def printjobs(jobs, wide=False, long=False, title=None,
                 match = re.search("model==(\w+)", job["resreq"])
                 if match:
                     l += match.groups()[0]
+            if job["rsvd_host"]:
+                l += color("  rsvd:", "y")
+                if wide or len(job["rsvd_host"]) == 1:
+                    d = job["rsvd_host"]
+                else:
+                    d = defaultdict(int)
+                    for key, val in job["rsvd_host"].iteritems():
+                        d[re.match("(.*?)\d+", key).groups()[0] + "*"] += val
+                for key, val in d.iteritems():
+                    c = "r" if val >= 100 else "y" if val >= 20 else 0
+                    l += color(" %3d" % val, c) + "*%s" % key
         print(l, file=file)
         file.flush()

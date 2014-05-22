@@ -114,7 +114,8 @@ def readjobs(args, fast=False):
                     job[key] = []
         # set jet unknown keys
         for key in ("pend_reason", "runlimit", "mail", "exclusive", "resreq",
-                    "combined_resreq", "notify_begin", "notify_end"):
+                    "combined_resreq", "notify_begin", "notify_end",
+                    "rsvd_host"):
             job[key] = None
         # info from resreq
         if job["effective_resreq"]:
@@ -220,6 +221,19 @@ def readjobs(args, fast=False):
         vals = lines[10].split()
         for i, key in enumerate(keys):
             job[key] = parsemem(vals[2 * i], vals[2 * i + 1])
+        # reserved hosts
+        match = re.search("Reserved <\d+> job slots on host\(s\) <(.*?)>;",
+                          lines[11])
+        if match:
+            val = match.groups()[0].split("> <")
+            hosts = {}
+            for v in val:
+                if "*" in v:
+                    v = v.split("*")
+                    hosts[v[1]] = int(v[0])
+                else:
+                    hosts[v] = 1
+            job["rsvd_host"] = hosts
     # aliases
     for job in jobs.values():
         job.update({alias: job[key] for alias, key in aliases})
