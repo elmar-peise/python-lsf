@@ -56,7 +56,7 @@ def ehosts(args, bhostsargs):
         hosts.sort(key=lambda h: h["host_name"])
 
     # no grouping
-    if not args.groupby:
+    if not args.groupby or args.groupby not in hosts[0]:
         printhostsfun(hosts, jobs, wide=args.wide, header=not args.noheader)
         return
 
