@@ -57,7 +57,7 @@ def ejobs(args, bjobsargs):
         printhostsfun = printhosts
 
     # no grouping
-    if not args.groupby:
+    if not args.groupby or args.groupby not in jobs[0]:
         printjobsfun(jobs, wide=args.wide, long=args.long, header=not
                      args.noheader)
         return
