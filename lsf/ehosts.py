@@ -39,6 +39,11 @@ def ehosts(args, bhostsargs):
 
     # read
     hosts = readhosts(bhostsargs, fast=args.fast)
+
+    if not hosts:
+        return
+
+    # read jobs
     if args.fast:
         jobs = []
     else:

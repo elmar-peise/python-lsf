@@ -44,6 +44,9 @@ def ejobs(args, bjobsargs):
     # read
     jobs = readjobs(bjobsargs, fast=args.fast)
 
+    if not jobs:
+        return
+
     # sort
     if args.sortby:
         jobs.sort(key=lambda j: j[args.sortby])
