@@ -40,6 +40,9 @@ def ejobs(args, bjobsargs):
         bjobsargs = ["-P", "aices2", "-G", "p_aices"] + bjobsargs
     if args.a:
         bjobsargs += ["-a"]
+    for l in list("rasd"):
+        if args.__dict__[l]:
+            bjobsargs += ["-" + l] + bjobsargs
 
     # read
     jobs = readjobs(bjobsargs, fast=args.fast)
@@ -166,15 +169,17 @@ def main():
         action="store_true"
     )
     parser.add_argument(
-        "-a",
+        "-X",  # discard
         help=argparse.SUPPRESS,
         action="store_true"
     )
-    parser.add_argument(
-        "-X",
-        help=argparse.SUPPRESS,
-        action="store_true"
-    )
+    # pass the following on to allow combining with -p
+    for l in list("rasd"):
+        parser.add_argument(
+            "-" + l,
+            help=argparse.SUPPRESS,
+            action="store_true"
+        )
     parser.add_argument_group(
         "further arguments",
         description="are passed to bjobs"
