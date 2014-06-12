@@ -134,15 +134,24 @@ def printjobssum(jobs, long=False, wide=False, title=None, header=True,
     if sumjob["runlimit"]:
         l += "  " + format_duration(sumjob["runlimit"]).rjust(lens["time"])
     if sumjob["%complete"]:
-        ptime = int(sumjob["%complete"])
+        ptime = sumjob["%complete"]
         c = "r" if ptime > 90 else "y" if ptime > 75 else 0
         l += " " + color("%3d" % ptime, c) + "%t"
+        if wide:
+            s = "%6.2f" % round(ptime, 2)
+        else:
+            s = "%3d" % int(round(ptime))
+        l += " " + color(s, c) + "%t"
     # Memory
     if sumjob["memlimit"] and sumjob["mem"] and sumjob["slots"]:
         memlimit = sumjob["memlimit"] * sumjob["slots"]
-        pmem = int(100 * sumjob["mem"] / memlimit)
+        pmem = 100 * sumjob["mem"] / memlimit
         c = "r" if pmem > 90 else "y" if pmem > 75 else 0
-        l += " " + color("%3d" % pmem, c) + "%m"
+        if wide:
+            s = "%6.2f" % round(pmem, 2)
+        else:
+            s = "%3d" % int(round(pmem))
+        l += " " + color(s, c) + "%m"
     if sumjob["mem"]:
         l += " " + format_mem(sumjob["mem"]).rjust(9)
     else:

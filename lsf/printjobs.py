@@ -134,16 +134,24 @@ def printjobs(jobs, wide=False, long=False, title=None,
         l += s.rjust(lens["time"])
         # Resources %
         if job["%complete"]:
-            ptime = int(job["%complete"])
+            ptime = job["%complete"]
             c = "r" if ptime > 90 else "y" if ptime > 75 else 0
-            l += " " + color("%3d" % ptime, c) + "%t"
+            if wide:
+                s = "%6.2f" % round(ptime, 2)
+            else:
+                s = "%3d" % int(round(ptime))
+            l += " " + color(s, c) + "%t"
         elif job["stat"] == "RUN":
             l += "      "
         if job["memlimit"] and job["mem"] and job["slots"]:
             memlimit = job["memlimit"] * job["slots"]
-            pmem = int(100 * job["mem"] / memlimit)
+            pmem = 100 * job["mem"] / memlimit
             c = "r" if pmem > 90 else "y" if pmem > 75 else 0
-            l += " " + color("%3d" % pmem, c) + "%m"
+            if wide:
+                s = "%6.2f" % round(pmem, 2)
+            else:
+                s = "%3d" % int(round(pmem))
+            l += " " + color(s, c) + "%m"
         elif job["stat"] == "RUN":
             l += "      "
         # Time
