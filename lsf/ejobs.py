@@ -38,11 +38,9 @@ def ejobs(args, bjobsargs):
         bjobsargs = ["-P", "aices", "-G", "p_aices"] + bjobsargs
     if args.aices2:
         bjobsargs = ["-P", "aices2", "-G", "p_aices"] + bjobsargs
-    if args.a:
-        bjobsargs += ["-a"]
-    for l in list("rasd"):
+    for l in list("rsda"):
         if args.__dict__[l]:
-            bjobsargs += ["-" + l] + bjobsargs
+            bjobsargs = ["-" + l] + bjobsargs
 
     # read
     jobs = readjobs(bjobsargs, fast=args.fast)
@@ -173,8 +171,8 @@ def main():
         help=argparse.SUPPRESS,
         action="store_true"
     )
-    # pass the following on to allow combining with -p
-    for l in list("rasd"):
+    # pass the following on to allow combining (e.g. with -p or -l)
+    for l in list("rsda"):
         parser.add_argument(
             "-" + l,
             help=argparse.SUPPRESS,
