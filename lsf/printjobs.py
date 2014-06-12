@@ -37,7 +37,7 @@ def printjoblong(job, file=sys.stdout):
                 print(format_mem(job[key]), file=file)
             elif key in ("submit_time", "start_time", "finish_time"):
                 print(format_time(job[key]), file=file)
-            elif key in ("cpu_used", "time_left", "runlimit"):
+            elif key in ("cpu_used", "time_left", "runlimit", "run_time"):
                 print(format_duration(job[key]), file=file)
             elif key in ("pend_reason", "exec_host", "rsvd_host"):
                 items = job[key]
