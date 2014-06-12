@@ -17,18 +17,6 @@ def printjobssum(jobs, long=False, wide=False, title=None, header=True,
     if len(jobs) == 0:
         return
     whoami = os.getenv("USER")
-    lens = {
-        "name": 20,
-        "stat": 12,
-        "user": 10,
-        "time": 12,
-        "title": 10
-    }
-    if wide:
-        lens["title"] = 20
-        lens["name"] = 32
-        lens["queue"] = 8
-        lens["project"] = 8
     sumjob = {}
     for key in jobs[0]:
         if key in ("job_name", "job_description", "input_file", "output_file",
@@ -74,6 +62,19 @@ def printjobssum(jobs, long=False, wide=False, title=None, header=True,
             for job in jobs:
                 sumjob[key][job[key]] += 1
     # begin output
+    namelen = max(map(len, (job["name"] for job in jobs)))
+    lens = {
+        "name": min(20, max(6, namelen + 1)),
+        "stat": 12,
+        "user": 10,
+        "time": 12,
+        "title": 10
+    }
+    if wide:
+        lens["title"] = 20
+        lens["name"] = max(6, namelen + 1)
+        lens["queue"] = 8
+        lens["project"] = 8
     if header and printjobssum.header:
         h = ""
         if title:

@@ -78,15 +78,18 @@ def printjobs(jobs, wide=False, long=False, title=None,
         return
     # begin output
     whoami = os.getenv("USER")
+    namelen = max(map(len, (job["name"] for job in jobs)))
     lens = {
-        "jobid": 14,
-        "name": 20,
+        "jobid": 10,
+        "name": min(20, max(6, namelen + 1)),
         "stat": 6,
         "user": 10,
         "time": 12,
     }
+    if any(job["jobid"][-1] == "]" for job in jobs):
+        lens["jobid"] = 14
     if wide:
-        lens["name"] = 32
+        lens["name"] = max(6, namelen + 1)
         lens["queue"] = 8
         lens["project"] = 8
         lens["prio."] = 6
