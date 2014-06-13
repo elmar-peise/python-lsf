@@ -11,12 +11,7 @@ from subprocess import check_output
 from collections import defaultdict
 
 
-def printjobssum(jobs, long=False, wide=False, title=None, header=True,
-                 file=sys.stdout):
-    """summarize the jobs in one line"""
-    if len(jobs) == 0:
-        return
-    whoami = os.getenv("USER")
+def sumjobs(jobs):
     sumjob = {}
     for key in jobs[0]:
         if key in ("job_name", "job_description", "input_file", "output_file",
@@ -61,20 +56,30 @@ def printjobssum(jobs, long=False, wide=False, title=None, header=True,
             sumjob[key] = defaultdict(int)
             for job in jobs:
                 sumjob[key][job[key]] += 1
-    # begin output
+    return sumjob
+
+
+def printjobssum(jobs, long=False, wide=False, title=None,
+                 header=True, file=sys.stdout):
+    """summarize the jobs in one line"""
+    if len(jobs) == 0:
+        return
+    whoami = os.getenv("USER")
+    job = sumjobs(jobs)
     namelen = max(map(len, (job["name"] for job in jobs)))
     lens = {
+        "title": 10,
         "name": min(20, max(6, namelen + 1)),
         "stat": 12,
         "user": 10,
-        "time": 12,
-        "title": 10
+        "time": 12
     }
     if wide:
         lens["title"] = 20
         lens["name"] = max(6, namelen + 1)
         lens["queue"] = 8
         lens["project"] = 8
+    # header
     if header and printjobssum.header:
         h = ""
         if title:
@@ -93,94 +98,99 @@ def printjobssum(jobs, long=False, wide=False, title=None, header=True,
             if len(title) >= lens["title"]:
                 title = title[:lens["title"] - 2] + "*"
         l += color(title.ljust(lens["title"]), "b")
-    # Job Name
-    jobname = sumjob["job_name"]
+    # job name
+    jobname = job["job_name"] if job["job_name"] else ""
     if not wide:
         if len(jobname) >= lens["name"]:
             jobname = jobname[:lens["name"] - 2] + "*"
     l += jobname.ljust(lens["name"])
-    # Status
-    l += color("%3d " % sumjob["stat"]["PEND"], "r")
-    l += color("%3d " % sumjob["stat"]["RUN"], "g")
-    done = sumjob["stat"]["EXIT"] + sumjob["stat"]["DONE"]
+    # status
+    l += color("%3d " % job["stat"]["PEND"], "r")
+    l += color("%3d " % job["stat"]["RUN"], "g")
+    done = job["stat"]["EXIT"] + job["stat"]["DONE"]
     if done:
         l += color("%3d " % done, "y")
     else:
         l += "    "
-    # User
-    if len(sumjob["user"]) == 1:
-        user = sumjob["user"].keys()[0]
+    # user
+    if len(job["user"]) == 1:
+        user = job["user"].keys()[0]
         c = "g" if user == whoami else 0
         l += color(user.ljust(lens["user"]), c)
     else:
-        l += color(str(len(sumjob["user"])).ljust(lens["user"]), "b")
-    # Project
+        l += color(str(len(job["user"])).ljust(lens["user"]), "b")
     if wide:
-        if len(sumjob["queue"]) == 1:
-            l += sumjob["queue"].keys()[0].ljust(lens["queue"])
+        # queue
+        if len(job["queue"]) == 1:
+            l += job["queue"].keys()[0].ljust(lens["queue"])
         else:
-            l += color(str(len(sumjob["queue"])).ljust(lens["queue"]), "b")
-        if len(sumjob["project"]) == 1:
-            l += sumjob["project"].keys()[0].ljust(lens["project"])
+            l += color(str(len(job["queue"])).ljust(lens["queue"]), "b")
+        # project
+        if len(job["project"]) == 1:
+            l += job["project"].keys()[0].ljust(lens["project"])
         else:
-            l += color(str(len(sumjob["project"])).ljust(lens["project"]), "b")
-    # Wait/Runtime
-    if sumjob["run_time"] > 0:
-        l += format_duration(sumjob["run_time"]).rjust(lens["time"])
+            n = len(job["project"])
+            l += color(str(n).ljust(lens["project"]), "b")
+    # runtime
+    if job["run_time"] > 0:
+        l += format_duration(job["run_time"]).rjust(lens["time"])
     else:
         l += "".rjust(lens["time"])
-    # Resources
-    # Time
-    if sumjob["runlimit"]:
-        l += "  " + format_duration(sumjob["runlimit"]).rjust(lens["time"])
-    if sumjob["%complete"]:
-        ptime = sumjob["%complete"]
+    # resources
+    # %t
+    if job["%complete"]:
+        ptime = job["%complete"]
         c = "r" if ptime > 90 else "y" if ptime > 75 else 0
-        l += " " + color("%3d" % ptime, c) + "%t"
         if wide:
             s = "%6.2f" % round(ptime, 2)
         else:
             s = "%3d" % int(round(ptime))
         l += " " + color(s, c) + "%t"
-    # Memory
-    if sumjob["memlimit"] and sumjob["mem"] and sumjob["slots"]:
-        memlimit = sumjob["memlimit"] * sumjob["slots"]
-        pmem = 100 * sumjob["mem"] / memlimit
+    # %m
+    if job["memlimit"] and job["mem"] and job["slots"]:
+        memlimit = job["memlimit"] * job["slots"]
+        pmem = 100 * job["mem"] / memlimit
         c = "r" if pmem > 90 else "y" if pmem > 75 else 0
         if wide:
             s = "%6.2f" % round(pmem, 2)
         else:
             s = "%3d" % int(round(pmem))
         l += " " + color(s, c) + "%m"
-    if sumjob["mem"]:
-        l += " " + format_mem(sumjob["mem"]).rjust(9)
+    # time
+    if job["runlimit"]:
+        l += "  " + format_duration(job["runlimit"])
+    # memory
+    if job["memlimit"]:
+        l += format_mem(job["memlimit"]).rjust(10)
     else:
-        l += "          "
+        l += "".rjust(10)
     # Hosts
-    if sumjob["exec_host"]:
-        if wide or len(sumjob["exec_host"]) == 1:
-            d = sumjob["exec_host"]
+    if job["exec_host"]:
+        if wide or len(job["exec_host"]) == 1:
+            d = job["exec_host"]
         else:
             d = defaultdict(int)
-            for key, val in sumjob["exec_host"].iteritems():
+            for key, val in job["exec_host"].iteritems():
                 d[re.match("(.*?)\d+", key).groups()[0] + "*"] += val
-        for key, val in d.iteritems():
+        for key in sorted(d.keys()):
+            val = d[key]
             c = "r" if val >= 100 else "y" if val >= 20 else 0
-            exclusive = sumjob["exclusive"]
+            exclusive = job["exclusive"]
             exclusive = len(exclusive) == 1 and True in exclusive
             times = color("x", "r") if exclusive else "*"
             l += color(" %3d" % val, c) + times + "%s" % key
-    if sumjob["rsvd_host"]:
-        l += color("  rsvd:", "y")
-        if wide or len(sumjob["rsvd_host"]) == 1:
-            d = sumjob["rsvd_host"]
-        else:
-            d = defaultdict(int)
-            for key, val in sumjob["rsvd_host"].iteritems():
-                d[re.match("(.*?)\d+", key).groups()[0] + "*"] += val
-        for key, val in d.iteritems():
-            c = "r" if val >= 100 else "y" if val >= 20 else 0
-            l += color(" %3d" % val, c) + "*%s" % key
+    else:
+        if job["rsvd_host"]:
+            l += color("  rsvd:", "y")
+            if wide or len(job["rsvd_host"]) == 1:
+                d = job["rsvd_host"]
+            else:
+                d = defaultdict(int)
+                for key, val in job["rsvd_host"].iteritems():
+                    d[re.match("(.*?)\d+", key).groups()[0] + "*"] += val
+            for key, val in d.iteritems():
+                c = "r" if val >= 100 else "y" if val >= 20 else 0
+                l += color(" %3d" % val, c) + "*%s" % key
     print(l, file=file)
     file.flush()
 

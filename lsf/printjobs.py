@@ -93,6 +93,7 @@ def printjobs(jobs, wide=False, long=False, title=None,
         lens["queue"] = 8
         lens["project"] = 8
         lens["prio."] = 6
+    # header
     if header:
         h = "".join(n.ljust(lens[n]) for n in ("jobid", "name", "stat",
                                                "user"))
@@ -105,34 +106,38 @@ def printjobs(jobs, wide=False, long=False, title=None,
             h += "  " + color(title, "b")
         print(h, file=file)
     for job in jobs:
+        l = ""
         # jobid
-        l = (job["jobid"] + " ").ljust(lens["jobid"])
-        # Job Name
-        jobname = job["name"] if job["name"] else ""
+        l += (job["jobid"] + " ").ljust(lens["jobid"])
+        # job name
+        jobname = job["job_name"] if job["job_name"] else ""
         if not wide:
             if len(jobname) >= lens["name"]:
                 jobname = jobname[:lens["name"] - 2] + "*"
         l += jobname.ljust(lens["name"])
-        # Status
+        # status
         stat = job["stat"]
         c = "r" if stat == "PEND" else "g" if stat == "RUN" else "y"
         l += color(stat.ljust(lens["stat"]), c)
-        # User
+        # user
         c = "g" if job["user"] == whoami else 0
         l += color((job["user"] + " ").ljust(lens["user"]), c)
-        # Queue and Project
         if wide:
+            # queue
             l += job["queue"].ljust(lens["queue"])
+            # project
             l += job["project"].ljust(lens["project"])
+            # priority
             l += str(job["priority"]).rjust(lens["prio."] - 1) + " "
-        # Wait/Runtime
+        # wait/runtime
         if job["stat"] == "PEND":
             t = time() - job["submit_time"]
         else:
             t = job["run_time"]
         s = format_duration(t)
         l += s.rjust(lens["time"])
-        # Resources %
+        # resources
+        # %t
         if job["%complete"]:
             ptime = job["%complete"]
             c = "r" if ptime > 90 else "y" if ptime > 75 else 0
@@ -143,6 +148,7 @@ def printjobs(jobs, wide=False, long=False, title=None,
             l += " " + color(s, c) + "%t"
         elif job["stat"] == "RUN":
             l += "      "
+        # %m
         if job["memlimit"] and job["mem"] and job["slots"]:
             memlimit = job["memlimit"] * job["slots"]
             pmem = 100 * job["mem"] / memlimit
@@ -154,10 +160,10 @@ def printjobs(jobs, wide=False, long=False, title=None,
             l += " " + color(s, c) + "%m"
         elif job["stat"] == "RUN":
             l += "      "
-        # Time
+        # time
         if job["runlimit"]:
             l += "  " + format_duration(job["runlimit"])
-        # Memory
+        # memory
         if job["memlimit"]:
             l += format_mem(job["memlimit"]).rjust(10)
         else:
@@ -170,9 +176,11 @@ def printjobs(jobs, wide=False, long=False, title=None,
                 d = defaultdict(int)
                 for key, val in job["exec_host"].iteritems():
                     d[re.match("(.*?)\d+", key).groups()[0] + "*"] += val
-            for key, val in d.iteritems():
+            for key in sorted(d.keys()):
+                val = d[key]
                 c = "r" if val >= 100 else "y" if val >= 20 else 0
-                times = color("x", "r") if job["exclusive"] else "*"
+                exclusive = job["exclusive"]
+                times = color("x", "r") if exclusive else "*"
                 l += color(" %3d" % val, c) + times + "%s" % key
         else:
             if job["min_req_proc"]:
