@@ -20,7 +20,7 @@ def sumjobs(jobs):
         elif key in ("runlimit", "swaplimit", "stacklimit", "memlimit",
                      "filelimit", "processlimit", "corelimit", "run_time",
                      "swap", "slots", "mem", "max_mem", "avg_mem",
-                     "nexec_host"):
+                     "nexec_host", "cpu_used", "time_left"):
             # sum
             sumjob[key] = sum(job[key] for job in jobs if job[key])
         elif key in ("%complete", "job_priority", "idle_factor"):
@@ -40,12 +40,20 @@ def sumjobs(jobs):
         elif key == "pids":
             # collect
             sumjob[key] = sum((job[key] for job in jobs if job[key]), [])
-        elif key in ("jobid", "pend_reason"):
+        elif key == "jobid":
             # collect
             sumjob[key] = []
             for job in jobs:
                 if job[key] and job[key] not in sumjob[key]:
                     sumjob[key].append(job[key])
+        elif key == "pend_reason":
+            # sum
+            sumjob[key] = defaultdict(int)
+            for job in jobs:
+                if not job[key]:
+                    continue
+                for key2, val in job[key]:
+                    sumjob[key][key2] += val
         else:
             # collect and count
             sumjob[key] = defaultdict(int)

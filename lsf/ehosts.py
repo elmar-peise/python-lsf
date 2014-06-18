@@ -88,7 +88,7 @@ def main():
     )
     parser.add_argument(
         "-w", "--wide",
-        help="don't shorten strings",
+        help="show more detailed info",
         action="store_true"
     )
     parser.add_argument(

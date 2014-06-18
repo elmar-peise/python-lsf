@@ -124,12 +124,13 @@ def main():
     parser = argparse.ArgumentParser(
         description="More comprehensive version of bjobs."
     )
-    parser.add_argument(
+    exg = parser.add_mutually_exclusive_group()
+    exg.add_argument(
         "-w", "--wide",
-        help="don't shorten strings",
+        help="shore more detailed info",
         action="store_true"
     )
-    parser.add_argument(
+    exg.add_argument(
         "-l", "--long",
         help="long job description",
         action="store_true"

@@ -44,13 +44,8 @@ def printjoblong(job, sumjob=False, file=sys.stdout):
             print(format_time(job[key]), file=file)
         elif key in ("cpu_used", "time_left", "runlimit", "run_time"):
             print(format_duration(job[key]), file=file)
-        elif key in ("pend_reason", "exec_host", "rsvd_host"):
-            if sumjob:
-                items = sum(job[key], [])
-            else:
-                items = job[key]
-            if isinstance(items, dict):
-                items = items.items()
+        elif key in ("pend_reason", "rsvd_host"):
+            items = job[key]
             key2, val = items[0]
             print("%4d * %s" % (val, key2), file=file)
             for key2, val in items[1:]:
@@ -76,8 +71,8 @@ def printjoblong(job, sumjob=False, file=sys.stdout):
                     if len(job[key]) == 1:
                         print(job[key].keys()[0], file=file)
                     else:
-                        items = job[key].items()
-                        print("%4d * %s" % (val, key2), file=file)
+                        items = sorted(job[key].items())
+                        print("%4d * %s" % items[0][::-1], file=file)
                         for key2, val in items[1:]:
                             print(20 * " " + "%4d * %s" % (val, key2),
                                   file=file)
