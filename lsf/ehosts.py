@@ -3,8 +3,8 @@ from __future__ import print_function, division
 
 from readhosts import readhosts
 from printhosts import printhosts
-from printhostssum import printhostssum
 from grouphosts import grouphosts
+from sumhosts import sumhosts
 
 from readjobs import readjobs
 
@@ -50,27 +50,35 @@ def ehosts(args, bhostsargs):
         hostnames = [h["host_name"] for h in hosts]
         jobs = readjobs(["-u", "all", "-r", "-m", " ".join(hostnames)])
 
-    # summarize?
-    if args.sum:
-        printhostsfun = printhostssum
-    else:
-        printhostsfun = printhosts
-
     # sort
     if not args.nosort:
         hosts.sort(key=lambda h: h["host_name"])
 
     # no grouping
     if not args.groupby or args.groupby not in hosts[0]:
-        printhostsfun(hosts, jobs, wide=args.wide, header=not args.noheader)
+        if args.sum:
+            printhosts([sumhosts(hosts)], wide=args.wide, header=not
+                       args.noheader)
+        else:
+            printhosts(hosts, jobs, wide=args.wide, header=not args.noheader)
         return
 
     # grouping
     hostgroups = grouphosts(hosts, args.groupby)
-    for title in sorted(hostgroups.keys()):
-        hosts = hostgroups[title]
-        printhostsfun(hosts, jobs, wide=args.wide, header=not args.noheader,
-                      title=title)
+    if args.sum:
+        hosts = []
+        for title in sorted(hostgroups.keys()):
+            hostgroup = hostgroups[title]
+            sumhost = sumhosts(hostgroup)
+            sumhost["title"] = title
+            hosts.append(sumhost)
+        printhosts(hosts, jobs, wide=args.wide, header=not args.noheader)
+    else:
+
+        for title in sorted(hostgroups.keys()):
+            hosts = hostgroups[title]
+            printhosts(hosts, jobs, wide=args.wide, header=not args.noheader,
+                       title=title)
 
 
 def main():

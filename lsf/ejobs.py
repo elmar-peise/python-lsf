@@ -5,14 +5,12 @@ from utility import color
 
 from readjobs import readjobs
 from printjobs import printjobs
-from printjobssum import printjobssum
 from groupjobs import groupjobs
+from sumjobs import sumjobs
 
 from readhosts import readhosts
 from printhosts import printhosts
-from printhostssum import printhostssum
 
-import sys
 import argparse
 import re
 
@@ -52,57 +50,73 @@ def ejobs(args, bjobsargs):
     if args.sortby:
         jobs.sort(key=lambda j: j[args.sortby])
 
-    # summarize?
-    if args.sum:
-        printjobsfun = printjobssum
-        printhostsfun = printhostssum
-    else:
-        printjobsfun = printjobs
-        printhostsfun = printhosts
-
     # no grouping
     if not args.groupby or args.groupby not in jobs[0]:
-        printjobsfun(jobs, wide=args.wide, long=args.long, header=not
-                     args.noheader)
+        if args.sum:
+            printjobs([sumjobs(jobs)], wide=args.wide, long=args.long,
+                      header=not args.noheader)
+        else:
+            printjobs(jobs, wide=args.wide, long=args.long,
+                      header=not args.noheader)
         return
 
     # grouping
     jobgroups = groupjobs(jobs, args.groupby)
+    if not args.pending:
+        if args.sum:
+            jobs = []
+            for title in sorted(jobgroups.keys()):
+                jobgroup = jobgroups[title]
+                sumjob = sumjobs(jobgroup)
+                sumjob["title"] = title
+                jobs.append(sumjob)
+            printjobs(jobs, wide=args.wide, long=args.long,
+                      header=not args.noheader)
+        else:
+            for title in sorted(jobgroups.keys()):
+                jobs = jobgroups[title]
+                printjobs(jobs, wide=args.wide, long=args.long,
+                          header=not args.noheader, title=title)
+        return
+
+    # pending
     for title in sorted(jobgroups.keys()):
         jobs = jobgroups[title]
-        if args.pending:  # grouped by pend_reason
-            reasons = jobs[0]["pend_reason"]
-            if not reasons or len(reasons) != 1:
-                title = None
-            else:  # only use singular reason as title
-                reason = reasons[0]
-                title = reason[0]
-                if not isinstance(reason[1], bool):
-                    title += ": %d" % reason[1]
-        printjobsfun(jobs, wide=args.wide, header=not args.noheader,
-                     title=title)
-        if args.pending:
-            if reasons and len(reasons) > 1:
-                # show pending reasons
-                for reason, count in reasons:
-                    if reason in pendingcolors:
-                        reason = color(reason, pendingcolors[reason])
-                    if count is True:
-                        print("        " + reason)
-                    else:
-                        print("  %4d  %s" % (count, reason))
-                # show potential hosts
-                if jobs[0]["resreq"] and not args.fast:
-                    req = jobs[0]["resreq"]
-                    req = re.sub(" && \(hostok\)", "", req)
-                    req = re.sub(" && \(mem>\d+\)", "", req)
-                    hosts = readhosts(["-R", req])
-                    hostnames = [h["host_name"] for h in hosts]
-                    jobs = readjobs(["-u", "all", "-r", "-m",
-                                     " ".join(hostnames)])
-                    hosts.sort(key=lambda h: h["host_name"])
-                    printhostsfun(hosts, jobs, wide=args.wide, header=not
-                                  args.noheader)
+        reasons = jobs[0]["pend_reason"]
+        if not reasons or len(reasons) != 1:
+            title = None
+        else:  # only use singular reason as title
+            reason = reasons[0]
+            title = reason[0]
+            if not isinstance(reason[1], bool):
+                title += ": %d" % reason[1]
+        if args.sum:
+            printjobs([sumjobs(jobs)], wide=args.wide, long=args.long,
+                      header=not args.noheader, title=title)
+        else:
+            printjobs(jobs, wide=args.wide, long=args.long,
+                      header=not args.noheader, title=title)
+        if reasons and len(reasons) > 1:
+            # show pending reasons
+            for reason, count in reasons:
+                if reason in pendingcolors:
+                    reason = color(reason, pendingcolors[reason])
+                if count is True:
+                    print("        " + reason)
+                else:
+                    print("  %4d  %s" % (count, reason))
+            # show potential hosts
+            if jobs[0]["resreq"] and not args.fast:
+                req = jobs[0]["resreq"]
+                req = re.sub(" && \(hostok\)", "", req)
+                req = re.sub(" && \(mem>\d+\)", "", req)
+                hosts = readhosts(["-R", req])
+                hostnames = [h["host_name"] for h in hosts]
+                jobs = readjobs(["-u", "all", "-r", "-m", " ".join(hostnames)])
+                hosts.sort(key=lambda h: h["host_name"])
+                printhosts(hosts, jobs, wide=args.wide,
+                           header=not args.noheader)
+                if len(jobgroups) > 1:
                     print()
 
 

@@ -3,6 +3,8 @@ from __future__ import print_function, division
 
 from utility import color, format_duration, format_mem
 from groupjobs import groupjobs
+from sumjobs import sumjobs
+from useraliases import getuseralias
 
 import os
 import sys
@@ -16,37 +18,73 @@ def printhosts(hosts, jobs=[], wide=False, header=True, file=sys.stdout):
     """list the hosts"""
     if len(hosts) == 0:
         return
+    sumhosts = not isinstance(hosts[0]["status"], str)
     jobsbyhost = groupjobs(jobs, "exec_host")
     # begin output
     screencols = int(check_output(["tput", "cols"]))
     whoami = os.getenv("USER")
+    namelen = max(map(len, (host["host_name"] for host in hosts)))
     lens = {
-        "host_name": 14,
+        "host_name": min(20, max(6, namelen + 1)),
         "status": 8,
+        "title": 15,
+        "cpus": 10
     }
+    if wide:
+        lens["title"] = 20
+        lens["host_name"] = max(6, namelen + 1)
+        lens["model"] = 14
+    if sumhosts:
+        lens["status"] = 12
+        lens["cpus"] = 14
     if header:
-        h = "".join(n.ljust(lens[n]) for n in ("host_name", "status"))
-        h += " cpus     mem (free/total)"
+        h = ""
+        if sumhosts and "title" in hosts[0]:
+            h += "group".ljust(lens["title"])
+        h += "".join(n.ljust(lens[n]) for n in ("host_name", "status", "cpus"))
+        h += "mem (free/total)"
         if wide:
-            h += "  " + "model".ljust(14)
+            h += "  " + "model".ljust(lens["model"])
         h = h.upper()
         print(h, file=file)
     for host in hosts:
+        l = ""
+        if sumhosts and "title" in host:
+            # title
+            title = host["title"]
+            if not wide:
+                if len(title) >= lens["title"]:
+                    title = title[:lens["title"] - 2] + "*"
+            l += color(title.ljust(lens["title"]), "b")
         # host_name
-        l = host["host_name"].ljust(lens["host_name"])
+        l += host["host_name"].ljust(lens["host_name"])
         # status
-        if host["status"] == "ok":
-            l += color("ok".ljust(lens["status"]), "g")
-        elif "closed_" in host["status"]:
-            l += color(host["status"][7:].ljust(lens["status"]), "r")
+        if sumhosts:
+            l += color("%3d " % host["status"]["ok"], "g")
+            closed = sum(n for stat, n in host["status"].iteritems() if
+                         stat.startswith("closed_"))
+            l += color("%3d " % closed, "r")
+            other = len(host["host_names"]) - host["status"]["ok"] - closed
+            if other:
+                l += color("%3d " % other, "y")
+            else:
+                l += "    "
         else:
-            l += color(host["status"].ljust(lens["status"]), "y")
+            if host["status"] == "ok":
+                l += color("ok".ljust(lens["status"]), "g")
+            elif "closed_" in host["status"]:
+                l += color(host["status"][7:].ljust(lens["status"]), "r")
+            else:
+                l += color(host["status"].ljust(lens["status"]), "y")
         # cpus
         total = host["max"]
         used = host["njobs"]
         free = total - used
         c = "r" if free == 0 else "y" if free < total else 0
-        l += color("%2d" % free, c) + "/%2d" % total
+        if sumhosts:
+            l += color("%4d" % free, c) + "/%4d" % total
+        else:
+            l += color("%2d" % free, c) + "/%2d" % total
         # mem
         if "mem" in host["load"]:
             free, used = host["load"]["mem"]
@@ -57,18 +95,48 @@ def printhosts(hosts, jobs=[], wide=False, header=True, file=sys.stdout):
             c = "r" if f > .75 else "y" if f > .5 else 0
             l += "  " + format_mem(free, c) + "/" + format_mem(total)
         if wide:
-            l += "  " + host["model"].ljust(14)
+            if sumhosts:
+                if len(host["model"]) == 1:
+                    l += host["model"][0].ljust(lens["model"])
+                else:
+                    nmodel = len(host["model"])
+                    l += color(("  %d" % nmodel).ljust(lens["model"]), "b")
+            else:
+                l += "  " + host["model"].ljust(14)
         l += " "
         if host["rsv"] > 0:
-            l += " %2d*" % host["rsv"] + color("reserved", "y")
-        if host["host_name"] in jobsbyhost:
-            jobs = jobsbyhost[host["host_name"]]
+            l += " %3d*" % host["rsv"] + color("reserved", "y")
+        if sumhosts:
+            hostnames = host["host_names"]
+        else:
+            hostnames = [host["host_name"]]
+        jobs = []
+        for hostname in hostnames:
+            if hostname in jobsbyhost:
+                for job in jobsbyhost[hostname]:
+                    if job not in jobs:
+                        jobs.append(job)
+        if sumhosts:
+            jobgroups = groupjobs(jobs, "user")
+            jobs = []
+            for user in sorted(jobgroups.keys()):
+                jobs.append(sumjobs(jobgroups[user]))
+        if jobs:
             for job in jobs:
-                times = color("x", "r") if job["exclusive"] else "*"
-                c = "g" if job["user"] == whoami else 0
-                l += " %2d" % job["exec_host"][host["host_name"]] + times
-                l += color(job["user"].ljust(8), c)
-                if wide:
+                exclusive = job["exclusive"]
+                if sumhosts:
+                    exclusive = len(exclusive) == 1 and True in exclusive
+                times = color("x", "r") if exclusive else "*"
+                nslots = sum(job["exec_host"][hn] for hn in hostnames
+                             if hn in job["exec_host"])
+                c = "r" if nslots >= 100 else "y" if nslots >= 20 else 0
+                l += color(" %3d" % nslots, c)
+                user = job["user"]
+                if sumhosts:
+                    user = user.keys()[0]
+                c = "g" if user == whoami else 0
+                l += times + color(getuseralias(user).ljust(8), c)
+                if wide and not sumhosts:
                     if job["mem"]:
                         l += format_mem(job["mem"])
                     else:
