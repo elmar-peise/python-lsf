@@ -6,9 +6,10 @@ Python API for the LSF batch job scheduler
 
 Requirements
 ------------
-* bjobs, bhosts, bsub, and lshosts available from the command line
+
 * python version 2.7.x
-* (developed with LSF version 9.1.2.0)
+* LSF version 9.1.2.0
+* bjobs, bhosts, bsub, and lshosts available
 
 
 Installation
@@ -21,7 +22,7 @@ use
 
     python setup.py install --user
 
-to install the package in ~/.local. You might then have to
+to install the package in ~/.local.  You might then have to
 
     export PATH=$PATH:~/.local/bin
 
@@ -31,7 +32,8 @@ in order to make the scripts available on the command line.
 Usage
 -----
 
-ejobs and ehosts have essentially the same interfaces as LSF' bjobs and bhosts.
+ejobs, ehosts, and esub have essentially the same interfaces as LSF' bjobs,
+bhosts, and bsub.
 Check
 
     ejobs -h
