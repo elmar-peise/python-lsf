@@ -32,10 +32,12 @@ def ehosts(args, bhostsargs):
             bhostsargs += ["-R", "select[%s]" % select]
         else:
             i = bhostsargs.index("-R") + 1
+            req = bhostsargs[i]
             if "select" in req:
-                bhostsargs[i].replace("select[", "select[(%s) &&" % select, 1)
+                bhostsargs[i] = req.replace("select[",
+                                            "select[(%s) & " % select, 1)
             else:
-                bhostsargs[i] += " select[%s]" % select
+                bhostsargs[i] = "(%s) & (%s)" % (req, select)
 
     # read
     hosts = readhosts(bhostsargs, fast=args.fast)
