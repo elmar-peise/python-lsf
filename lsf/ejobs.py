@@ -2,6 +2,7 @@
 from __future__ import print_function, division
 
 from utility import color
+from useraliases import lookupalias
 
 from readjobs import readjobs
 from printjobs import printjobs
@@ -39,6 +40,11 @@ def ejobs(args, bjobsargs):
     for l in list("rsda"):
         if args.__dict__[l]:
             bjobsargs = ["-" + l] + bjobsargs
+    if args.u:
+        unames = []
+        for alias in args.u.split():
+            unames += lookupalias(alias)
+        bjobsargs += ["-u", " ".join(unames)]
 
     # read
     jobs = readjobs(bjobsargs, fast=args.fast)
@@ -185,6 +191,10 @@ def main():
         "-X",  # discard
         help=argparse.SUPPRESS,
         action="store_true"
+    )
+    parser.add_argument(
+        "-u",  # for username lookup
+        help=argparse.SUPPRESS,
     )
     # pass the following on to allow combining (e.g. with -p or -l)
     for l in list("rsda"):
