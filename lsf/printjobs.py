@@ -66,23 +66,18 @@ def printjoblong(job, sumjob=False, file=sys.stdout):
         elif key == "pids":
             print(" ".join(map(str, job[key])), file=file)
         else:
-            if sumjob:
-                if isinstance(job[key], dict):
-                    if len(job[key]) == 1:
-                        print(job[key].keys()[0], file=file)
-                    else:
-                        items = sorted(job[key].items())
-                        print("%4d * %s" % items[0][::-1], file=file)
-                        for key2, val in items[1:]:
-                            print(20 * " " + "%4d * %s" % (val, key2),
-                                  file=file)
-                elif isinstance(job[key], list):
-                    print(" ".join(job[key]), file=file)
+            if isinstance(job[key], dict):
+                if len(job[key]) == 1:
+                    print(job[key].keys()[0], file=file)
                 else:
-                    print(job[key], file=file)
+                    items = sorted(job[key].items())
+                    print("%4d * %s" % items[0][::-1], file=file)
+                    for key2, val in items[1:]:
+                        print(20 * " " + "%4d * %s" % (val, key2), file=file)
+            elif isinstance(job[key], list):
+                print(" ".join(job[key]), file=file)
             else:
                 print(job[key], file=file)
-    print(file=file)
 
 
 def printjobs(jobs, wide=False, long=False, title=None,
