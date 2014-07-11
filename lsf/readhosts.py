@@ -9,7 +9,7 @@ def parseval(val):
         return None
     if re.match("\d+$", val):
         return int(val)
-    if re.match("\d+.\d+$", val):
+    if re.match("\d+(.\d+)?([eE][+-]\d+)?$", val):
         return float(val)
     if re.match("\d+(.\d+)?%$", val):
         return 100 * float(val[:-1])
