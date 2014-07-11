@@ -196,7 +196,7 @@ def readjobs(args, fast=False):
     out = check_output(["bjobs", "-UF"] + joborder)
     out = out.split(78 * "-" + "\n")
     for jobout in out:
-        lines = jobout.splitlines()
+        lines = [line.strip() for line in jobout.splitlines()]
         jobid = re.match("Job <(\d+(?:\[\d+\])?)>", lines[1]).groups()[0]
         job = jobs[jobid]
         # mail
@@ -213,17 +213,20 @@ def readjobs(args, fast=False):
         if match:
             job["resreq"] = match.groups()[0]
         if lines[-2].startswith("Combined: "):
-            jon["combined_resreq"] = lines[-2].split(": ", 1)[1]
+            job["combined_resreq"] = lines[-2].split(": ", 1)[1]
         # runlimit
-        job["runlimit"] = int(float(lines[7].split()[0]) * 60)
+        idx = lines.index("RUNLIMIT")
+        job["runlimit"] = int(float(lines[idx + 1].split()[0]) * 60)
         # memlimits
-        keys = lines[9].lower().strip().split()
-        vals = lines[10].split()
+        idx += 3
+        keys = lines[idx].lower().strip().split()
+        vals = lines[idx + 1].split()
         for i, key in enumerate(keys):
             job[key] = parsemem(vals[2 * i], vals[2 * i + 1])
         # reserved hosts
+        idx += 2
         match = re.search("Reserved <\d+> job slots on host\(s\) <(.*?)>;",
-                          lines[11])
+                          lines[idx])
         if match:
             val = match.groups()[0].split("> <")
             hosts = {}
