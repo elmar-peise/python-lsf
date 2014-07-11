@@ -149,7 +149,7 @@ def printjobs(jobs, wide=False, long=False, title=None,
         jobname = job["job_name"] if job["job_name"] else ""
         if not wide:
             if len(jobname) >= lens["name"]:
-                jobname = jobname[:lens["name"] - 2] + "*"
+                jobname = "*" + jobname[-lens["name"] + 2:]
         l += jobname.ljust(lens["name"])
         # status
         if sumjob:
