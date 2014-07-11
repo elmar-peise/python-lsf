@@ -17,7 +17,7 @@ def sumhosts(hosts):
                      "maxmem", "maxswp"):
             # sum
             sumhost[key] = sum(host[key] for host in hosts if host[key])
-        elif key in ("status", "server", "type"):
+        elif key in ("status", "server", "type", "comment"):
             sumhost[key] = defaultdict(int)
             for host in hosts:
                 sumhost[key][host[key]] += 1

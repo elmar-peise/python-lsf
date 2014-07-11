@@ -146,5 +146,12 @@ def printhosts(hosts, jobs=[], wide=False, header=True, file=sys.stdout):
                         c = "r" if ptime > 90 else "y" if ptime > 75 else 0
                         l += color("%3d" % ptime, c) + "% "
                         l += format_duration(job["runlimit"])
+        if host["comment"]:
+            if sumhosts:
+                for key, val in host["comment"].iteritems():
+                    if key:
+                        l += " %3dx" % val + color(key, "b")
+            else:
+                l += "   " + color(host["comment"], "b")
         print(l, file=file)
         file.flush()

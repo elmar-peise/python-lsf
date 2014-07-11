@@ -45,6 +45,7 @@ def readhosts(args, fast=False):
                 "host_name": tokens[1],
                 "load": {},
                 "threshold": {},
+                "comment": None,
             }
             stage = None
         elif tokens[0] == "STATUS":
@@ -59,6 +60,8 @@ def readhosts(args, fast=False):
             stage = "load"
         elif tokens[0] == "LOAD":
             stage = "threshold"
+        elif tokens[0] == "ADMIN":
+            host["comment"] = " ".join(tokens[3:])[1:-1]
         elif stage in ("load", "threshold"):
             keys = tokens
             try:
