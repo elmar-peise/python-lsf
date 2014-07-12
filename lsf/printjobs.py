@@ -92,7 +92,7 @@ def printjobs(jobs, wide=False, long=False, title=None,
         return
     # begin output
     whoami = os.getenv("USER")
-    namelen = max(map(len, (job["name"] for job in jobs)))
+    namelen = max(map(len, (job["job_name"] for job in jobs)))
     lens = {
         "title": 10,
         "jobid": 10,
