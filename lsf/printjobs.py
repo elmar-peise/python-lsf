@@ -216,6 +216,8 @@ def printjobs(jobs, wide=False, long=False, title=None,
             l += " " + color(s, c) + "%t"
         elif not sumjob and job["stat"] == "RUN":
             l += "      "
+            if wide:
+                l += "   "
         # %m
         if job["memlimit"] and job["mem"] and job["slots"]:
             memlimit = job["memlimit"] * job["slots"]
@@ -228,6 +230,8 @@ def printjobs(jobs, wide=False, long=False, title=None,
             l += " " + color(s, c) + "%m"
         elif not sumjob and job["stat"] == "RUN":
             l += "      "
+            if wide:
+                l += "   "
         # time
         if job["runlimit"]:
             l += "  " + format_duration(job["runlimit"])
