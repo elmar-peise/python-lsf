@@ -44,7 +44,7 @@ def printjoblong(job, sumjob=False, file=sys.stdout):
             print(format_time(job[key]), file=file)
         elif key in ("cpu_used", "time_left", "runlimit", "run_time"):
             print(format_duration(job[key]), file=file)
-        elif key in ("pend_reason", "rsvd_host"):
+        elif key in ("pend_reason"):
             items = job[key]
             key2, val = items[0]
             print("%4d * %s" % (val, key2), file=file)
