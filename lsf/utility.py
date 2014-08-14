@@ -14,6 +14,16 @@ def color(string, c):
     return "\033[{}m{}\033[0m".format(c, string)
 
 
+def fractioncolor(fraction):
+    if fraction < .1:
+        return "r"
+    if fraction < .25:
+        return "y"
+    if fraction < .9:
+        return 0
+    return "g"
+
+
 def format_duration(t):
     t = int(t)
     if t == 0:

@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 from __future__ import print_function, division
 
-from utility import color, format_duration, format_mem
+from utility import color, fractioncolor, format_duration, format_mem
 from groupjobs import groupjobs
 from sumjobs import sumjobs
 from useraliases import getuseralias
@@ -80,7 +80,7 @@ def printhosts(hosts, jobs=[], wide=False, header=True, file=sys.stdout):
         total = host["max"]
         used = host["njobs"]
         free = total - used
-        c = "r" if free == 0 else "y" if free < total else 0
+        c = fractioncolor(free / total)
         if sumhosts:
             l += color("%4d" % free, c) + "/%4d" % total
         else:
@@ -91,8 +91,7 @@ def printhosts(hosts, jobs=[], wide=False, header=True, file=sys.stdout):
             total = free + used
             if "maxmem" in host and host["maxmem"]:
                 total = host["maxmem"]
-            f = used / total
-            c = "r" if f > .75 else "y" if f > .5 else 0
+            c = fractioncolor(free / total)
             l += "  " + format_mem(free, c) + "/" + format_mem(total)
         if wide:
             if sumhosts:
@@ -143,7 +142,7 @@ def printhosts(hosts, jobs=[], wide=False, header=True, file=sys.stdout):
                         l += "         "
                     if job["%complete"] and job["runlimit"]:
                         ptime = job["%complete"]
-                        c = "r" if ptime > 90 else "y" if ptime > 75 else 0
+                        c = fractioncolor(1 - ptime / 100)
                         l += color("%3d" % ptime, c) + "% "
                         l += format_duration(job["runlimit"])
         if host["comment"]:

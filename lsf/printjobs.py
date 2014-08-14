@@ -1,7 +1,8 @@
 #!/usr/bin/env python
 from __future__ import print_function, division
 
-from utility import color, format_duration, format_mem, format_time
+from utility import color, fractioncolor
+from utility import format_duration, format_mem, format_time
 from useraliases import getuseralias
 
 import os
@@ -208,7 +209,7 @@ def printjobs(jobs, wide=False, long=False, title=None,
         # %t
         if job["%complete"]:
             ptime = job["%complete"]
-            c = "r" if ptime > 90 else "y" if ptime > 75 else 0
+            c = fractioncolor(1 - ptime / 100)
             if wide:
                 s = "%6.2f" % round(ptime, 2)
             else:
@@ -222,7 +223,7 @@ def printjobs(jobs, wide=False, long=False, title=None,
         if job["memlimit"] and job["mem"] and job["slots"]:
             memlimit = job["memlimit"] * job["slots"]
             pmem = 100 * job["mem"] / memlimit
-            c = "r" if pmem > 90 else "y" if pmem > 75 else 0
+            c = fractioncolor(1 - pmem / 100)
             if wide:
                 s = "%6.2f" % round(pmem, 2)
             else:
