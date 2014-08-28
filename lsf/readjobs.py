@@ -175,15 +175,17 @@ def readjobs(args, fast=False):
         out = check_output(["bjobs", "-p"] + pids)
         job = None
         for line in out.split("\n")[1:-1]:
-            if line[0] == " ":
+            if line[0] == " " or line[:4] == "JOBS":
                 # pending reason
                 if ":" in line:
-                    match = re.match(" (.*): (\d+) hosts?;", line).groups()
+                    match = re.match(" ?(.*): (\d+) hosts?;", line).groups()
                     job["pend_reason"].append((match[0], int(match[1])))
                 else:
-                    match = re.match(" (.*);", line).groups()
+                    match = re.match(" ?(.*);", line).groups()
                     job["pend_reason"].append((match[0], True))
             else:
+                if job:
+                    job["pend_reason"].sort(key=lambda p: -p[1])
                 # next job
                 line = line.split()
                 jobid = line[0]
