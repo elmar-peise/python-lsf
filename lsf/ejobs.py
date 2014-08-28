@@ -37,6 +37,8 @@ def ejobs(args, bjobsargs):
         bjobsargs = ["-P", "aices", "-G", "p_aices"] + bjobsargs
     if args.aices2:
         bjobsargs = ["-P", "aices2", "-G", "p_aices"] + bjobsargs
+    if args.aices24:
+        bjobsargs = ["-P", "aices24", "-G", "p_aices"] + bjobsargs
     for l in list("rsda"):
         if args.__dict__[l]:
             bjobsargs = ["-" + l] + bjobsargs
@@ -197,6 +199,11 @@ def main():
     parser.add_argument(
         "-aices2",
         help="short for -P aices2",
+        action="store_true"
+    )
+    parser.add_argument(
+        "-aices24",
+        help="short for -P aices-24",
         action="store_true"
     )
     parser.add_argument(
