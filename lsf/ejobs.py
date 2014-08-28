@@ -53,6 +53,23 @@ def ejobs(args, bjobsargs):
         return
 
     # sort
+    statorder = {
+        "RUN": 4,
+        "PROV": 4,
+        "PSUSP": 3,
+        "USUSP": 3,
+        "SSUSP": 3,
+        "PEND": 2,
+        "WAIT": 2,
+        "UNKWN": 1,
+        "DONE": 0,
+        "ZOMBI": 0,
+        "EXIT": 0,
+    }
+    jobs.sort(key=lambda j: -j["submit_time"])
+    jobs.sort(key=lambda j: j["priority"], reverse=True)
+    jobs.sort(key=lambda j: statorder[j["stat"]])
+    jobs.sort(key=lambda j: -j["run_time"])
     if args.sortby:
         jobs.sort(key=lambda j: j[args.sortby])
 
