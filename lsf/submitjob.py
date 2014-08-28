@@ -60,7 +60,7 @@ def submitjob(data, shell=False):
         if key[0] == "-":
             if val is True:
                 args += [key]
-            else:
+            if not isinstance(val, bool):
                 args += [key, val]
             continue
         if key in aliases:
