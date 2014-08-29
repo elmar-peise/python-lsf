@@ -68,10 +68,10 @@ def ejobs(args, bjobsargs):
         "ZOMBI": 0,
         "EXIT": 0,
     }
-    jobs.sort(key=lambda j: -j["submit_time"])
+    jobs.sort(key=lambda j: j["submit_time"])
     jobs.sort(key=lambda j: j["priority"], reverse=True)
-    jobs.sort(key=lambda j: statorder[j["stat"]])
     jobs.sort(key=lambda j: -j["run_time"])
+    jobs.sort(key=lambda j: -statorder[j["stat"]])
     if args.sortby:
         jobs.sort(key=lambda j: j[args.sortby])
 
