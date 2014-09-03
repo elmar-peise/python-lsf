@@ -23,7 +23,7 @@ def ehosts(args, bhostsargs):
     elif args.aices2:
         select = "aices2"
     elif args.aices24:
-        select = "aices-24"
+        select = "aices24"
     if args.model:
         if select:
             select = "(%s) && model==%s" % (select, args.model)
@@ -126,7 +126,7 @@ def main():
     )
     parser.add_argument(
         "-aices24",
-        help="short for -R aices-24",
+        help="short for -R aices24",
         action="store_true"
     )
     parser.add_argument(

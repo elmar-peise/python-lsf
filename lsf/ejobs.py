@@ -38,7 +38,7 @@ def ejobs(args, bjobsargs):
     if args.aices2:
         bjobsargs = ["-P", "aices2", "-G", "p_aices"] + bjobsargs
     if args.aices24:
-        bjobsargs = ["-P", "aices24", "-G", "p_aices"] + bjobsargs
+        bjobsargs = ["-P", "aices-24", "-G", "p_aices"] + bjobsargs
     for l in list("rsda"):
         if args.__dict__[l]:
             bjobsargs = ["-" + l] + bjobsargs
