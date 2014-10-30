@@ -12,7 +12,7 @@ def loadaliases():
         filename = os.environ["HOME"] + "/.useraliases"
         if os.path.isfile(filename):
             with open(filename) as fin:
-                useraliases = dict(line.split() for line in fin)
+                useraliases = dict(line.strip().split(None, 1) for line in fin)
         else:
             useraliases = {}
     return useraliases
