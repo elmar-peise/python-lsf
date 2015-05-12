@@ -32,7 +32,7 @@ in order to make the scripts available on the command line.
 Usage
 -----
 
-`ejobs`, `ehosts`, and `esub` have essentially the same interfaces as LSF'
+`ejobs`, `ehosts`, and `esub` have essentially the same interfaces as LSF's
 `bjobs`, `bhosts`, and `bsub`.
 Check
 
