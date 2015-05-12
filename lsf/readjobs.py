@@ -54,15 +54,16 @@ def readjobs(args, fast=False):
     )
     delimiter = "\7"
     # get detailed job information
-    cmd = ["bjobs", "-noheader", "-X", "-o",
+    cmd = ["bjobs", "-X", "-o",
            " ".join(keys) + " delimiter='" + delimiter + "'"] + args
     p = Popen(cmd, stdout=PIPE, stderr=PIPE)
     out, err = p.communicate()
     if err:
         return []
+    out = out.splitlines()[1:]  # get rid of header
     joborder = []
     jobs = {}
-    for line in out.splitlines():
+    for line in out:
         job = dict(zip(keys, line.split(delimiter)))
         for key, val in job.iteritems():
             if val == "-":

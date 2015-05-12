@@ -15,7 +15,7 @@ from collections import defaultdict
 
 
 def printhosts(hosts, jobs=[], wide=False, header=True, file=sys.stdout):
-    """list the hosts"""
+    """list the hosts."""
     if len(hosts) == 0:
         return
     sumhosts = not isinstance(hosts[0]["status"], str)
@@ -101,7 +101,15 @@ def printhosts(hosts, jobs=[], wide=False, header=True, file=sys.stdout):
                     nmodel = len(host["model"])
                     l += color(("  %d" % nmodel).ljust(lens["model"]), "b")
             else:
-                l += "  " + host["model"].ljust(14)
+                hoststr = host["model"]
+                phis = 0
+                if "mic0" in host["load"]:
+                    phis += int(bool(host["load"]["mic0"][0]))
+                if "mic1" in host["load"]:
+                    phis += int(bool(host["load"]["mic1"][0]))
+                if phis > 0:
+                    hoststr += "+%dPhi" % phis
+                l += "  " + hoststr.ljust(14)
         l += " "
         if host["rsv"] > 0:
             l += " %3d*" % host["rsv"] + color("reserved", "y")
