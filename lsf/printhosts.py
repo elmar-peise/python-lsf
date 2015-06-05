@@ -102,6 +102,7 @@ def printhosts(hosts, jobs=[], wide=False, header=True, file=sys.stdout):
                     l += color(("  %d" % nmodel).ljust(lens["model"]), "b")
             else:
                 hoststr = host["model"]
+                # Xeon Phi(s)
                 phis = 0
                 if "mic0" in host["load"]:
                     phis += int(bool(host["load"]["mic0"][0]))
@@ -109,6 +110,9 @@ def printhosts(hosts, jobs=[], wide=False, header=True, file=sys.stdout):
                     phis += int(bool(host["load"]["mic1"][0]))
                 if phis > 0:
                     hoststr += "+%dPhi" % phis
+                # GPU
+                if "gpu" in host["resources"]:
+                    hoststr += "+GPU"
                 l += "  " + hoststr.ljust(14)
         l += " "
         if host["rsv"] > 0:
