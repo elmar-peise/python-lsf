@@ -270,6 +270,10 @@ def printjobs(jobs, wide=False, long=False, title=None,
                     match = re.search("model==(\w+)", job["resreq"])
                     if match:
                         l += match.groups()[0]
+                    if re.search("phi", job["resreq"]):
+                        if match:
+                            l += "+"
+                        l += "Phi"
             if job["rsvd_host"]:
                 l += color("  rsvd:", "y")
                 if wide or len(job["rsvd_host"]) == 1:
