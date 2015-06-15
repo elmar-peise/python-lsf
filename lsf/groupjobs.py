@@ -9,7 +9,7 @@ def groupjobs(jobs, key):
     result = defaultdict(list)
     for job in jobs:
         if key == "pend_reason":
-            result[repr(job[key])].append(job)
+            result[repr(sorted(job[key]))].append(job)
         elif isinstance(job[key], dict):
             for val in job[key]:
                 result[val].append(job)
