@@ -161,7 +161,7 @@ def main():
         action="store_true"
     )
     parser.add_argument(
-        "-sum",
+        "--sum",
         help="summarize across jobs",
         action="store_true"
     )
