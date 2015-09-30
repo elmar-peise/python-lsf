@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+"""Read hosts from LSF."""
 from __future__ import print_function, division
 
 from subprocess import Popen, PIPE, check_output
@@ -5,6 +7,7 @@ import re
 
 
 def parseval(val):
+    """Parse a value that could be int, float, % or contain a memory unit."""
     if val == "-":
         return None
     if re.match("\d+$", val):
@@ -20,7 +23,7 @@ def parseval(val):
 
 
 def readhosts(args, fast=False):
-    """read hosts from LSF"""
+    """Read hosts from LSF."""
     # read bhosts for dynamic information
     p = Popen(["bhosts", "-l"] + args, stdout=PIPE, stderr=PIPE)
     out, err = p.communicate()

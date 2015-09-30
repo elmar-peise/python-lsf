@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+"""Wrapper script with bhosts functionality."""
 from __future__ import print_function, division
 
 from readhosts import readhosts
@@ -14,6 +15,7 @@ import argparse
 
 
 def ehosts(args, bhostsargs):
+    """Wrapper script with bhosts functionality."""
     # construct -R argument
     select = None
     if args.aices and args.aices2:
@@ -86,6 +88,7 @@ def ehosts(args, bhostsargs):
 
 
 def main():
+    """Main program entry point."""
     global args
     parser = argparse.ArgumentParser(
         description="More comprehensive version of bhosts."

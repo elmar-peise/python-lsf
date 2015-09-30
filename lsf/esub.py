@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+"""Wrapper script with bsub functionality."""
 from __future__ import print_function, division
 
 from submitjob import submitjob
@@ -13,6 +14,7 @@ import subprocess
 
 
 def esub(args, bsubargs, jobscript):
+    """Wrapper script with bsub functionality."""
     data = {"command": ""}
     if args.aices:
         data["project"] = "aices"
@@ -55,6 +57,7 @@ def esub(args, bsubargs, jobscript):
 
 
 def main():
+    """Main program entry point."""
     parser = argparse.ArgumentParser(
         description="Wrapper for bsub."
     )

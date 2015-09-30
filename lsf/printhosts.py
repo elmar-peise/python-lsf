@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+"""Print a list of hosts."""
 from __future__ import print_function, division
 
 from utility import color, fractioncolor, format_duration, format_mem
@@ -15,7 +16,7 @@ from collections import defaultdict
 
 
 def printhosts(hosts, jobs=[], wide=False, header=True, file=sys.stdout):
-    """list the hosts."""
+    """Print a list of hosts."""
     if len(hosts) == 0:
         return
     sumhosts = not isinstance(hosts[0]["status"], str)

@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+"""Read jobs from bjobs."""
 from __future__ import print_function, division
 
 import re
@@ -7,12 +8,13 @@ from subprocess import Popen, check_output, PIPE
 
 
 def parsemem(value, unit):
+    """Parse a memory size value and unit to int."""
     e = {"B": 0, "K": 1, "M": 2, "G": 3, "T": 4}[unit]
     return int(float(value) * 1024 ** e)
 
 
 def readjobs(args, fast=False):
-    """Read jobs from bjobs"""
+    """Read jobs from bjobs."""
     keys = ("jobid", "stat", "user", "queue", "job_name", "job_description",
             "proj_name", "application", "service_class", "job_group",
             "job_priority", "dependency", "command", "pre_exec_command",

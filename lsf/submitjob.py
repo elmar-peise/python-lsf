@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+"""Submit a job to LSF."""
 from __future__ import print_function, division
 
 import sys
@@ -7,7 +8,7 @@ from subprocess import Popen, PIPE
 
 
 def submitjob(data, shell=False):
-    """Submit a job to LSF"""
+    """Submit a job to LSF."""
     if "command" not in data:
         print("no command given", file=sys.stderr)
         return False

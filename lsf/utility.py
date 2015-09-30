@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+"""Utility function."""
 from __future__ import print_function, division
 
 import sys
@@ -6,6 +7,7 @@ from time import strftime, gmtime
 
 
 def color(string, c):
+    """Surround a string by shell coloring commands."""
     if not sys.stdout.isatty():
         return string
     names = {"r": 31, "g": 32, "y": 33, "b": 34}
@@ -15,6 +17,7 @@ def color(string, c):
 
 
 def fractioncolor(fraction):
+    """Color for utilization fractions."""
     if fraction < .1:
         return "r"
     if fraction < .25:
@@ -25,6 +28,7 @@ def fractioncolor(fraction):
 
 
 def format_duration(t):
+    """Format a duration."""
     t = int(t)
     if t == 0:
         return "           0"
@@ -52,10 +56,12 @@ def format_duration(t):
 
 
 def format_time(t):
+    """Format a time stamp."""
     return strftime("%x %X")
 
 
 def format_mem(s, c=0):
+    """Format a memory size value."""
     i = 0
     while abs(s) >= 1024:
         s /= 1024
@@ -65,6 +71,7 @@ def format_mem(s, c=0):
 
 
 def findstringpattern(strings):
+    """Find a common patter in a list of string."""
     if not len(strings):
         return ""
     if all(strings[0] == s for s in strings[1:]):

@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+"""Wrapper script with bjobs functionality."""
 from __future__ import print_function, division
 
 from utility import color
@@ -28,6 +29,7 @@ pendingcolors = {
 
 
 def ejobs(args, bjobsargs):
+    """Wrapper script with bjobs functionality."""
     if args.pending:
         bjobsargs = ["-p"] + bjobsargs
         args.groupby = "pend_reason"
@@ -146,6 +148,7 @@ def ejobs(args, bjobsargs):
 
 
 def main():
+    """Main program entry point."""
     parser = argparse.ArgumentParser(
         description="More comprehensive version of bjobs."
     )

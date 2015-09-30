@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+"""Print a list of jobs."""
 from __future__ import print_function, division
 
 from utility import color, fractioncolor
@@ -14,6 +15,7 @@ from collections import defaultdict
 
 
 def printjoblong(job, sumjob=False, file=sys.stdout):
+    """Print a job in long format."""
     keys = ("jobid", "stat", "user", "mail", "queue", "job_name",
             "job_description", "proj_name", "application", "service_class",
             "job_group", "job_priority", "dependency", "command",
@@ -83,7 +85,7 @@ def printjoblong(job, sumjob=False, file=sys.stdout):
 
 def printjobs(jobs, wide=False, long=False, title=None,
               header=True, file=sys.stdout):
-    """list the jobs"""
+    """Print a list of jobs."""
     if len(jobs) == 0:
         return
     sumjob = not isinstance(jobs[0]["jobid"], str)

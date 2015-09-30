@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+"""Username to real name aliasing utilities."""
 from __future__ import division, print_function
 
 import os
@@ -7,6 +8,7 @@ useraliases = None
 
 
 def loadaliases():
+    """Load all aliases from ~/.useraliases."""
     global useraliases
     if useraliases is None:
         filename = os.environ["HOME"] + "/.useraliases"
@@ -19,6 +21,7 @@ def loadaliases():
 
 
 def getuseralias(user):
+    """Look up the alias for a user."""
     aliases = loadaliases()
     if user in aliases:
         return aliases[user]
@@ -27,6 +30,7 @@ def getuseralias(user):
 
 
 def lookupalias(alias):
+    """Look up the user for an alias."""
     aliases = loadaliases()
     usernames = [k for k, v in aliases.iteritems() if v == alias]
     if not usernames:

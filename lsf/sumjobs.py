@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+"""Summarize a list of jobs."""
 from __future__ import print_function, division
 
 from utility import findstringpattern
@@ -7,6 +8,7 @@ from collections import defaultdict
 
 
 def sumjobs(jobs):
+    """Summarize a list of jobs."""
     sumjob = {}
     for key in jobs[0]:
         if key in ("job_name", "job_description", "input_file", "output_file",

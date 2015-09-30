@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+"""Summarize a list of hosts."""
 from __future__ import division, print_function
 
 from utility import findstringpattern
@@ -7,6 +8,7 @@ from collections import defaultdict
 
 
 def sumhosts(hosts):
+    """Summarize a list of hosts."""
     sumhost = {}
     for key in hosts[0]:
         if key in ("host_name"):

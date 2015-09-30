@@ -1,11 +1,12 @@
 #!/usr/bin/env python
+"""Sort the jobs in groups by attributes."""
 from __future__ import print_function, division
 
 from collections import defaultdict
 
 
 def grouphosts(jobs, key):
-    """sort the jobs in groups by attributes"""
+    """Sort the jobs in groups by attributes."""
     result = defaultdict(list)
     for job in jobs:
         if isinstance(job[key], dict):
