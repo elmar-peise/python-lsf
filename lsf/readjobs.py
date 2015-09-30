@@ -15,12 +15,12 @@ def parsemem(value, unit):
 
 def readjobs(args, fast=False):
     """Read jobs from bjobs."""
-    keys = ("jobid", "stat", "user", "queue", "job_name", "job_description",
-            "proj_name", "application", "service_class", "job_group",
-            "job_priority", "dependency", "command", "pre_exec_command",
-            "post_exec_command", "resize_notification_command", "pids",
-            "exit_code", "exit_reason", "from_host", "first_host", "exec_host",
-            "nexec_host", "submit_time", "start_time", "estimated_start_time",
+    keys = ("jobid", "stat", "user", "queue", "job_description", "proj_name",
+            "application", "service_class", "job_group", "job_priority",
+            "dependency", "command", "pre_exec_command", "post_exec_command",
+            "resize_notification_command", "pids", "exit_code", "exit_reason",
+            "from_host", "first_host", "exec_host", "nexec_host",
+            "submit_time", "start_time", "estimated_start_time",
             "specified_start_time", "specified_terminate_time", "time_left",
             "finish_time", "%complete", "warning_action",
             "action_warning_time", "cpu_used", "run_time", "idle_factor",
@@ -29,7 +29,7 @@ def readjobs(args, fast=False):
             "effective_resreq", "network_req", "filelimit", "corelimit",
             "stacklimit", "processlimit", "input_file", "output_file",
             "error_file", "output_dir", "sub_cwd", "exec_home", "exec_cwd",
-            "forward_cluster", "forward_time")
+            "forward_cluster", "forward_time", "job_name")
     aliases = (
         ("id", "jobid"),
         ("name", "job_name"),
@@ -60,6 +60,11 @@ def readjobs(args, fast=False):
            " ".join(keys) + " delimiter='" + delimiter + "'"] + args
     p = Popen(cmd, stdout=PIPE, stderr=PIPE)
     out, err = p.communicate()
+    # ignore certain errors
+    err = [line for line in err.splitlines() if line]
+    # (fix for bjobs display_flexibleOutput bug)
+    err = [line for line in err if "display_flexibleOutput: Failed to get the "
+           "value of job_name" not in line]
     if err:
         return []
     out = out.splitlines()[1:]  # get rid of header
@@ -204,6 +209,10 @@ def readjobs(args, fast=False):
         lines = [line.strip() for line in jobout.splitlines()]
         jobid = re.match("Job <(\d+(?:\[\d+\])?)>", lines[1]).groups()[0]
         job = jobs[jobid]
+        # name  (fix for bjobs display_flexibleOutput bug)
+        match = re.search("Name <(.*?)>", lines[1])
+        if match:
+            job["job_name"] = match.groups()[0]
         # mail
         match = re.search("Mail <(.*?)>", lines[1])
         if match:
