@@ -81,7 +81,7 @@ def printhosts(hosts, jobs=[], wide=False, header=True, file=sys.stdout):
         total = host["max"]
         used = host["njobs"]
         free = total - used
-        c = fractioncolor(free / total)
+        c = fractioncolor(free, total)
         if sumhosts:
             l += color("%4d" % free, c) + "/%4d" % total
         else:
@@ -92,7 +92,7 @@ def printhosts(hosts, jobs=[], wide=False, header=True, file=sys.stdout):
             total = free + used
             if "maxmem" in host and host["maxmem"]:
                 total = host["maxmem"]
-            c = fractioncolor(free / total)
+            c = fractioncolor(free, total)
             l += "  " + format_mem(free, c) + "/" + format_mem(total)
         if wide:
             if sumhosts:

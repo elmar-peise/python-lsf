@@ -16,8 +16,11 @@ def color(string, c):
     return "\033[{}m{}\033[0m".format(c, string)
 
 
-def fractioncolor(fraction):
+def fractioncolor(nom, denom=1):
     """Color for utilization fractions."""
+    if denom == 0:
+        return "r"
+    fraction = nom / denom
     if fraction < .1:
         return "r"
     if fraction < .25:
