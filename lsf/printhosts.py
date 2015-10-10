@@ -107,8 +107,10 @@ def printhosts(hosts, jobs=[], wide=False, header=True, file=sys.stdout):
                 phis = 0
                 if "mic0" in host["load"]:
                     phis += int(bool(host["load"]["mic0"][0]))
+                    phis += int(bool(host["load"]["mic0"][1]))
                 if "mic1" in host["load"]:
                     phis += int(bool(host["load"]["mic1"][0]))
+                    phis += int(bool(host["load"]["mic1"][1]))
                 if phis > 0:
                     hoststr += "+%dPhi" % phis
                 # GPU
