@@ -239,8 +239,13 @@ def printjobs(jobs, wide=False, long=False, title=None,
         if job["runlimit"]:
             l += "  " + format_duration(job["runlimit"])
         # memory
+        memlimit = None
         if job["memlimit"]:
-            l += format_mem(job["memlimit"]).rjust(10)
+            memlimit = job["memlimit"]
+            if job["min_req_proc"]:
+                memlimit *= job["min_req_proc"]
+        if memlimit is not None:
+            l += format_mem(memlimit).rjust(10)
         else:
             l += "".rjust(10)
         # Hosts
