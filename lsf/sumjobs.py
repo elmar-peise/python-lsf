@@ -21,8 +21,9 @@ def sumjobs(jobs):
                                              if job[key]])
         elif key in ("runlimit", "swaplimit", "stacklimit", "memlimit",
                      "filelimit", "processlimit", "corelimit", "run_time",
-                     "swap", "slots", "mem", "max_mem", "avg_mem",
-                     "nexec_host", "cpu_used", "time_left"):
+                     "swap", "slots", "min_req_proc", "max_req_proc", "mem",
+                     "max_mem", "avg_mem", "nexec_host", "cpu_used",
+                     "time_left"):
             # sum
             sumjob[key] = sum(job[key] for job in jobs if job[key])
         elif key in ("%complete", "job_priority", "idle_factor"):
