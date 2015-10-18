@@ -26,13 +26,13 @@ def printjoblong(job, sumjob=False, file=sys.stdout):
             "specified_start_time", "specified_terminate_time", "time_left",
             "finish_time", "runlimit", "%complete", "warning_action",
             "action_warning_time", "cpu_used", "run_time", "idle_factor",
-            "exception_status", "slots", "mem", "max_mem", "avg_mem",
-            "memlimit", "swap", "swaplimit", "min_req_proc", "max_req_proc",
-            "resreq", "combined_resreq", "effective_resreq", "network_req",
-            "filelimit", "corelimit", "stacklimit", "processlimit",
-            "input_file", "output_file", "error_file", "output_dir", "sub_cwd",
-            "exec_home", "exec_cwd", "forward_cluster", "forward_time",
-            "pend_reason", "rsvd_host")
+            "exception_status", "slots", "exclusive", "mem", "max_mem",
+            "avg_mem", "memlimit", "swap", "swaplimit", "min_req_proc",
+            "max_req_proc", "resreq", "combined_resreq", "effective_resreq",
+            "network_req", "filelimit", "corelimit", "stacklimit",
+            "processlimit", "input_file", "output_file", "error_file",
+            "output_dir", "sub_cwd", "exec_home", "exec_cwd",
+            "forward_cluster", "forward_time", "pend_reason", "rsvd_host")
     for key in keys:
         if not job[key]:
             continue
