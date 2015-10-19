@@ -102,7 +102,8 @@ def printjobs(jobs, wide=False, long=False, title=None,
         "name": min(20, max(6, namelen + 1)),
         "stat": 6,
         "user": 10,
-        "time": 12
+        "time": 12,
+        "model": 14
     }
     if sumjob:
         lens["stat"] = 12
@@ -275,12 +276,14 @@ def printjobs(jobs, wide=False, long=False, title=None,
                     l += "   1*"
                 if job["resreq"]:
                     match = re.search("model==(\w+)", job["resreq"])
+                    model = ""
                     if match:
-                        l += match.groups()[0]
+                        model += match.groups()[0]
                     if re.search("phi", job["resreq"]):
                         if match:
-                            l += "+"
-                        l += "Phi"
+                            m += "+"
+                        model += "Phi"
+                    l += model.ljust(lens["model"])
             if job["rsvd_host"]:
                 l += color("  rsvd:", "y")
                 if wide or len(job["rsvd_host"]) == 1:
@@ -292,5 +295,11 @@ def printjobs(jobs, wide=False, long=False, title=None,
                 for key, val in d.iteritems():
                     c = "r" if val >= 100 else "y" if val >= 20 else 0
                     l += color(" %3d" % val, c) + "*%s" % key
+            if wide and len(job["pend_reason"]) == 1:
+                l += color("  %s" % job["pend_reason"][0][0], "b")
+                if job["dependency"]:
+                    l += color(":", "b")
+            if job["dependency"]:
+                l += color(" %s" % job["dependency"], "b")
         print(l, file=file)
         file.flush()
