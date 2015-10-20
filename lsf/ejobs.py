@@ -59,10 +59,8 @@ def ejobs(args, bjobsargs):
         if args.__dict__[l]:
             bjobsargs = ["-" + l] + bjobsargs
     if args.u:
-        unames = []
-        for alias in args.u.split():
-            unames += lookupalias(alias)
-        bjobsargs += ["-u", " ".join(unames)]
+        unames = map(lookupalias, args.u.split())
+        bjobsargs = ["-u", " ".join(unames)] + bjobsargs
 
     # read
     jobs = readjobs(bjobsargs, fast=args.fast)
@@ -72,7 +70,7 @@ def ejobs(args, bjobsargs):
 
     # sort
     jobs.sort(key=lambda j: j["submit_time"])
-    jobs.sort(key=lambda j: j["priority"], reverse=True)
+    jobs.sort(key=lambda j: -j["priority"])
     jobs.sort(key=lambda j: -j["run_time"])
     jobs.sort(key=lambda j: -statorder[j["stat"]])
     if args.sortby:
@@ -81,11 +79,9 @@ def ejobs(args, bjobsargs):
     # no grouping
     if not args.groupby or args.groupby not in jobs[0]:
         if args.sum:
-            printjobs([sumjobs(jobs)], wide=args.wide, long=args.long,
-                      header=not args.noheader)
-        else:
-            printjobs(jobs, wide=args.wide, long=args.long,
-                      header=not args.noheader)
+            jobs = [sumjobs(jobs)]
+        printjobs(jobs, wide=args.wide, long=args.long,
+                  header=not args.noheader)
         return
 
     # grouping
@@ -94,16 +90,14 @@ def ejobs(args, bjobsargs):
         if args.sum:
             jobs = []
             for title in sorted(jobgroups.keys()):
-                jobgroup = jobgroups[title]
-                sumjob = sumjobs(jobgroup)
+                sumjob = sumjobs(jobgroups[title])
                 sumjob["title"] = title
                 jobs.append(sumjob)
             printjobs(jobs, wide=args.wide, long=args.long,
                       header=not args.noheader)
         else:
             for title in sorted(jobgroups.keys()):
-                jobs = jobgroups[title]
-                printjobs(jobs, wide=args.wide, long=args.long,
+                printjobs(jobgroups[title], wide=args.wide, long=args.long,
                           header=not args.noheader, title=title)
         return
 
@@ -111,6 +105,7 @@ def ejobs(args, bjobsargs):
     for title in sorted(jobgroups.keys()):
         jobs = jobgroups[title]
         reasons = jobs[0]["pend_reason"]
+        resreq = jobs[0]["resreq"]
         if not reasons or len(reasons) != 1:
             title = None
         else:  # only use singular reason as title
@@ -119,11 +114,9 @@ def ejobs(args, bjobsargs):
             if not isinstance(reason[1], bool):
                 title += ": %d" % reason[1]
         if args.sum:
-            printjobs([sumjobs(jobs)], wide=args.wide, long=args.long,
-                      header=not args.noheader, title=title)
-        else:
-            printjobs(jobs, wide=args.wide, long=args.long,
-                      header=not args.noheader, title=title)
+            jobs = [sumjobs(jobs)]
+        printjobs(jobs, wide=args.wide, long=args.long,
+                  header=not args.noheader, title=title)
         if reasons and len(reasons) > 1:
             # show pending reasons
             for reason, count in reasons:
@@ -136,11 +129,10 @@ def ejobs(args, bjobsargs):
                 else:
                     print("  %4d  %s" % (count, reason))
             # show potential hosts
-            if jobs[0]["resreq"] and not args.fast:
-                req = jobs[0]["resreq"]
-                req = re.sub(" && \(hostok\)", "", req)
-                req = re.sub(" && \(mem>\d+\)", "", req)
-                hosts = readhosts(["-R", req])
+            if resreq and not args.fast:
+                resreq = re.sub(" && \(hostok\)", "", resreq)
+                resreq = re.sub(" && \(mem>\d+\)", "", resreq)
+                hosts = readhosts(["-R", resreq])
                 hostnames = [h["host_name"] for h in hosts]
                 jobs = readjobs(["-u", "all", "-r", "-m", " ".join(hostnames)])
                 hosts.sort(key=lambda h: h["host_name"])

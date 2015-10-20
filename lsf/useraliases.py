@@ -32,7 +32,7 @@ def getuseralias(user):
 def lookupalias(alias):
     """Look up the user for an alias."""
     aliases = loadaliases()
-    usernames = [k for k, v in aliases.iteritems() if v == alias]
-    if not usernames:
-        usernames = [alias]
-    return usernames
+    try:
+        return next(k for k, v in aliases.iteritems() if v == alias)
+    except:
+        return alias
