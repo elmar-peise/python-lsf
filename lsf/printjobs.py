@@ -169,34 +169,22 @@ def printjobs(jobs, wide=False, long=False, title=None,
             c = "r" if stat == "PEND" else "g" if stat == "RUN" else "y"
             l += color(stat.ljust(lens["stat"]), c)
         # user
-        if sumjob:
-            if len(job["user"]) == 1:
-                user = job["user"].keys()[0]
-                c = "g" if user == whoami else 0
-                username = getuseralias(user)
-                l += color(username.ljust(lens["user"]), c)
-            else:
-                l += color(str(len(job["user"])).ljust(lens["user"]), "b")
+        if sumjob and isinstance(job["user"], defaultdict):
+            l += color(str(len(job["user"])).ljust(lens["user"]), "b")
         else:
             c = "g" if job["user"] == whoami else 0
             username = getuseralias(job["user"])
             l += color((username + " ").ljust(lens["user"]), c)
         if wide:
             # queue
-            if sumjob:
-                if len(job["queue"]) == 1:
-                    l += job["queue"].keys()[0].ljust(lens["queue"])
-                else:
-                    nqueues = len(job["queue"])
-                    l += color(str(nqueues).ljust(lens["queue"]), "b")
+            if sumjob and isinstance(job["queue"], defaultdict):
+                l += color(str(len(job["queue"])).ljust(lens["queue"]), "b")
             else:
                 l += job["queue"].ljust(lens["queue"])
             # project
-            if sumjob:
-                if len(job["project"]) == 1:
-                    l += job["project"].keys()[0].ljust(lens["project"])
-                else:
-                    n = len(job["project"])
+            if sumjob and isinstance(job["project"], defaultdict):
+                l += color(str(len(job["project"])).ljust(lens["project"]),
+                           "b")
             else:
                 l += job["project"].ljust(lens["project"])
             if not sumjob:
@@ -296,9 +284,11 @@ def printjobs(jobs, wide=False, long=False, title=None,
                     c = "r" if val >= 100 else "y" if val >= 20 else 0
                     l += color(" %3d" % val, c) + "*%s" % key
             if wide and len(job["pend_reason"]) == 1:
-                l += color("  %s" % job["pend_reason"][0][0], "b")
-                if job["dependency"]:
-                    l += color(":", "b")
+                reason = job["pend_reason"][0][0]
+                if reason != title:
+                    l += color("  %s" % reason, "b")
+                    if job["dependency"]:
+                        l += color(":", "b")
             if job["dependency"]:
                 l += color(" %s" % job["dependency"], "b")
         print(l, file=file)

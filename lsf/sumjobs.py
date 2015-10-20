@@ -57,6 +57,7 @@ def sumjobs(jobs):
                     continue
                 for key2, val in job[key]:
                     sumjob[key][key2] += val
+            sumjob[key] = sumjob[key].items()
         else:
             # collect and count
             sumjob[key] = defaultdict(int)
