@@ -24,7 +24,21 @@ pendingcolors = {
     "Not enough processors to meet the job's spanning requirement": "y",
     "Not enough slots or resources for whole duration of the job": "r",
     "Not enough hosts to meet the job's spanning requirement": "r",
-    "Job requirements for reserving resource (mem) not satisfied": "r",
+    "Job('s)? requirements for reserving resource \(.*\) not satisfied": "r",
+}
+
+statorder = {
+    "RUN": 4,
+    "PROV": 4,
+    "PSUSP": 3,
+    "USUSP": 3,
+    "SSUSP": 3,
+    "PEND": 2,
+    "WAIT": 2,
+    "UNKWN": 1,
+    "DONE": 0,
+    "ZOMBI": 0,
+    "EXIT": 0,
 }
 
 
@@ -57,19 +71,6 @@ def ejobs(args, bjobsargs):
         return
 
     # sort
-    statorder = {
-        "RUN": 4,
-        "PROV": 4,
-        "PSUSP": 3,
-        "USUSP": 3,
-        "SSUSP": 3,
-        "PEND": 2,
-        "WAIT": 2,
-        "UNKWN": 1,
-        "DONE": 0,
-        "ZOMBI": 0,
-        "EXIT": 0,
-    }
     jobs.sort(key=lambda j: j["submit_time"])
     jobs.sort(key=lambda j: j["priority"], reverse=True)
     jobs.sort(key=lambda j: -j["run_time"])
@@ -126,8 +127,10 @@ def ejobs(args, bjobsargs):
         if reasons and len(reasons) > 1:
             # show pending reasons
             for reason, count in reasons:
-                if reason in pendingcolors:
-                    reason = color(reason, pendingcolors[reason])
+                for pattern in pendingcolors:
+                    if re.match(pattern, reason):
+                        reason = color(reason, pendingcolors[pattern])
+                        break
                 if count is True:
                     print("        " + reason)
                 else:
