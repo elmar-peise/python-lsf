@@ -156,7 +156,7 @@ def printjobs(jobs, wide=False, long=False, title=None,
                 jobname = "*" + jobname[-lens["name"] + 2:]
         l += jobname.ljust(lens["name"])
         # status
-        if sumjob:
+        if sumjob and isinstance(job["stat"], defaultdict):
             l += color("%3d " % job["stat"]["PEND"], "r")
             l += color("%3d " % job["stat"]["RUN"], "g")
             done = job["stat"]["EXIT"] + job["stat"]["DONE"]

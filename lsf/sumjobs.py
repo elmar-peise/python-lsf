@@ -13,8 +13,8 @@ def sumjobs(jobs):
     for key in jobs[0]:
         if key in ("job_name", "job_description", "input_file", "output_file",
                    "error_file", "output_dir", "sub_cwd", "exec_home",
-                   "exec_cwd", "exit_reson", "application", "command",
-                   "pre_exec_command", "post_exec_command",
+                   "exec_cwd", "exit_reson", "application", "dependency",
+                   "command", "pre_exec_command", "post_exec_command",
                    "resize_notification_command", "effective_resreq"):
             # find string pattern
             sumjob[key] = findstringpattern([job[key] for job in jobs
@@ -62,4 +62,7 @@ def sumjobs(jobs):
             sumjob[key] = defaultdict(int)
             for job in jobs:
                 sumjob[key][job[key]] += 1
+            if len(sumjob[key]) == 1:
+                sumjob[key] = sumjob[key].keys()[0]
+
     return sumjob
