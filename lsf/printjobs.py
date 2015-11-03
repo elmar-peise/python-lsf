@@ -269,7 +269,7 @@ def printjobs(jobs, wide=False, long=False, title=None,
                         model += match.groups()[0]
                     if re.search("phi", job["resreq"]):
                         if match:
-                            m += "+"
+                            model += "+"
                         model += "Phi"
                     l += model.ljust(lens["model"])
             if job["rsvd_host"]:
