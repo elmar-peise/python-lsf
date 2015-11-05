@@ -70,7 +70,7 @@ def ejobs(args, bjobsargs):
 
     # sort
     jobs.sort(key=lambda j: j["submit_time"])
-    jobs.sort(key=lambda j: -j["priority"])
+    jobs.sort(key=lambda j: j["priority"], reverse=True)  # can be None
     jobs.sort(key=lambda j: -j["run_time"])
     jobs.sort(key=lambda j: -statorder[j["stat"]])
     if args.sortby:
