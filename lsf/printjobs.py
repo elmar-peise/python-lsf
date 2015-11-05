@@ -166,7 +166,15 @@ def printjobs(jobs, wide=False, long=False, title=None,
                 l += "    "
         else:
             stat = job["stat"]
-            c = "r" if stat == "PEND" else "g" if stat == "RUN" else "y"
+            if stat == "PEND":
+                pr = job["pend_reason"]
+                if len(pr) == 1 and "New job" in pr[0][0]:
+                    stat = "New"
+                    c = "b"
+                else:
+                    c = "r"
+            else:
+                c = "g" if stat == "RUN" else "y"
             l += color(stat.ljust(lens["stat"]), c)
         # user
         if sumjob and isinstance(job["user"], defaultdict):
