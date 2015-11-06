@@ -222,6 +222,8 @@ def readjobs(args, fast=False):
         job["notify_begin"] = "Notify when job begins" in lines[2]
         job["notify_end"] = bool(re.search("Notify when job (?:begins/)?ends",
                                            lines[2]))
+        job["interactive"] = "Interactive pseudo-terminal shell" in lines[1]
+        job["X11"] = "ssh X11 forwarding mode" in lines[1]
         # resource request
         match = re.search("Requested Resources <(.*?)>[,;]", lines[2])
         if match:

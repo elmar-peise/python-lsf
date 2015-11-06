@@ -19,7 +19,7 @@ def printjoblong(job, sumjob=False, file=sys.stdout):
     keys = ("jobid", "stat", "user", "mail", "queue", "job_name",
             "job_description", "proj_name", "application", "service_class",
             "job_group", "job_priority", "dependency", "command",
-            "pre_exec_command", "post_exec_command",
+            "interactive", "X11", "pre_exec_command", "post_exec_command",
             "resize_notification_command", "pids", "exit_code", "exit_reason",
             "from_host", "first_host", "exec_host", "nexec_host",
             "submit_time", "start_time", "estimated_start_time",
@@ -167,14 +167,26 @@ def printjobs(jobs, wide=False, long=False, title=None,
         else:
             stat = job["stat"]
             if stat == "PEND":
-                pr = job["pend_reason"]
-                if len(pr) == 1 and "New job" in pr[0][0]:
-                    stat = "New"
-                    c = "b"
-                else:
-                    c = "r"
+                c = "r"
+                if len(job["pend_reason"]) == 1:
+                    pr = job["pend_reason"][0]
+                    if "New job is waiting for scheduling" in pr[0]:
+                        stat = "NEW"
+                        c = "b"
+                    if "Waiting for rescheduling after parameters" in pr[0]:
+                        stat = "MOD"
+                        c = "b"
+                    if "Job dependency condition not satisfied" in pr[0]:
+                        stat = "DEP"
+                        c = "b"
+            elif stat == "RUN":
+                c = "g"
+                if job["interactive"]:
+                    stat = "INT"
+                    if job["X11"]:
+                        stat = "X11"
             else:
-                c = "g" if stat == "RUN" else "y"
+                c = "y"
             l += color(stat.ljust(lens["stat"]), c)
         # user
         if sumjob and isinstance(job["user"], defaultdict):
