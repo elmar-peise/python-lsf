@@ -63,7 +63,8 @@ def sumjobs(jobs):
             sumjob[key] = defaultdict(int)
             for job in jobs:
                 sumjob[key][job[key]] += 1
-            if len(sumjob[key]) == 1:
-                sumjob[key] = sumjob[key].keys()[0]
+            if key not in ("stat",):
+                if len(sumjob[key]) == 1:
+                    sumjob[key] = sumjob[key].keys()[0]
 
     return sumjob
