@@ -269,8 +269,8 @@ def printjobs(jobs, wide=False, long=False, title=None,
                 val = d[key]
                 c = "r" if val >= 100 else "y" if val >= 20 else 0
                 exclusive = job["exclusive"]
-                if sumjob:
-                    exclusive = len(exclusive) == 1 and True in exclusive
+                if sumjob and exclusive not in (True, False):
+                    exclusive = False
                 times = color("x", "r") if exclusive else "*"
                 l += color(" %3d" % val, c) + times + "%s" % key
         else:
