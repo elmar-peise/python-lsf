@@ -1,7 +1,7 @@
 python-lsf
 ==========
 
-Python API and utilities for the LSF batch job scheduler
+Improved Interface for the LSF batch job scheduler
 
 
 Requirements
@@ -42,3 +42,15 @@ Check
     man bjobs
     man bhosts
     man bsub
+
+
+User Alias Resolution
+---------------------
+
+To resolve commonly encountered and possibly cryptic user names, `ejobs` and
+`ehosts` provide a mechanism to replace such user names by user defined aliases.
+These aliases are read from `~/.useraliases` (if existing), which needs to be in
+the following format:  each user is on its own line; the first word on the line
+is the user name, all following words are the user alias. E.g.:
+
+    ep123456    Elmar Peise
