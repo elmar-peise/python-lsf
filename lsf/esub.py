@@ -16,10 +16,6 @@ import subprocess
 def esub(args, bsubargs, jobscript):
     """Wrapper script with bsub functionality."""
     data = {"command": ""}
-    if args.aices:
-        data["project"] = "aices"
-    if args.aices2:
-        data["project"] = "aices2"
     scriptargs = []
     for line in jobscript.splitlines(True):
         if line.startswith("#!"):
@@ -60,16 +56,6 @@ def main():
     """Main program entry point."""
     parser = argparse.ArgumentParser(
         description="Wrapper for bsub."
-    )
-    parser.add_argument(
-        "-aices",
-        help="short for -P aices",
-        action="store_true",
-    )
-    parser.add_argument(
-        "-aices2",
-        help="short for -P aices2",
-        action="store_true",
     )
     parser.add_argument_group("further arguments",
                               description="are passed to bsub")

@@ -2,6 +2,8 @@
 """Wrapper script with bhosts functionality."""
 from __future__ import print_function, division
 
+from shortcuts import ehostsshortcuts
+
 from readhosts import readhosts
 from printhosts import printhosts
 from grouphosts import grouphosts
@@ -17,15 +19,12 @@ import argparse
 def ehosts(args, bhostsargs):
     """Wrapper script with bhosts functionality."""
     # construct -R argument
-    select = None
-    if args.aices and args.aices2:
-        select = "aices || aices2"
-    elif args.aices:
-        select = "aices"
-    elif args.aices2:
-        select = "aices2"
-    elif args.aices24:
-        select = "aices24"
+    select = []
+    for shortcutname, shortcutselect in ehostsshortcuts.items():
+        if getattr(args, shortcutname):
+            select.append(shortcutselect)
+    if select:
+        select = " || ".join(select)
     if args.model:
         if select:
             select = "(%s) && model==%s" % (select, args.model)
@@ -89,7 +88,7 @@ def ehosts(args, bhostsargs):
 
 def main():
     """Main program entry point."""
-    global args
+    # argument parser and options
     parser = argparse.ArgumentParser(
         description="More comprehensive version of bhosts."
     )
@@ -118,21 +117,6 @@ def main():
         help="short for -R model==MODEL"
     )
     parser.add_argument(
-        "-aices",
-        help="short for -R aices",
-        action="store_true"
-    )
-    parser.add_argument(
-        "-aices2",
-        help="short for -R aices2",
-        action="store_true"
-    )
-    parser.add_argument(
-        "-aices24",
-        help="short for -R aices24",
-        action="store_true"
-    )
-    parser.add_argument(
         "--noheader",
         help="don't show the header",
         action="store_true"
@@ -142,13 +126,26 @@ def main():
         help="don't sort lexigraphically",
         action="store_true"
     )
+
+    # shortcuts
+    shortcuts = parser.add_argument_group("shortcuts")
+    for shortcutname, shortcutselect in ehostsshortcuts.items():
+        shortcuts.add_argument(
+            "-" + shortcutname,
+            help="for \"-R %s\"" % shortcutselect,
+            action="store_true"
+        )
+
+    #
     parser.add_argument_group(
         "further arguments",
         description="are passed to bhosts"
     )
 
+    # parse arguments
     args, bhostsargs = parser.parse_known_args()
 
+    # run ehosts
     try:
         ehosts(args, bhostsargs)
     except (KeyboardInterrupt, IOError):

@@ -4,6 +4,7 @@ from __future__ import print_function, division
 
 from utility import color
 from useraliases import lookupalias
+from shortcuts import ejobsshortcuts
 
 from readjobs import readjobs
 from printjobs import printjobs
@@ -44,17 +45,15 @@ statorder = {
 
 def ejobs(args, bjobsargs):
     """Wrapper script with bjobs functionality."""
+    # handle arguments
     if args.pending:
         bjobsargs = ["-p"] + bjobsargs
         args.groupby = "pend_reason"
     if args.sort:
         args.sortby = "jobid"
-    if args.aices:
-        bjobsargs = ["-P", "aices", "-G", "p_aices"] + bjobsargs
-    if args.aices2:
-        bjobsargs = ["-P", "aices2", "-G", "p_aices"] + bjobsargs
-    if args.aices24:
-        bjobsargs = ["-P", "aices-24", "-G", "p_aices"] + bjobsargs
+    for shortcutname, shortcutargs in ejobsshortcuts.items():
+        if getattr(args, shortcutname):
+            bjobsargs = shortcutargs + bjobsargs
     for l in list("rsda"):
         if args.__dict__[l]:
             bjobsargs = ["-" + l] + bjobsargs
@@ -144,6 +143,7 @@ def ejobs(args, bjobsargs):
 
 def main():
     """Main program entry point."""
+    # argument parser and options
     parser = argparse.ArgumentParser(
         description="More comprehensive version of bjobs."
     )
@@ -190,25 +190,21 @@ def main():
         action="store_true"
     )
     parser.add_argument(
-        "-aices",
-        help="short for -P aices",
-        action="store_true"
-    )
-    parser.add_argument(
-        "-aices2",
-        help="short for -P aices2",
-        action="store_true"
-    )
-    parser.add_argument(
-        "-aices24",
-        help="short for -P aices-24",
-        action="store_true"
-    )
-    parser.add_argument(
         "--noheader",
         help="don't show the header",
         action="store_true"
     )
+
+    # shortcuts
+    shortcuts = parser.add_argument_group("shortcuts")
+    for shortcutname, shortcutargs in ejobsshortcuts.items():
+        shortcuts.add_argument(
+            "-" + shortcutname,
+            help="for \"%s\"" % " ".join(shortcutargs),
+            action="store_true"
+        )
+
+    # hide or discard some arguments
     parser.add_argument(
         "-X",  # discard
         help=argparse.SUPPRESS,
@@ -225,13 +221,17 @@ def main():
             help=argparse.SUPPRESS,
             action="store_true"
         )
+
+    # bjobs arguments hint
     parser.add_argument_group(
         "further arguments",
         description="are passed to bjobs"
     )
 
+    # parse arguments
     args, bjobsargs = parser.parse_known_args()
 
+    # run ejobs
     try:
         ejobs(args, bjobsargs)
     except (KeyboardInterrupt, IOError):
