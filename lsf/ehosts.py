@@ -113,10 +113,6 @@ def main():
         action="store_true"
     )
     parser.add_argument(
-        "--model",
-        help="short for -R model==MODEL"
-    )
-    parser.add_argument(
         "--noheader",
         help="don't show the header",
         action="store_true"
@@ -129,6 +125,10 @@ def main():
 
     # shortcuts
     shortcuts = parser.add_argument_group("shortcuts")
+    shortcuts.add_argument(
+        "--model",
+        help="for \"-R model==MODEL\""
+    )
     for shortcutname, shortcutselect in ehostsshortcuts.items():
         shortcuts.add_argument(
             "-" + shortcutname,

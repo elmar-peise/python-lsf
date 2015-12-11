@@ -17,6 +17,7 @@ from printhosts import printhosts
 import argparse
 import re
 
+# highlighting color for pending reasing
 pendingcolors = {
     "Running an exclusive job": "y",
     "Job's requirement for exclusive execution not satisfied": "y",
@@ -28,6 +29,7 @@ pendingcolors = {
     "Job('s)? requirements for reserving resource \(.*\) not satisfied": "r",
 }
 
+# order of status identifiers
 statorder = {
     "RUN": 4,
     "PROV": 4,
@@ -107,7 +109,8 @@ def ejobs(args, bjobsargs):
         resreq = jobs[0]["resreq"]
         if not reasons or len(reasons) != 1:
             title = None
-        else:  # only use singular reason as title
+        else:
+            # use singular reason as title
             reason = reasons[0]
             title = reason[0]
             if not isinstance(reason[1], bool):
@@ -180,11 +183,6 @@ def main():
         metavar="KEY"
     )
     parser.add_argument(
-        "--sort",
-        help="short for --sortby jobid",
-        action="store_true"
-    )
-    parser.add_argument(
         "--fast",
         help="read less info from LSF",
         action="store_true"
@@ -197,6 +195,11 @@ def main():
 
     # shortcuts
     shortcuts = parser.add_argument_group("shortcuts")
+    shortcuts.add_argument(
+        "--sort",
+        help="for \"--sortby jobid\"",
+        action="store_true"
+    )
     for shortcutname, shortcutargs in ejobsshortcuts.items():
         shortcuts.add_argument(
             "-" + shortcutname,
