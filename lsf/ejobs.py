@@ -16,6 +16,7 @@ from printhosts import printhosts
 
 import argparse
 import re
+import sys
 
 # highlighting color for pending reasing
 pendingcolors = {
@@ -75,7 +76,10 @@ def ejobs(args, bjobsargs):
     jobs.sort(key=lambda j: -j["run_time"])
     jobs.sort(key=lambda j: -statorder[j["stat"]])
     if args.sortby:
-        jobs.sort(key=lambda j: j[args.sortby])
+        try:
+            jobs.sort(key=lambda j: j[args.sortby])
+        except:
+            print("Unknown sorting key \"%s\"!" % args.sortby, file=sys.stderr)
 
     # no grouping
     if not args.groupby or args.groupby not in jobs[0]:
