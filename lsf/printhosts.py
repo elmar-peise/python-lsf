@@ -89,7 +89,9 @@ def printhosts(hosts, jobs=[], wide=False, header=True, file=sys.stdout):
         # mem
         if "mem" in host["load"]:
             free, used = host["load"]["mem"]
-            total = free + used
+            total = free
+            if used:  # used can be None
+                total += used
             if "maxmem" in host and host["maxmem"]:
                 total = host["maxmem"]
             c = fractioncolor(free, total)
