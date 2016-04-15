@@ -303,7 +303,7 @@ def printjobs(jobs, wide=False, long=False, title=None,
                 for key, val in d.iteritems():
                     c = "r" if val >= 100 else "y" if val >= 20 else 0
                     l += color(" %3d" % val, c) + "*%s" % key
-            if wide and len(job["pend_reason"]) == 1:
+            if wide and job["pend_reason"] and len(job["pend_reason"]) == 1:
                 reason = job["pend_reason"][0][0]
                 if reason != title:
                     l += color("  %s" % reason, "b")
