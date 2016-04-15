@@ -46,7 +46,10 @@ def esub(args, bsubargs, jobscript):
         data[last] = True
     try:
         jobid = submitjob(data)
-        subprocess.Popen(["ejobs", "--noheader", jobid])
+        if args.jid:
+            print(jobid)
+        else:
+            subprocess.Popen(["ejobs", "--noheader", jobid])
     except Exception as e:
         print(color(e.strerror, "r"))
         sys.exit(-1)
@@ -56,6 +59,11 @@ def main():
     """Main program entry point."""
     parser = argparse.ArgumentParser(
         description="Wrapper for bsub."
+    )
+    parser.add_argument(
+        "--jid",
+        help="only print submitted job's id",
+        action="store_true"
     )
     parser.add_argument_group("further arguments",
                               description="are passed to bsub")
