@@ -147,6 +147,12 @@ def readjobs(args, fast=False):
         jobs[job["jobid"]] = job
     if not joborder:
         return []
+    # set some keys
+    for job in jobs.values():
+        job.update({
+            "interactive": None,
+            "pend_reason": []
+        })
     if fast:
         for job in jobs.values():
             job.update({alias: job[key] for alias, key in aliases})
