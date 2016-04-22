@@ -212,7 +212,7 @@ def readjobs(args, fast=False):
                 # next job
                 line = line.split()
                 jobid = line[0]
-                match = re.match(".*(\[\d+\])$", line[5])
+                match = re.match(".*(\[\d+\])$", " ".join(line[5:-3]))
                 if match:
                     jobid += match.groups()[0]
                 job = jobs[jobid]
