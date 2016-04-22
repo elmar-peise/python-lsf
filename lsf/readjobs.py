@@ -4,7 +4,7 @@ from __future__ import print_function, division
 
 import re
 from time import strptime, strftime, mktime, time
-from subprocess import Popen, check_output, PIPE
+from subprocess import Popen, check_output, PIPE, CalledProcessError
 
 
 def parsemem(value, unit):
@@ -152,9 +152,14 @@ def readjobs(args, fast=False):
             job.update({alias: job[key] for alias, key in aliases})
         return [jobs[jid] for jid in joborder]
     # get more accurate timestamps from -W output
-    out = check_output(["bjobs", "-noheader", "-W"] + joborder)
+    try:
+        out = check_output(["bjobs", "-noheader", "-W"] + joborder)
+    except CalledProcessError as e:
+        out = e.output
     for line in out.splitlines():
         line = line.split()
+        if len(line) != 15:
+            continue
         jobid = line[0]
         match = re.match(".*(\[\d+\])$", line[-9])
         if match:
@@ -181,7 +186,10 @@ def readjobs(args, fast=False):
     # get pending reasons (if any)
     pids = [jid for jid in joborder if jobs[jid]["stat"] == "PEND"]
     if pids:
-        out = check_output(["bjobs", "-p"] + pids)
+        try:
+            out = check_output(["bjobs", "-p"] + pids)
+        except CalledProcessError as e:
+            out = e.output
         job = None
         for line in out.split("\n")[1:-1]:
             if line[0] == " " or line[:4] == "JOBS":
@@ -204,7 +212,10 @@ def readjobs(args, fast=False):
                 job = jobs[jobid]
                 job["pend_reason"] = []
     # get -UF (long) output (may be restricted)
-    out = check_output(["bjobs", "-UF"] + joborder)
+    try:
+        out = check_output(["bjobs", "-UF"] + joborder)
+    except CalledProcessError as e:
+        out = e.output
     out = out.split(78 * "-" + "\n")
     for jobout in out:
         lines = [line.strip() for line in jobout.splitlines()]
