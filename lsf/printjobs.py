@@ -18,21 +18,21 @@ def printjoblong(job, sumjob=False, file=sys.stdout):
     """Print a job in long format."""
     keys = ("jobid", "stat", "user", "mail", "queue", "job_name",
             "job_description", "proj_name", "application", "service_class",
-            "job_group", "job_priority", "dependency", "command",
-            "interactive", "X11", "pre_exec_command", "post_exec_command",
-            "resize_notification_command", "pids", "exit_code", "exit_reason",
-            "from_host", "first_host", "exec_host", "nexec_host",
-            "submit_time", "start_time", "estimated_start_time",
-            "specified_start_time", "specified_terminate_time", "time_left",
-            "finish_time", "runlimit", "%complete", "warning_action",
-            "action_warning_time", "cpu_used", "run_time", "idle_factor",
-            "exception_status", "slots", "exclusive", "mem", "max_mem",
-            "avg_mem", "memlimit", "swap", "swaplimit", "min_req_proc",
-            "max_req_proc", "resreq", "combined_resreq", "effective_resreq",
-            "network_req", "filelimit", "corelimit", "stacklimit",
-            "processlimit", "input_file", "output_file", "error_file",
-            "output_dir", "sub_cwd", "exec_home", "exec_cwd",
-            "forward_cluster", "forward_time", "pend_reason", "rsvd_host")
+            "job_group", "job_priority", "dependency", "command", "slots",
+            "memlimit", "exclusive", "interactive", "X11", "pre_exec_command",
+            "post_exec_command", "resize_notification_command", "pids",
+            "exit_code", "exit_reason", "from_host", "first_host", "exec_host",
+            "nexec_host", "submit_time", "start_time", "estimated_start_time",
+            "specified_start_time", "specified_terminate_time", "runlimit",
+            "run_time", "time_left", "finish_time", "%complete",
+            "warning_action", "action_warning_time", "cpu_used", "idle_factor",
+            "exception_status", "mem", "max_mem", "avg_mem", "swap",
+            "swaplimit", "min_req_proc", "max_req_proc", "resreq",
+            "combined_resreq", "effective_resreq", "network_req", "filelimit",
+            "corelimit", "stacklimit", "processlimit", "input_file",
+            "output_file", "error_file", "output_dir", "sub_cwd", "exec_home",
+            "exec_cwd", "forward_cluster", "forward_time", "pend_reason",
+            "rsvd_host")
     for key in keys:
         if not job[key]:
             continue

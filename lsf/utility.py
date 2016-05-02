@@ -3,7 +3,7 @@
 from __future__ import print_function, division
 
 import sys
-from time import strftime, gmtime
+from time import strftime, localtime
 
 
 def color(string, c):
@@ -60,7 +60,7 @@ def format_duration(t):
 
 def format_time(t):
     """Format a time stamp."""
-    return strftime("%x %X")
+    return strftime("%x %X", localtime(t))
 
 
 def format_mem(s, c=0):
