@@ -62,7 +62,11 @@ def sumjobs(jobs):
             # collect and count
             sumjob[key] = defaultdict(int)
             for job in jobs:
-                sumjob[key][job[key]] += 1
+                if key == "host_req":
+                    for host in job[key]:
+                        sumjob[key][host] += 1
+                else:
+                    sumjob[key][job[key]] += 1
             if key not in ("stat",):
                 if len(sumjob[key]) == 1:
                     sumjob[key] = sumjob[key].keys()[0]
