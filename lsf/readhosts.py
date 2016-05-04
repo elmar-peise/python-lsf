@@ -36,10 +36,9 @@ def readhosts(args, fast=False):
     host = None
     stage = None
     while lines:
-        line = lines.pop()
-        if not line:  # ignore empty lines
+        tokens = lines.pop().split()
+        if not tokens:  # ignore empty lines
             continue
-        tokens = line.split()
         if tokens[0] == "HOST":
             if host:
                 hostorder.append(host["host_name"])
@@ -49,10 +48,11 @@ def readhosts(args, fast=False):
                 "load": {},
                 "threshold": {},
                 "comment": None,
+                "affinity": None,
             }
             stage = None
         elif tokens[0] == "STATUS":
-            keys = line.lower().split()
+            keys = [token.lower() for token in tokens]
             try:
                 vals = lines.pop().split()
                 for key, val in zip(keys, vals):
@@ -65,6 +65,8 @@ def readhosts(args, fast=False):
             stage = "threshold"
         elif tokens[0] == "ADMIN":
             host["comment"] = " ".join(tokens[3:])[1:-1]
+        elif tokens[0] == "CONFIGURED":
+            host["affinity"] = " ".join(tokens[4:])
         elif stage in ("load", "threshold"):
             keys = tokens
             try:
