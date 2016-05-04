@@ -10,7 +10,6 @@ def groupjobs(jobs, key):
     result = defaultdict(list)
     for job in jobs:
         if key == "pend_reason":
-            print(job[key])
             if len(job[key]) == 1:
                 group = repr(job[key])
             else:
