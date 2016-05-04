@@ -111,6 +111,7 @@ def ejobs(args, bjobsargs):
         jobs = jobgroups[title]
         reasons = jobs[0]["pend_reason"]
         resreq = jobs[0]["resreq"]
+        hostreq = jobs[0]["host_req"]
         if not reasons or len(reasons) != 1:
             title = None
         else:
@@ -138,7 +139,7 @@ def ejobs(args, bjobsargs):
             if resreq and not args.fast:
                 resreq = re.sub(" && \(hostok\)", "", resreq)
                 resreq = re.sub(" && \(mem>\d+\)", "", resreq)
-                hosts = readhosts(["-R", resreq])
+                hosts = readhosts(["-R", resreq] + hostreq)
                 hostnames = [h["host_name"] for h in hosts]
                 jobs = readjobs(["-u", "all", "-r", "-m", " ".join(hostnames)])
                 hosts.sort(key=lambda h: h["host_name"])

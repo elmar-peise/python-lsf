@@ -151,7 +151,8 @@ def readjobs(args, fast=False):
     for job in jobs.values():
         job.update({
             "interactive": None,
-            "pend_reason": []
+            "pend_reason": [],
+            "host_req": []
         })
     if fast:
         for job in jobs.values():
@@ -248,6 +249,10 @@ def readjobs(args, fast=False):
             job["resreq"] = match.groups()[0]
         if lines[-2].startswith("Combined: "):
             job["combined_resreq"] = lines[-2].split(": ", 1)[1]
+        # requested hosts
+        match = re.search("Specified Hosts <(.*?)>(, \w|;)", lines[2])
+        if match:
+            job["host_req"] = match.groups()[0].split(">, <")
         # runlimit
         idx = lines.index("RUNLIMIT")
         job["runlimit"] = int(float(lines[idx + 1].split()[0]) * 60)
@@ -258,8 +263,7 @@ def readjobs(args, fast=False):
         for i, key in enumerate(keys):
             job[key] = parsemem(vals[2 * i], vals[2 * i + 1])
         # reserved hosts
-        idx += 2
-        match = re.search("Reserved <\d+> job slots on host\(s\) <(.*?)>;",
+        match = re.search("Reserved <\d+> job slots on host\(s\) <(.*?)>[,;]",
                           lines[idx])
         if match:
             val = match.groups()[0].split("> <")

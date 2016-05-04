@@ -10,10 +10,14 @@ def groupjobs(jobs, key):
     result = defaultdict(list)
     for job in jobs:
         if key == "pend_reason":
+            print(job[key])
             if len(job[key]) == 1:
-                result[repr(job[key])].append(job)
+                group = repr(job[key])
             else:
-                result[job["resreq"] + repr(sorted(job[key]))].append(job)
+                group = job["resreq"]
+                group += repr(sorted(job[key]))
+                group += repr(sorted(job["host_req"]))
+            result[group].append(job)
         elif isinstance(job[key], dict):
             for val in job[key]:
                 result[val].append(job)
