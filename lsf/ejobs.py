@@ -65,7 +65,7 @@ def ejobs(args, bjobsargs):
         bjobsargs = ["-u", " ".join(unames)] + bjobsargs
 
     # read
-    jobs = readjobs(bjobsargs, fast=args.fast)
+    jobs = readjobs(bjobsargs, fast=args.fast or args.jid)
 
     if not jobs:
         return
@@ -80,6 +80,11 @@ def ejobs(args, bjobsargs):
             jobs.sort(key=lambda j: j[args.sortby])
         except:
             print("Unknown sorting key \"%s\"!" % args.sortby, file=sys.stderr)
+
+    if args.jid:
+        for job in jobs:
+            print(job["id"])
+        return
 
     # no grouping
     if not args.groupby or args.groupby not in jobs[0]:
@@ -164,6 +169,11 @@ def main():
     exg.add_argument(
         "-l", "--long",
         help="long job description",
+        action="store_true"
+    )
+    exg.add_argument(
+        "--jid",
+        help="only job ids",
         action="store_true"
     )
     parser.add_argument(
