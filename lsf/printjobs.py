@@ -85,7 +85,7 @@ def printjoblong(job, sumjob=False, file=sys.stdout):
                 print(job[key], file=file)
 
 
-def printjobs(jobs, wide=False, long=False, title=None,
+def printjobs(jobs, wide=False, long=False, output=None, title=None,
               header=True, file=sys.stdout):
     """Print a list of jobs."""
     if len(jobs) == 0:
@@ -94,6 +94,12 @@ def printjobs(jobs, wide=False, long=False, title=None,
     if long:
         for job in jobs:
             printjoblong(job, sumjob=sumjob, file=file)
+        return
+    if output:
+        # header
+        print(*output, sep="\t", file=file)
+        for job in jobs:
+            print(*[job[field] for field in output], sep="\t", file=file)
         return
     # begin output
     whoami = os.getenv("USER")

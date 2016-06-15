@@ -63,6 +63,8 @@ def ejobs(args, bjobsargs):
     if args.u:
         unames = map(lookupalias, args.u.split())
         bjobsargs = ["-u", " ".join(unames)] + bjobsargs
+    if args.output:
+        args.output = sum([fields.split() for fields in args.output], [])
 
     # read
     jobs = readjobs(bjobsargs, fast=args.fast or args.jid)
@@ -90,7 +92,7 @@ def ejobs(args, bjobsargs):
     if not args.groupby or args.groupby not in jobs[0]:
         if args.sum:
             jobs = [sumjobs(jobs)]
-        printjobs(jobs, wide=args.wide, long=args.long,
+        printjobs(jobs, wide=args.wide, long=args.long, output=args.output,
                   header=not args.noheader)
         return
 
@@ -103,12 +105,13 @@ def ejobs(args, bjobsargs):
                 sumjob = sumjobs(jobgroups[title])
                 sumjob["title"] = title
                 jobs.append(sumjob)
-            printjobs(jobs, wide=args.wide, long=args.long,
+            printjobs(jobs, wide=args.wide, long=args.long, output=args.output,
                       header=not args.noheader)
         else:
             for title in sorted(jobgroups.keys()):
                 printjobs(jobgroups[title], wide=args.wide, long=args.long,
-                          header=not args.noheader, title=title)
+                          output=args.output, header=not args.noheader,
+                          title=title)
         return
 
     # pending
@@ -127,7 +130,7 @@ def ejobs(args, bjobsargs):
                 title += ": %d" % reason[1]
         if args.sum:
             jobs = [sumjobs(jobs)]
-        printjobs(jobs, wide=args.wide, long=args.long,
+        printjobs(jobs, wide=args.wide, long=args.long, output=args.output,
                   header=not args.noheader, title=title)
         if reasons and len(reasons) > 1:
             # show pending reasons
@@ -170,6 +173,12 @@ def main():
         "-l", "--long",
         help="long job description",
         action="store_true"
+    )
+    exg.add_argument(
+        "-o", "--output",
+        help="show value of FIELD_NAME",
+        action="append",
+        metavar="FIELD_NAME"
     )
     exg.add_argument(
         "--jid",
