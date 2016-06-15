@@ -1,7 +1,7 @@
 python-lsf
 ==========
 
-Improved Interface for the LSF batch job scheduler
+Improved Interface for the IBM Platform LSF batch job scheduler
 
 
 Requirements
