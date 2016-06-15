@@ -2,7 +2,7 @@
 from distutils.core import setup
 
 setup(name="lsf",
-      version="1.1",
+      version="1.2",
       description="LSF job scheduler utilities",
       author="Elmar Peise",
       author_email="peise@aices.rwth-aachen.de",

@@ -16,23 +16,24 @@ from collections import defaultdict
 
 def printjoblong(job, sumjob=False, file=sys.stdout):
     """Print a job in long format."""
-    keys = ("jobid", "stat", "user", "mail", "queue", "job_name",
-            "job_description", "proj_name", "application", "service_class",
-            "job_group", "job_priority", "dependency", "command", "slots",
-            "memlimit", "exclusive", "interactive", "X11", "pre_exec_command",
-            "post_exec_command", "resize_notification_command", "pids",
-            "exit_code", "exit_reason", "from_host", "first_host", "exec_host",
-            "nexec_host", "submit_time", "start_time", "estimated_start_time",
-            "specified_start_time", "specified_terminate_time", "runlimit",
-            "run_time", "time_left", "finish_time", "%complete",
-            "warning_action", "action_warning_time", "cpu_used", "idle_factor",
-            "exception_status", "mem", "max_mem", "avg_mem", "swap",
-            "swaplimit", "min_req_proc", "max_req_proc", "resreq",
-            "combined_resreq", "effective_resreq", "network_req", "filelimit",
+    keys = ("jobid", "stat", "user", "user_group", "queue", "job_name",
+            "job_description", "interactive", "X11", "proj_name",
+            "application", "service_class", "job_group", "job_priority",
+            "dependency", "notify_begin", "notify_end", "command",
+            "pre_exec_command", "post_exec_command",
+            "resize_notification_command", "pids", "exit_code", "exit_reason",
+            "exclusive", "from_host", "first_host", "exec_host", "nexec_host",
+            "alloc_slot", "nalloc_slot", "host_file", "submit_time",
+            "start_time", "estimated_start_time", "specified_start_time",
+            "specified_terminate_time", "runlimit", "time_left", "finish_time",
+            "%complete", "warning_action", "action_warning_time", "pend_time",
+            "pend_reason", "cpu_used", "run_time", "idle_factor",
+            "exception_status", "slots", "mem", "max_mem", "avg_mem",
+            "memlimit", "swap", "swaplimit", "min_req_proc", "max_req_proc",
+            "resreq", "effective_resreq", "network_req", "filelimit",
             "corelimit", "stacklimit", "processlimit", "input_file",
             "output_file", "error_file", "output_dir", "sub_cwd", "exec_home",
-            "exec_cwd", "forward_cluster", "forward_time", "pend_reason",
-            "rsvd_host")
+            "exec_cwd", "forward_cluster", "forward_time")
     for key in keys:
         if not job[key]:
             continue
@@ -45,9 +46,10 @@ def printjoblong(job, sumjob=False, file=sys.stdout):
             print(format_mem(job[key]), file=file)
         elif key in ("submit_time", "start_time", "finish_time"):
             print(format_time(job[key]), file=file)
-        elif key in ("cpu_used", "time_left", "runlimit", "run_time"):
+        elif key in ("cpu_used", "time_left", "runlimit", "run_time",
+                     "pend_time"):
             print(format_duration(job[key]), file=file)
-        elif key in ("pend_reason"):
+        elif key == "pend_reason":
             items = job[key]
             key2, val = items[0]
             print("%4d * %s" % (val, key2), file=file)
@@ -292,13 +294,13 @@ def printjobs(jobs, wide=False, long=False, title=None,
                             model += "+"
                         model += "Phi"
                     l += model.ljust(lens["model"])
-            if job["rsvd_host"]:
+            if job["alloc_slot"]:
                 l += color("  rsvd:", "y")
-                if wide or len(job["rsvd_host"]) == 1:
-                    d = job["rsvd_host"]
+                if wide or len(job["alloc_slot"]) == 1:
+                    d = job["alloc_slot"]
                 else:
                     d = defaultdict(int)
-                    for key, val in job["rsvd_host"].iteritems():
+                    for key, val in job["alloc_slot"].iteritems():
                         d[re.match("(.*?)\d+", key).groups()[0] + "*"] += val
                 for key, val in d.iteritems():
                     c = "r" if val >= 100 else "y" if val >= 20 else 0

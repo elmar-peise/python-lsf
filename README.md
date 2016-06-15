@@ -8,7 +8,7 @@ Requirements
 ------------
 
 * python version 2.7.x
-* LSF version 9.1.2.0
+* LSF version 9.1.3.0
 * `bjobs`, `bhosts`, `bsub`, and `lshosts` available
 
 

@@ -15,23 +15,25 @@ def parsemem(value, unit):
 
 def readjobs(args, fast=False):
     """Read jobs from bjobs."""
-    keys = ("jobid", "stat", "user", "queue", "job_description", "proj_name",
-            "application", "service_class", "job_group", "job_priority",
-            "dependency", "command", "pre_exec_command", "post_exec_command",
+    keys = ("jobid", "stat", "user", "user_group", "queue", "job_name",
+            "job_description", "proj_name", "application", "service_class",
+            "job_group", "job_priority", "dependency", "command",
+            "pre_exec_command", "post_exec_command",
             "resize_notification_command", "pids", "exit_code", "exit_reason",
-            "from_host", "first_host", "exec_host", "nexec_host",
-            "submit_time", "start_time", "estimated_start_time",
-            "specified_start_time", "specified_terminate_time", "time_left",
-            "finish_time", "%complete", "warning_action",
-            "action_warning_time", "cpu_used", "run_time", "idle_factor",
-            "exception_status", "slots", "mem", "max_mem", "avg_mem",
-            "memlimit", "swap", "swaplimit", "min_req_proc", "max_req_proc",
-            "effective_resreq", "network_req", "filelimit", "corelimit",
-            "stacklimit", "processlimit", "input_file", "output_file",
-            "error_file", "output_dir", "sub_cwd", "exec_home", "exec_cwd",
-            "forward_cluster", "forward_time", "job_name")
+            "from_host", "first_host", "exec_host", "nexec_host", "alloc_slot",
+            "nalloc_slot", "host_file", "submit_time", "start_time",
+            "estimated_start_time", "specified_start_time",
+            "specified_terminate_time", "time_left", "finish_time",
+            "%complete", "warning_action", "action_warning_time", "pend_time",
+            "cpu_used", "run_time", "idle_factor", "exception_status", "slots",
+            "mem", "max_mem", "avg_mem", "memlimit", "swap", "swaplimit",
+            "min_req_proc", "max_req_proc", "effective_resreq", "network_req",
+            "filelimit", "corelimit", "stacklimit", "processlimit",
+            "input_file", "output_file", "error_file", "output_dir", "sub_cwd",
+            "exec_home", "exec_cwd", "forward_cluster", "forward_time")
     aliases = (
         ("id", "jobid"),
+        ("ugroup", "user_group"),
         ("name", "job_name"),
         ("description", "job_description"),
         ("proj", "proj_name"),
@@ -101,7 +103,7 @@ def readjobs(args, fast=False):
                                                "%Y %b %d %H:%M"))
             elif key == "%complete":
                 job[key] = float(val.split("%")[0])
-            elif key == "exec_host":
+            elif key in ("exec_host", "alloc_slot"):
                 val = val.split(":")
                 hosts = {}
                 for v in val:
@@ -120,10 +122,10 @@ def readjobs(args, fast=False):
                     job[key] = map(int, val.split(","))
                 else:
                     job[key] = []
+
         # set jet unknown keys
         for key in ("pend_reason", "runlimit", "mail", "exclusive", "resreq",
-                    "combined_resreq", "notify_begin", "notify_end",
-                    "rsvd_host"):
+                    "combined_resreq", "notify_begin", "notify_end"):
             job[key] = None
         # info from resreq
         if job["effective_resreq"]:
@@ -257,24 +259,6 @@ def readjobs(args, fast=False):
         idx = lines.index("RUNLIMIT")
         job["runlimit"] = int(float(lines[idx + 1].split()[0]) * 60)
         # memlimits
-        idx += 3
-        keys = lines[idx].lower().strip().split()
-        vals = lines[idx + 1].split()
-        for i, key in enumerate(keys):
-            job[key] = parsemem(vals[2 * i], vals[2 * i + 1])
-        # reserved hosts
-        match = re.search("Reserved <\d+> job slots on host\(s\) <(.*?)>[,;]",
-                          lines[idx])
-        if match:
-            val = match.groups()[0].split("> <")
-            hosts = {}
-            for v in val:
-                if "*" in v:
-                    v = v.split("*")
-                    hosts[v[1]] = int(v[0])
-                else:
-                    hosts[v] = 1
-            job["rsvd_host"] = hosts
     # aliases
     for job in jobs.values():
         job.update({alias: job[key] for alias, key in aliases})
