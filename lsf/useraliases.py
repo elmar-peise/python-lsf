@@ -1,6 +1,4 @@
-#!/usr/bin/env python
 """Username to real name aliasing utilities."""
-from __future__ import division, print_function
 
 import os
 

@@ -1,11 +1,6 @@
-#!/usr/bin/env python
 """Print a list of hosts."""
-from __future__ import print_function, division
 
-from utility import color, fractioncolor, format_duration, format_mem
-from groupjobs import groupjobs
-from sumjobs import sumjobs
-from useraliases import getuseralias
+from __future__ import print_function, division
 
 import os
 import sys
@@ -13,6 +8,11 @@ import re
 from time import time
 from subprocess import check_output
 from collections import defaultdict
+
+from utility import color, fractioncolor, format_duration, format_mem
+from groupjobs import groupjobs
+from sumjobs import sumjobs
+from useraliases import getuseralias
 
 
 def printhosts(hosts, jobs=[], wide=False, header=True, file=sys.stdout):

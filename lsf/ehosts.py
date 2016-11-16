@@ -1,6 +1,9 @@
 #!/usr/bin/env python
 """Wrapper script with bhosts functionality."""
-from __future__ import print_function, division
+
+import sys
+import re
+import argparse
 
 from shortcuts import ehostsshortcuts
 
@@ -10,10 +13,6 @@ from grouphosts import grouphosts
 from sumhosts import sumhosts
 
 from readjobs import readjobs
-
-import sys
-import re
-import argparse
 
 
 def ehosts(args, bhostsargs):

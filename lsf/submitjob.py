@@ -1,5 +1,5 @@
-#!/usr/bin/env python
 """Submit a job to LSF."""
+
 from __future__ import print_function, division
 
 import sys

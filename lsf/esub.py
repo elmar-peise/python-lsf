@@ -1,14 +1,15 @@
 #!/usr/bin/env python
 """Wrapper script with bsub functionality."""
-from __future__ import print_function, division
+
+from __future__ import print_function
+
+import sys
+import os
+import shlex
+import argparse
 
 from submitjob import submitjob
 from utility import color
-
-import shlex
-import sys
-import os
-import argparse
 
 
 def esub(args, bsubargs, jobscript):

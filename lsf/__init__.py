@@ -1,10 +1,9 @@
-#!/usr/bin/env python
 """LSF module."""
-from __future__ import print_function, division
+
+__all__ = ["ejobs", "ehosts", "esub", "submitjob"]
+__author__ = "Elmar Peise"
 
 import ejobs
 import ehosts
 import esub
 from submitjob import submitjob
-
-__all__ = ["ejobs", "ehosts", "esub", "submitjob"]

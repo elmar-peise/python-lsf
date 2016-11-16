@@ -1,6 +1,6 @@
-#!/usr/bin/env python
 """Read jobs from bjobs."""
-from __future__ import print_function, division
+
+from __future__ import division
 
 import re
 from time import strptime, strftime, mktime, time

@@ -1,9 +1,7 @@
-#!/usr/bin/env python
 """Read hosts from LSF."""
-from __future__ import print_function, division
 
-from subprocess import Popen, PIPE, check_output
 import re
+from subprocess import Popen, PIPE, check_output
 
 
 def parseval(val):

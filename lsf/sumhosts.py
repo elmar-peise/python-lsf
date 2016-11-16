@@ -1,10 +1,8 @@
-#!/usr/bin/env python
 """Summarize a list of hosts."""
-from __future__ import division, print_function
-
-from utility import findstringpattern
 
 from collections import defaultdict
+
+from utility import findstringpattern
 
 
 def sumhosts(hosts):

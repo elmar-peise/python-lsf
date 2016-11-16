@@ -1,10 +1,6 @@
-#!/usr/bin/env python
 """Print a list of jobs."""
-from __future__ import print_function, division
 
-from utility import color, fractioncolor
-from utility import format_duration, format_mem, format_time
-from useraliases import getuseralias
+from __future__ import print_function, division
 
 import os
 import sys
@@ -12,6 +8,10 @@ import re
 from time import time
 from subprocess import check_output
 from collections import defaultdict
+
+from utility import color, fractioncolor
+from utility import format_duration, format_mem, format_time
+from useraliases import getuseralias
 
 
 def printjoblong(job, sumjob=False, file=sys.stdout):

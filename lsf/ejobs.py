@@ -1,6 +1,11 @@
 #!/usr/bin/env python
 """Wrapper script with bjobs functionality."""
-from __future__ import print_function, division
+
+from __future__ import print_function
+
+import sys
+import re
+import argparse
 
 from utility import color
 from useraliases import lookupalias
@@ -13,10 +18,6 @@ from sumjobs import sumjobs
 
 from readhosts import readhosts
 from printhosts import printhosts
-
-import argparse
-import re
-import sys
 
 # highlighting color for pending reasing
 pendingcolors = {
@@ -166,7 +167,7 @@ def main():
     exg = parser.add_mutually_exclusive_group()
     exg.add_argument(
         "-w", "--wide",
-        help="shore more detailed info",
+        help="show more detailed info",
         action="store_true"
     )
     exg.add_argument(

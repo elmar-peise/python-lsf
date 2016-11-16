@@ -1,6 +1,4 @@
-#!/usr/bin/env python
 """Argument shortcuts for ejobs/ehosts/esub."""
-from __future__ import division, print_function
 
 ejobsshortcuts = {
     "aices": ["-G", "p_aices", "-P", "aices"],
