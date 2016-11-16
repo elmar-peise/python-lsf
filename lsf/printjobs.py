@@ -104,7 +104,9 @@ def printjobs(jobs, wide=False, long=False, output=None, title=None,
     # begin output
     whoami = os.getenv("USER")
     namelen = max(map(len, (job["job_name"] for job in jobs)))
-    titlelen = max(map(len, (job["title"] for job in jobs if job["title"])))
+    if sumjob:
+        titlelen = max(map(len, (job["title"] for job in jobs
+                                 if job["title"])))
     lens = {
         "title": 10,
         "jobid": 10,
@@ -120,7 +122,8 @@ def printjobs(jobs, wide=False, long=False, output=None, title=None,
         if any(job["jobid"][-1] == "]" for job in jobs):
             lens["jobid"] = 14
     if wide:
-        lens["title"] = max(6, namelen + 1)
+        if sumjob:
+            lens["title"] = max(6, titlelen + 1)
         lens["name"] = max(6, namelen + 1)
         lens["queue"] = 8
         lens["project"] = 8
