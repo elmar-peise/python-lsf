@@ -9,7 +9,7 @@ from time import time
 from subprocess import check_output
 from collections import defaultdict
 
-from utility import color, fractioncolor
+from utility import color, fractioncolor, findstringpattern
 from utility import format_duration, format_mem, format_time
 from useraliases import getuseralias
 
@@ -294,7 +294,17 @@ def printjobs(jobs, wide=False, long=False, output=None, title=None,
                     l += "   1" + color("x", "r")
                 else:
                     l += "   1*"
-                if job["resreq"]:
+                if job["host_req"]:
+                    hosts = job["host_req"]
+                    if len(hosts) == 1:
+                        hosts = hosts[0]
+                    else:
+                        if wide:
+                            hosts = "(%s)" % ", ".join(hosts)
+                        else:
+                            hosts = findstringpattern(hosts)
+                    l += hosts.ljust(lens["model"])
+                elif job["resreq"]:
                     match = re.search("model==(\w+)", job["resreq"])
                     model = ""
                     if match:
