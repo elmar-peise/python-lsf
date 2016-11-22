@@ -65,13 +65,13 @@ def sumjobs(jobs):
                 if key == "host_req":
                     for host in job[key]:
                         sumjob[key][host] += 1
-                elif key == "alloc_slot" and job[key]:
-                    for host in job[key]:
-                        sumjob[key][host] += job[key][host]
+                elif key == "alloc_slot":
+                    if job[key]:
+                        for host in job[key]:
+                            sumjob[key][host] += job[key][host]
                 else:
                     sumjob[key][job[key]] += 1
-            if key not in ("stat",):
+            if key not in ("stat", "alloc_slot"):
                 if len(sumjob[key]) == 1:
                     sumjob[key] = sumjob[key].keys()[0]
-
     return sumjob
