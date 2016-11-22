@@ -104,7 +104,8 @@ def ejobs(args, bjobsargs):
             jobs = []
             for title in sorted(jobgroups.keys()):
                 sumjob = sumjobs(jobgroups[title])
-                sumjob["title"] = title
+                if args.groupby not in ("name", "jobname", "user"):
+                    sumjob["title"] = title
                 jobs.append(sumjob)
             printjobs(jobs, wide=args.wide, long=args.long, output=args.output,
                       header=not args.noheader)
