@@ -252,7 +252,7 @@ def readjobs(args, fast=False):
         if lines[-2].startswith("Combined: "):
             job["combined_resreq"] = lines[-2].split(": ", 1)[1]
         # requested hosts
-        match = re.search("Specified Hosts <(.*?)>[,;]", lines[2])
+        match = re.search("Specified Hosts <(.*?)>(?:;|, [^<])", lines[2])
         if match:
             job["host_req"] = match.groups()[0].split(">, <")
         # runlimit

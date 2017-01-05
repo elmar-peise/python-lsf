@@ -23,17 +23,18 @@ def printjoblong(job, sumjob=False, file=sys.stdout):
             "pre_exec_command", "post_exec_command",
             "resize_notification_command", "pids", "exit_code", "exit_reason",
             "exclusive", "from_host", "first_host", "exec_host", "nexec_host",
-            "alloc_slot", "nalloc_slot", "host_file", "submit_time",
-            "start_time", "estimated_start_time", "specified_start_time",
-            "specified_terminate_time", "runlimit", "time_left", "finish_time",
-            "%complete", "warning_action", "action_warning_time", "pend_time",
-            "pend_reason", "cpu_used", "run_time", "idle_factor",
-            "exception_status", "slots", "mem", "max_mem", "avg_mem",
-            "memlimit", "swap", "swaplimit", "min_req_proc", "max_req_proc",
-            "resreq", "effective_resreq", "network_req", "filelimit",
-            "corelimit", "stacklimit", "processlimit", "input_file",
-            "output_file", "error_file", "output_dir", "sub_cwd", "exec_home",
-            "exec_cwd", "forward_cluster", "forward_time")
+            "alloc_slot", "nalloc_slot", "host_file", "host_req",
+            "submit_time", "start_time", "estimated_start_time",
+            "specified_start_time", "specified_terminate_time", "runlimit",
+            "time_left", "finish_time", "%complete", "warning_action",
+            "action_warning_time", "pend_time", "pend_reason", "cpu_used",
+            "run_time", "idle_factor", "exception_status", "slots", "mem",
+            "max_mem", "avg_mem", "memlimit", "swap", "swaplimit",
+            "min_req_proc", "max_req_proc", "resreq", "effective_resreq",
+            "network_req", "filelimit", "corelimit", "stacklimit",
+            "processlimit", "input_file", "output_file", "error_file",
+            "output_dir", "sub_cwd", "exec_home", "exec_cwd",
+            "forward_cluster", "forward_time")
     for key in keys:
         if not job[key]:
             continue
