@@ -333,7 +333,7 @@ def printjobs(jobs, wide=False, long=False, output=None, title=None,
                     l += color("  %s" % reason, "b")
                     if job["dependency"]:
                         l += color(":", "b")
-            if job["dependency"]:
-                l += color(" %s" % job["dependency"], "b")
+                if job["dependency"]:
+                    l += color(" %s" % job["dependency"], "b")
         print(l, file=file)
         file.flush()
