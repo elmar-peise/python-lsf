@@ -53,8 +53,6 @@ def ejobs(args, bjobsargs):
     if args.pending:
         bjobsargs = ["-p"] + bjobsargs
         args.groupby = "pend_reason"
-    if args.sort:
-        args.sortby = "jobid"
     for shortcutname, shortcutargs in ejobsshortcuts.items():
         if getattr(args, shortcutname):
             bjobsargs = shortcutargs + bjobsargs
@@ -64,11 +62,17 @@ def ejobs(args, bjobsargs):
     if args.u:
         unames = map(lookupalias, args.u.split())
         bjobsargs = ["-u", " ".join(unames)] + bjobsargs
+    if args.jid:
+        args.output = ["id"]
+        args.fast = True
+        args.noheader = True
     if args.output:
         args.output = sum([fields.split() for fields in args.output], [])
+        if len(args.output) == 1:
+            args.noheader = True
 
     # read
-    jobs = readjobs(bjobsargs, fast=args.fast or args.jid)
+    jobs = readjobs(bjobsargs, fast=args.fast)
 
     if not jobs:
         return
@@ -78,16 +82,11 @@ def ejobs(args, bjobsargs):
     jobs.sort(key=lambda j: j["priority"], reverse=True)  # can be None
     jobs.sort(key=lambda j: -j["run_time"])
     jobs.sort(key=lambda j: -statorder[j["stat"]])
-    if args.sortby:
+    if args.sort:
         try:
-            jobs.sort(key=lambda j: j[args.sortby])
+            jobs.sort(key=lambda j: j[args.sort])
         except:
-            print("Unknown sorting key \"%s\"!" % args.sortby, file=sys.stderr)
-
-    if args.jid:
-        for job in jobs:
-            print(job["id"])
-        return
+            print("Unknown sorting key \"%s\"!" % args.sort, file=sys.stderr)
 
     # no grouping
     if not args.groupby or args.groupby not in jobs[0]:
@@ -168,7 +167,7 @@ def main():
     exg = parser.add_mutually_exclusive_group()
     exg.add_argument(
         "-w", "--wide",
-        help="show more detailed info",
+        help="show more detailed (wide) info",
         action="store_true"
     )
     exg.add_argument(
@@ -178,14 +177,9 @@ def main():
     )
     exg.add_argument(
         "-o", "--output",
-        help="show value of FIELD_NAME",
+        help="show value of FIELD",
         action="append",
-        metavar="FIELD_NAME"
-    )
-    exg.add_argument(
-        "--jid",
-        help="only job ids",
-        action="store_true"
+        metavar="FIELD"
     )
     parser.add_argument(
         "--sum",
@@ -204,9 +198,11 @@ def main():
         metavar="KEY"
     )
     parser.add_argument(
-        "--sortby",
+        "--sort",
         help="sort jobs by KEY",
-        metavar="KEY"
+        metavar="KEY",
+        nargs="?",
+        const="id"
     )
     parser.add_argument(
         "--fast",
@@ -222,8 +218,8 @@ def main():
     # shortcuts
     shortcuts = parser.add_argument_group("shortcuts")
     shortcuts.add_argument(
-        "--sort",
-        help="for \"--sortby jobid\"",
+        "--jid",
+        help="for \"-o id --noheader\"",
         action="store_true"
     )
     for shortcutname, shortcutargs in ejobsshortcuts.items():

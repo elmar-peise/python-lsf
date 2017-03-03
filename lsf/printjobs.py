@@ -97,8 +97,8 @@ def printjobs(jobs, wide=False, long=False, output=None, title=None,
             printjoblong(job, sumjob=sumjob, file=file)
         return
     if output:
-        # header
-        print(*output, sep="\t", file=file)
+        if  header:
+            print(*output, sep="\t", file=file)
         for job in jobs:
             print(*[job[field] for field in output], sep="\t", file=file)
         return
