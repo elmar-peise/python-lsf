@@ -87,9 +87,6 @@ def readjobs(args, fast=False):
                     val = val[:-2]
                 job[key] = mktime(strptime(val,
                                            "%b %d %H:%M:%S %Y"))
-                if key != "finish_time" and job[key] > time():
-                    job[key] = mktime(strptime(val,
-                                               "%b %d %H:%M:%S %Y"))
             elif key == "time_left":
                 if val[-1] in "ELXA":
                     val = val[:-2]
